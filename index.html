@@ -3,368 +3,1190 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hanzi Quiz - Học Hán Tự & Pinyin</title>
+<title>Hanzi Studio 汉字 - Học & Luyện tập Hán Tự, Pinyin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
-    --paper:#FAF6EF;--paper-deep:#F3EDE1;--ink:#26221C;--ink-soft:#6B6357;--ink-faint:#A89F90;
-    --hairline:#E5DCC9;--seal-son:#C73E2E;--seal-deep:#A33225;--jade:#35705F;--jade-fill:#3E8A74;
-    --jade-tint:#E9F2EE;--amber:#8F6409;--amber-tint:#F5ECD9;--slate:#5B6770;
-    --slate-tint:#EEF0F2;--red-bg:#F7E5E1;
-    --max-w:540px;
+    --paper:#FAF7EE;
+    --paper-card:#F3ECE0;
+    --paper-deep:#ECE2D0;
+    --paper-card-hover:#EFE6D6;
+    --ink:#1F1B16;
+    --ink-soft:#5A5245;
+    --ink-faint:#968C7C;
+    --hairline:#DFD5BF;
+    --hairline-light:#ECE5D4;
+    
+    --seal-son:#C63D2D;
+    --seal-deep:#9E2C1E;
+    --seal-tint:#FAECE9;
+    
+    --amber:#8E6206;
+    --amber-deep:#6E4B02;
+    --amber-tint:#F8F0DC;
+    
+    --jade:#2E6958;
+    --jade-fill:#39826C;
+    --jade-tint:#E9F3EF;
+    
+    --shadow-sm: 0 2px 6px rgba(31,27,22,0.04);
+    --shadow-md: 0 6px 18px rgba(31,27,22,0.06);
+    --shadow-lg: 0 12px 32px rgba(31,27,22,0.08);
   }
+
   html{height:100%}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--paper);color:var(--ink);min-height:100%;-webkit-font-smoothing:antialiased}
-  .serif{font-family:Georgia,'Noto Serif SC','SimSun',serif}
-  .screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
-  .topbar{display:flex;align-items:center;padding:10px 16px;min-height:60px;width:100%;max-width:1120px;margin:0 auto}
-  @media(min-width:640px){.topbar{padding:10px 24px}}
-  .topbar-title{font-size:clamp(18px,2vw,22px);font-weight:600;font-family:Georgia,serif;letter-spacing:-.01em}
-  .icon-btn{width:40px;height:40px;border:none;background:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
-  .icon-btn:hover{background:var(--paper-deep)}
-  .icon-btn svg{width:22px;height:22px;fill:var(--ink-soft)}
-  .spacer{flex:1}
-  .content{flex:1;padding:0 16px 40px;overflow-y:auto;width:100%;max-width:1120px;margin:0 auto}
-  @media(min-width:640px){.content{padding:0 24px 40px}}
-  .content-scroll{max-height:calc(100dvh - 60px);overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none;scroll-snap-type:x proximity}
-  .chips::-webkit-scrollbar{display:none}
-  .chip{padding:9px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;border:none;transition:all .2s;flex:0 0 auto;scroll-snap-align:start}
-  .chip.active{background:var(--seal-son);color:#fff}
-  .chip:not(.active){background:var(--paper-deep);color:var(--ink-soft)}
-  .chip:not(.active):hover{background:var(--hairline)}
+  body{
+    font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background: radial-gradient(ellipse at 50% 0%, #FCF9F2 0%, #F8F3E7 60%, #EFE7D5 100%);
+    color:var(--ink);
+    min-height:100%;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .serif{font-family:'Noto Serif SC',Georgia,serif}
 
-  /* Session card with dual actions */
-  .session-card{background:var(--paper-deep);border:1.5px solid var(--hairline);border-radius:12px;padding:16px;margin-bottom:14px;transition:all .15s}
-  .session-card:hover{border-color:var(--ink-faint);box-shadow:0 2px 8px rgba(0,0,0,0.03)}
-  .session-card .ordinal-box{width:32px;height:32px;border-radius:8px;background:var(--paper);border:1px solid rgba(229,220,201,0.8);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .session-card .ordinal{font-family:Georgia,'Noto Serif SC',serif;font-size:14px;font-weight:700;color:var(--ink-soft)}
-  .session-card .title{font-weight:600;font-size:16px;color:var(--ink);overflow-wrap:anywhere}
-  .session-card .meta{font-size:12px;color:var(--ink-faint);display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap}
-  .hsk-badge{background:var(--jade-tint);color:var(--jade);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
-  .session-card .delete-btn{width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;transition:background .15s}
-  .session-card .delete-btn:hover{background:var(--red-bg)}
-  .session-card .delete-btn svg{width:18px;height:18px;fill:var(--ink-faint)}
-  
-  .card-divider{height:1px;background:var(--hairline);opacity:.7;margin:12px 0}
-  .session-btn-row{display:flex;gap:10px;align-items:center}
-  .btn-write-pinyin{flex:1;min-height:42px;border-radius:10px;border:1.2px solid rgba(143,100,9,0.4);background:var(--amber-tint);color:var(--amber);font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .15s}
-  .btn-write-pinyin:hover{background:#eedeb8;border-color:var(--amber)}
-  .btn-write-pinyin:active{transform:scale(.98)}
-  .btn-quiz{flex:1;min-height:42px;border-radius:10px;border:none;background:var(--seal-son);color:#fff;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .15s}
-  .btn-quiz:hover{background:var(--seal-deep)}
-  .btn-quiz:active{transform:scale(.98)}
+  /* Screens */
+  .screen{display:none;min-height:100vh;flex-direction:column}
+  .screen.active{display:flex}
 
-  .primary-btn{border:none;background:var(--seal-son);color:#fff;font-weight:600;font-size:14px;padding:12px 20px;border-radius:10px;cursor:pointer;transition:all .15s;min-height:46px;display:inline-flex;align-items:center;justify-content:center}
-  .primary-btn:hover{background:var(--seal-deep)}
-  .primary-btn:active{transform:scale(.98)}
-  .primary-btn:disabled{opacity:.5;cursor:not-allowed}
-  .primary-btn.full{width:100%}
-  .outline-btn{border:1.5px solid var(--hairline);background:none;color:var(--ink-soft);font-weight:600;font-size:15px;padding:12px 20px;border-radius:10px;cursor:pointer;min-height:46px;transition:all .15s;width:100%;display:flex;align-items:center;justify-content:center}
-  .outline-btn:hover{border-color:var(--ink-faint);background:var(--paper-deep)}
-  .outline-btn:active{transform:scale(.98)}
-  .label-sm{font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase}
+  /* Header & Navigation */
+  .desktop-header{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:rgba(252,249,242,0.92);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--hairline);
+    transition:all .2s;
+  }
+  .header-inner{
+    max-width:1240px;
+    margin:0 auto;
+    padding:10px 20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    min-height:64px;
+  }
+  .brand-group{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    text-decoration:none;
+    color:inherit;
+    flex-shrink:0;
+  }
+  .brand-seal{
+    width:34px;
+    height:34px;
+    background:var(--seal-son);
+    border:1.5px solid #E57368;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-family:'Noto Serif SC',serif;
+    font-size:18px;
+    font-weight:900;
+    box-shadow:0 2px 6px rgba(198,61,45,0.3);
+  }
+  .brand-text{display:flex;flex-direction:column}
+  .brand-title{font-size:18px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+  .brand-sub{font-size:11px;color:var(--ink-soft);font-weight:500}
 
-  .progress-bar{height:6px;background:var(--hairline);border-radius:9999px;flex:1;overflow:hidden}
-  .progress-bar .fill{height:100%;background:var(--jade-fill);transition:width .3s}
+  /* HSK Segmented Bar */
+  .hsk-segmented-wrap{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .hsk-segmented-wrap::-webkit-scrollbar{display:none}
+  .hsk-segmented{
+    display:flex;
+    background:var(--paper-deep);
+    padding:4px;
+    border-radius:30px;
+    border:1px solid var(--hairline);
+    gap:2px;
+  }
+  .hsk-tab{
+    padding:6px 16px;
+    border-radius:24px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    cursor:pointer;
+    transition:all .18s ease;
+    white-space:nowrap;
+  }
+  .hsk-tab:hover:not(.active){
+    color:var(--ink);
+    background:rgba(255,255,255,0.4);
+  }
+  .hsk-tab.active{
+    background:var(--seal-son);
+    color:#fff;
+    box-shadow:0 2px 8px rgba(198,61,45,0.35);
+  }
 
-  /* Flashcard */
-  .flashcard{width:min(72vw,320px);aspect-ratio:1;background:var(--paper-deep);border:1.5px solid var(--hairline);border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto}
+  /* Header Tools */
+  .header-tools{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+  }
+  .tool-btn{
+    height:36px;
+    padding:0 12px;
+    background:var(--paper-deep);
+    border:1px solid var(--hairline);
+    border-radius:8px;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    transition:all .15s;
+  }
+  .tool-btn:hover{
+    background:#e8deca;
+    color:var(--ink);
+    border-color:var(--ink-faint);
+  }
+  .tool-btn svg{width:16px;height:16px;fill:currentColor}
+  .tool-icon-btn{
+    width:36px;
+    height:36px;
+    padding:0;
+    justify-content:center;
+    border-radius:50%;
+  }
+
+  /* Main Container */
+  .main-wrapper{
+    max-width:1240px;
+    width:100%;
+    margin:0 auto;
+    padding:24px 20px 48px;
+    flex:1;
+  }
+
+  /* Home Banner */
+  .home-hero{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--hairline);
+    margin-bottom:24px;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .home-hero-left h1{
+    font-size:clamp(24px,3.2vw,36px);
+    font-family:'Noto Serif SC',Georgia,serif;
+    font-weight:700;
+    color:var(--ink);
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+  }
+  .home-hero-left .date-badge{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:4px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .home-hero-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .stat-pill{
+    padding:6px 14px;
+    background:var(--paper-deep);
+    border:1px solid var(--hairline);
+    border-radius:20px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .stat-pill b{color:var(--seal-son);font-size:14px}
+
+  /* Section Title */
+  .section-heading{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    margin-bottom:16px;
+  }
+  .section-heading::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:var(--hairline);
+  }
+
+  /* Session Grid */
+  .session-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:16px;
+    margin-bottom:32px;
+  }
+  @media(min-width:680px){
+    .session-grid{grid-template-columns:repeat(2,1fr);gap:18px}
+  }
+  @media(min-width:1040px){
+    .session-grid{grid-template-columns:repeat(3,1fr);gap:20px}
+  }
+
+  /* Session Card */
+  .session-card{
+    background:var(--paper-card);
+    border:1.5px solid var(--hairline);
+    border-radius:14px;
+    padding:18px 20px;
+    transition:all .2s cubic-bezier(0.16, 1, 0.3, 1);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    box-shadow:var(--shadow-sm);
+  }
+  .session-card:hover{
+    transform:translateY(-3px);
+    border-color:var(--ink-faint);
+    background:var(--paper-card-hover);
+    box-shadow:var(--shadow-md);
+  }
+  .session-card.highlighted{
+    border-left:4px solid var(--amber);
+    background:#f5efe2;
+  }
+  .card-top{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+  }
+  .card-ordinal{
+    width:36px;
+    height:36px;
+    border-radius:10px;
+    background:var(--paper);
+    border:1.2px solid rgba(223,213,191,0.9);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Noto Serif SC',serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--seal-son);
+    flex-shrink:0;
+    box-shadow:0 1px 3px rgba(0,0,0,0.02);
+  }
+  .card-info{flex:1;min-width:0}
+  .card-title{
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.3;
+    overflow-wrap:anywhere;
+  }
+  .card-meta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:5px;
+    font-size:12px;
+    color:var(--ink-faint);
+    flex-wrap:wrap;
+  }
+  .hsk-pill{
+    background:var(--jade-tint);
+    color:var(--jade);
+    font-size:10.5px;
+    font-weight:700;
+    padding:2px 7px;
+    border-radius:4px;
+  }
+  .card-del-btn{
+    width:30px;
+    height:30px;
+    border:none;
+    background:none;
+    cursor:pointer;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink-faint);
+    transition:all .15s;
+    opacity:0.6;
+  }
+  .card-del-btn:hover{
+    opacity:1;
+    background:var(--seal-tint);
+    color:var(--seal-son);
+  }
+  .card-del-btn svg{width:17px;height:17px;fill:currentColor}
+
+  .card-split{
+    height:1px;
+    background:var(--hairline);
+    margin:16px 0 14px;
+    opacity:0.8;
+  }
+  .card-actions{
+    display:flex;
+    gap:10px;
+    margin-top:auto;
+  }
+  .action-btn{
+    flex:1;
+    min-height:42px;
+    border-radius:10px;
+    font-size:13.5px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    cursor:pointer;
+    transition:all .15s;
+    text-decoration:none;
+  }
+  .btn-wp{
+    background:var(--amber-tint);
+    border:1.2px solid rgba(142,98,6,0.35);
+    color:var(--amber);
+  }
+  .btn-wp:hover{
+    background:#f1e4c3;
+    border-color:var(--amber);
+  }
+  .btn-wp:active{transform:scale(.98)}
+  .btn-qz{
+    background:var(--seal-son);
+    border:none;
+    color:#fff;
+    box-shadow:0 2px 6px rgba(198,61,45,0.25);
+  }
+  .btn-qz:hover{background:var(--seal-deep)}
+  .btn-qz:active{transform:scale(.98)}
+
+  /* Practice Studio (Write Pinyin & Quiz) */
+  .studio-container{
+    max-width:980px;
+    margin:0 auto;
+    width:100%;
+  }
+  .studio-bar{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .back-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 14px;
+    background:var(--paper-card);
+    border:1px solid var(--hairline);
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:all .15s;
+  }
+  .back-btn:hover{background:var(--paper-deep);color:var(--ink)}
+  .back-btn svg{width:18px;height:18px;fill:currentColor}
+  .studio-title-badge{
+    font-size:13px;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:20px;
+  }
+  .badge-wp{background:var(--amber-tint);color:var(--amber);border:1px solid rgba(142,98,6,0.3)}
+  .badge-qz{background:var(--seal-tint);color:var(--seal-son);border:1px solid rgba(198,61,45,0.3)}
+
+  .progress-wrap{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    max-width:320px;
+    margin-left:auto;
+  }
+  .progress-bar{
+    flex:1;
+    height:8px;
+    background:var(--hairline);
+    border-radius:99px;
+    overflow:hidden;
+  }
+  .progress-bar .fill{
+    height:100%;
+    background:var(--jade-fill);
+    transition:width .3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .progress-text{font-size:13px;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+
+  /* Studio Split Layout (Desktop 2-Col) */
+  .studio-card{
+    background:var(--paper-card);
+    border:1.5px solid var(--hairline);
+    border-radius:18px;
+    padding:28px;
+    box-shadow:var(--shadow-md);
+  }
+  .studio-split{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:28px;
+    align-items:start;
+  }
+  @media(min-width:820px){
+    .studio-split{
+      grid-template-columns:300px 1fr;
+      gap:36px;
+    }
+  }
+
+  /* Flashcard Column */
+  .flashcard-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .flashcard{
+    width:240px;
+    height:240px;
+    background:var(--paper);
+    border:1.5px solid var(--hairline);
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    box-shadow:var(--shadow-md);
+    transition:transform .3s;
+  }
+  @media(min-width:820px){
+    .flashcard{width:280px;height:280px}
+  }
   .flashcard .grid{position:absolute;inset:0;pointer-events:none}
-  .flashcard .grid::before,.flashcard .grid::after{content:'';position:absolute;background:var(--hairline);opacity:.4}
+  .flashcard .grid::before,.flashcard .grid::after{content:'';position:absolute;background:var(--hairline);opacity:.6}
   .flashcard .grid::before{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
   .flashcard .grid::after{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
-  .flashcard .hanzi{font-family:Georgia,'Noto Serif SC','SimSun',serif;font-size:clamp(58px,12vw,84px);font-weight:900;line-height:1;z-index:1}
-  .flashcard .seal{position:absolute;bottom:10px;right:10px;width:26px;height:26px;background:var(--seal-son);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:11px;color:#fff;font-weight:600}
+  .flashcard .hanzi{
+    font-family:'Noto Serif SC',Georgia,serif;
+    font-size:clamp(74px,11vw,96px);
+    font-weight:900;
+    line-height:1;
+    z-index:1;
+    color:var(--ink);
+  }
+  .flashcard .seal{
+    position:absolute;
+    bottom:12px;
+    right:12px;
+    width:28px;
+    height:28px;
+    background:var(--seal-son);
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Noto Serif SC',serif;
+    font-size:12px;
+    color:#fff;
+    font-weight:700;
+  }
   .flashcard.anim-in{animation:cardIn .35s ease-out}
-  @keyframes cardIn{from{opacity:0;transform:scale(.8) translateX(30px)}to{opacity:1;transform:scale(1) translateX(0)}}
+  @keyframes cardIn{from{opacity:0;transform:scale(.85) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
 
-  /* Quiz Area */
-  .quiz-area, .write-area{width:100%;max-width:680px;margin:0 auto}
-  .step-chips{display:flex;align-items:center;justify-content:center;gap:4px;margin:12px 0}
-  .step-chip{padding:6px 14px;border-radius:10px;font-size:12px;font-weight:600}
-  .step-chip.active{background:var(--seal-son);color:#fff}
-  .step-chip:not(.active){background:var(--paper-deep);color:var(--ink-faint)}
-  .options{margin-top:10px;width:100%}
-  .option-row{display:flex;align-items:center;padding:14px 16px;border-bottom:.5px solid var(--hairline);cursor:pointer;transition:all .15s;border-left:3px solid transparent;border-radius:4px;min-height:52px}
-  .option-row:hover:not(.disabled){background:var(--paper-deep)}
-  .option-row .ord{font-family:Georgia,serif;font-size:15px;width:24px;color:var(--ink-faint);flex-shrink:0}
-  .option-row .text{flex:1;font-size:15px;margin-left:12px;overflow-wrap:anywhere}
-  .option-row .check-icon{width:20px;height:20px;opacity:0;transition:opacity .2s;flex-shrink:0}
-  .option-row.correct{background:var(--jade-tint);border-left-color:var(--jade)}
-  .option-row.correct .ord,.option-row.correct .text{color:var(--jade);font-weight:600}
-  .option-row.correct .check-icon{opacity:1;fill:var(--jade)}
-  .option-row.wrong{background:var(--red-bg);border-left-color:var(--seal-deep)}
-  .option-row.wrong .ord,.option-row.wrong .text{color:var(--seal-deep)}
-  .option-row.wrong .check-icon{opacity:1}
-  .option-row.disabled{cursor:default}
-  .option-row.correct.anim-correct{animation:popIn .3s cubic-bezier(.3,1.4,.6,1)}
-  .option-row.wrong.anim-shake{animation:shake .3s}
-  @keyframes popIn{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
-  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(8px)}50%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-  .feedback{margin-top:16px;text-align:center;animation:fadeUp .2s ease-out}
+  /* Interaction Column */
+  .interact-col{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-height:280px;
+  }
+  .col-label{
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .kbd-hint{
+    font-size:11px;
+    color:var(--ink-faint);
+    font-weight:500;
+  }
+  kbd{
+    background:var(--paper-deep);
+    border:1px solid var(--hairline);
+    border-radius:4px;
+    padding:2px 5px;
+    font-family:monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+  }
+
+  /* Pinyin Input Field */
+  .pinyin-input-box{
+    position:relative;
+    display:flex;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  .pinyin-input{
+    width:100%;
+    padding:14px 54px 14px 18px;
+    border:2px solid var(--hairline);
+    border-radius:12px;
+    font-size:18px;
+    font-family:inherit;
+    background:var(--paper);
+    color:var(--ink);
+    outline:none;
+    transition:all .2s;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,0.02);
+  }
+  .pinyin-input:focus{
+    border-color:var(--jade);
+    box-shadow:0 0 0 3px var(--jade-tint);
+  }
+  .pinyin-input:disabled{
+    background:var(--paper-deep);
+    opacity:.85;
+    cursor:not-allowed;
+  }
+  .inline-check-btn{
+    position:absolute;
+    right:8px;
+    width:38px;
+    height:38px;
+    border:none;
+    background:var(--jade);
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:all .15s;
+    color:#fff;
+  }
+  .inline-check-btn:hover:not(:disabled){background:var(--jade-fill);transform:scale(1.04)}
+  .inline-check-btn:active:not(:disabled){transform:scale(.96)}
+  .inline-check-btn:disabled{background:var(--hairline);color:var(--ink-faint);cursor:not-allowed;opacity:.5}
+  .inline-check-btn svg{width:22px;height:22px;fill:currentColor}
+
+  /* Pinyin Quick Toolbar for Desktop */
+  .pinyin-toolbar{
+    background:var(--paper);
+    border:1px solid var(--hairline);
+    border-radius:10px;
+    padding:8px 10px;
+    margin-bottom:16px;
+  }
+  .toolbar-label{
+    font-size:11px;
+    font-weight:600;
+    color:var(--ink-faint);
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .tone-chips-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:4px;
+  }
+  .tone-btn{
+    padding:4px 8px;
+    border-radius:6px;
+    border:1px solid rgba(223,213,191,0.8);
+    background:var(--paper-deep);
+    color:var(--ink);
+    font-family:'Noto Serif SC',serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .12s;
+  }
+  .tone-btn:hover{
+    background:var(--amber-tint);
+    border-color:var(--amber);
+    color:var(--amber);
+  }
+
+  /* Buttons */
+  .primary-action-btn{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:10px;
+    background:var(--seal-son);
+    color:#fff;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:all .15s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .primary-action-btn:hover{background:var(--seal-deep)}
+  .primary-action-btn:active{transform:scale(.98)}
+  .primary-action-btn:disabled{opacity:.4;cursor:not-allowed}
+
+  /* Feedback Card */
+  .feedback-box{
+    margin-top:16px;
+    background:var(--paper);
+    border:1.5px solid var(--hairline);
+    border-radius:12px;
+    padding:16px 18px;
+    animation:fadeUp .22s ease-out;
+  }
   @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .feedback .label{font-size:14px;font-weight:600}
-  .feedback .label.correct-text{color:var(--jade)}
-  .feedback .label.wrong-text{color:var(--seal-deep)}
+  .feedback-status{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:12.5px;
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .feedback-status.correct{background:var(--jade-tint);color:var(--jade);border:1px solid var(--jade)}
+  .feedback-status.wrong{background:var(--seal-tint);color:var(--seal-son);border:1px solid var(--seal-son)}
+  .feedback-details{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:14.5px;
+    margin-bottom:14px;
+  }
+  .fb-pinyin{
+    font-family:'Noto Serif SC',Georgia,serif;
+    font-size:20px;
+    font-weight:700;
+    color:var(--seal-son);
+  }
+  .fb-meaning{
+    color:var(--ink);
+    font-weight:500;
+  }
+  .next-btn{
+    width:100%;
+    min-height:44px;
+    border:1.5px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:8px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    transition:all .15s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .next-btn:hover{background:#38322a;border-color:#38322a}
+  .next-btn:active{transform:scale(.98)}
 
-  /* Write Pinyin Area */
-  .wp-badge{display:inline-block;padding:4px 14px;background:var(--amber-tint);color:var(--amber);border:1px solid rgba(143,100,9,0.3);border-radius:20px;font-size:12px;font-weight:700}
-  .wp-input-wrapper{position:relative;margin-top:12px;display:flex;align-items:center}
-  .wp-input{width:100%;padding:13px 52px 13px 16px;border:2px solid var(--hairline);border-radius:12px;font-size:17px;font-family:inherit;background:var(--paper-deep);color:var(--ink);outline:none;transition:all .2s;box-shadow:inset 0 1px 3px rgba(0,0,0,0.02)}
-  .wp-input:focus{border-color:var(--jade);background:var(--paper);box-shadow:0 0 0 3px var(--jade-tint)}
-  .wp-input:disabled{background:var(--paper-deep);opacity:.85;cursor:not-allowed}
-  .wp-inline-submit{position:absolute;right:8px;width:36px;height:36px;border:none;background:var(--jade);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;color:#fff}
-  .wp-inline-submit:hover:not(:disabled){background:var(--jade-fill);transform:scale(1.04)}
-  .wp-inline-submit:active:not(:disabled){transform:scale(.96)}
-  .wp-inline-submit:disabled{background:var(--hairline);color:var(--ink-faint);cursor:not-allowed;opacity:.5}
-  .wp-inline-submit svg{width:20px;height:20px;fill:currentColor}
+  /* Quiz Options Grid */
+  .quiz-options-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+    width:100%;
+    margin-top:10px;
+  }
+  @media(min-width:640px){
+    .quiz-options-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  }
+  .opt-card{
+    display:flex;
+    align-items:center;
+    padding:12px 14px;
+    background:var(--paper);
+    border:1.5px solid var(--hairline);
+    border-radius:10px;
+    cursor:pointer;
+    transition:all .15s;
+    min-height:52px;
+  }
+  .opt-card:hover:not(.disabled){
+    border-color:var(--ink-faint);
+    background:#fff;
+    transform:translateY(-1px);
+  }
+  .opt-card .key-badge{
+    width:24px;
+    height:24px;
+    border-radius:6px;
+    background:var(--paper-deep);
+    border:1px solid var(--hairline);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    font-weight:700;
+    color:var(--ink-soft);
+    flex-shrink:0;
+    margin-right:10px;
+  }
+  .opt-card .text{
+    flex:1;
+    font-size:15px;
+    font-weight:500;
+    color:var(--ink);
+    overflow-wrap:anywhere;
+  }
+  .opt-card.correct{
+    background:var(--jade-tint);
+    border-color:var(--jade);
+    color:var(--jade);
+    font-weight:700;
+  }
+  .opt-card.wrong{
+    background:var(--seal-tint);
+    border-color:var(--seal-son);
+    color:var(--seal-son);
+  }
+  .opt-card.disabled{cursor:default}
 
-  .wp-feedback-card{margin-top:18px;background:var(--paper-deep);border:1.5px solid var(--hairline);border-radius:12px;padding:16px 18px;animation:fadeUp .25s ease-out}
-  .wp-feedback-header{display:flex;align-items:center;justify-content:center;margin-bottom:12px}
-  .wp-status-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700}
-  .wp-status-badge.correct{background:var(--jade-tint);color:var(--jade);border:1px solid var(--jade)}
-  .wp-status-badge.wrong{background:var(--red-bg);color:var(--seal-deep);border:1px solid var(--seal-deep)}
-  .wp-feedback-body{display:flex;flex-direction:column;gap:8px;background:var(--paper);border:1px solid var(--hairline);border-radius:10px;padding:12px 14px}
-  .wp-correct-pinyin-row, .wp-meaning-row{display:flex;align-items:baseline;gap:8px;font-size:15px}
-  .wp-label{font-size:12px;font-weight:600;color:var(--ink-soft);min-width:82px}
-  .wp-target-pinyin{font-size:18px;font-weight:700;color:var(--seal-son);font-family:Georgia,serif}
-  .wp-target-meaning{font-size:14.5px;font-weight:500;color:var(--ink)}
-  .wp-next-btn{background:var(--paper);border-color:var(--ink-soft);color:var(--ink);font-weight:700}
-  .wp-next-btn:hover{background:var(--paper-deep)}
+  /* Finish Screen */
+  .finish-view{
+    text-align:center;
+    padding:40px 20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .finish-icon{
+    width:64px;
+    height:64px;
+    color:var(--jade);
+    margin-bottom:16px;
+  }
+  .finish-title{
+    font-size:28px;
+    font-family:'Noto Serif SC',serif;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .finish-sub{
+    font-size:15px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .finish-stats-row{
+    display:flex;
+    gap:40px;
+    margin:32px 0;
+  }
+  .stat-block .num{font-size:42px;font-weight:700;line-height:1}
+  .stat-block .lbl{font-size:12px;font-weight:600;color:var(--ink-soft);margin-top:6px}
 
-  .finish{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center}
-  .finish .icon{width:56px;height:56px;color:var(--jade);animation:popIn .5s cubic-bezier(.3,1.4,.6,1)}
-  .finish h2{font-size:24px;font-weight:600;font-family:Georgia,serif;margin:12px 0 4px}
-  .finish .subtitle{font-size:14px;color:var(--ink-soft)}
-  .stats{display:flex;gap:clamp(28px,8vw,64px);margin-top:28px}
-  .stat-col{text-align:center}
-  .stat-col .value{font-size:36px;font-weight:700}
-  .stat-col .label{font-size:11px;font-weight:500;letter-spacing:.02em;color:var(--ink-soft)}
-  .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:50}
+  /* Shortcuts Modal */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(31,27,22,0.45);
+    backdrop-filter:blur(4px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s;
+    padding:20px;
+  }
+  .modal-overlay.show{opacity:1;pointer-events:auto}
+  .shortcuts-modal{
+    background:var(--paper);
+    border:1.5px solid var(--hairline);
+    border-radius:16px;
+    padding:24px 28px;
+    max-width:480px;
+    width:100%;
+    box-shadow:var(--shadow-lg);
+  }
+  .modal-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+  .shortcuts-list{display:flex;flex-direction:column;gap:12px;font-size:13.5px}
+  .sc-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--hairline)}
 
-  .empty-state{display:flex;flex-direction:column;align-items:center;padding-top:48px;text-align:center}
-  .empty-state .icon{width:48px;height:48px;color:var(--jade);opacity:.5}
-  .empty-state h3{font-size:20px;font-weight:600;margin:16px 0 8px}
-  .empty-state p{font-size:14px;color:var(--ink-faint);margin-bottom:24px;max-width:300px}
-  .spinner{width:32px;height:32px;border:3px solid var(--hairline);border-top-color:var(--jade-fill);border-radius:50%;animation:spin .7s linear infinite;margin:80px auto}
+  /* Setup Screen */
+  .setup-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+  .setup-box{
+    background:var(--paper-card);
+    border:1.5px solid var(--hairline);
+    border-radius:16px;
+    padding:36px;
+    max-width:460px;
+    width:100%;
+    text-align:center;
+    box-shadow:var(--shadow-md);
+  }
+  .setup-box input{
+    width:100%;
+    padding:12px 16px;
+    border:1.5px solid var(--hairline);
+    border-radius:10px;
+    font-family:monospace;
+    font-size:13px;
+    background:var(--paper);
+    outline:none;
+    margin:16px 0;
+  }
+
+  .spinner{
+    width:36px;
+    height:36px;
+    border:3px solid var(--hairline);
+    border-top-color:var(--seal-son);
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    margin:60px auto;
+  }
   @keyframes spin{to{transform:rotate(360deg)}}
-  .section-label{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase;margin:18px 0 10px}
-  .snackbar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--paper);padding:12px 24px;border-radius:10px;font-size:14px;z-index:200;transition:transform .3s;pointer-events:none;white-space:nowrap;max-width:calc(100vw - 32px);text-align:center}
+
+  .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:90}
+  .snackbar{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:var(--ink);
+    color:var(--paper);
+    padding:12px 24px;
+    border-radius:10px;
+    font-size:14px;
+    z-index:200;
+    transition:transform .3s;
+    pointer-events:none;
+  }
   .snackbar.show{transform:translateX(-50%) translateY(0)}
 
-  .setting-card{background:var(--paper-deep);border-radius:12px;padding:16px 20px;margin-bottom:12px}
-  .setting-card .setting-title{font-weight:600;font-size:15px}
-  .setting-card .setting-desc{font-size:12px;color:var(--ink-soft);margin-top:2px}
-  .toggle{position:relative;width:48px;height:26px;cursor:pointer;flex-shrink:0}
-  .toggle input{display:none}
-  .toggle .slider{position:absolute;inset:0;background:var(--hairline);border-radius:13px;transition:background .2s}
-  .toggle .slider::before{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
-  .toggle input:checked+.slider{background:var(--jade)}
-  .toggle input:checked+.slider::before{transform:translateX(22px)}
-  .audio-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
-
-  .setup-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-  .setup-inner{text-align:center;max-width:440px;width:100%}
-  .setup-inner .serif{font-size:32px;font-weight:600}
-  .setup-inner .accent-line{width:60px;height:2.5px;background:var(--seal-son);margin:8px auto 0}
-  .setup-inner code{background:var(--paper-deep);padding:2px 6px;border-radius:4px;font-size:12px}
-  .setup-inner input{width:100%;padding:12px 14px;border:1.5px solid var(--hairline);border-radius:10px;font-size:13px;background:var(--paper);color:var(--ink);outline:none;font-family:monospace;transition:border-color .2s}
-  .setup-inner input:focus{border-color:var(--jade)}
-
-  .home-header{padding:8px 0 0}
-  .home-header .serif-sub{font-size:16px;color:var(--ink-soft)}
-  .home-header h1{font-size:clamp(28px,4vw,38px);font-weight:600;font-family:Georgia,serif;letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px;margin-top:4px;flex-wrap:wrap}
-  .home-header .accent-line{display:inline-block;width:60px;height:2.5px;background:var(--seal-son)}
-  .home-header .date{color:var(--ink-faint);font-size:13px;margin-top:4px}
-  .hsk-row{padding:0;margin-top:18px}
-  .list-area{padding:0;margin-top:14px}
-  .settings-area{padding:0;margin-top:20px;max-width:680px;margin-left:auto;margin-right:auto}
-
-  @media (min-width: 640px) {
-    .home-header, .hsk-row, .list-area, .quiz-area, .write-area { max-width: 760px; }
-  }
-  @media (min-width: 1024px) {
-    .home-header, .hsk-row, .list-area, .quiz-area, .write-area { max-width: 880px; }
+  @media(max-width:720px){
+    .header-inner{flex-wrap:wrap;padding:10px 16px}
+    .hsk-segmented-wrap{order:3;width:100%;justify-content:flex-start}
+    .brand-sub{display:none}
+    .flashcard{width:220px;height:220px}
   }
 </style>
 </head>
 <body>
 
-<!-- SETUP -->
+<!-- SETUP SCREEN -->
 <div id="setup-screen" class="screen active">
   <div class="setup-wrap">
-    <div class="setup-inner">
-      <div class="serif">Hanzi Quiz</div>
-      <div class="accent-line"></div>
-      <p style="color:var(--ink-soft);font-size:14px;margin-top:24px;margin-bottom:8px">Nhập Supabase Anon Key để kết nối dữ liệu.</p>
-      <p style="color:var(--ink-faint);font-size:12px;margin-bottom:20px">Tìm key trong <code>local.properties</code>, dòng <code>supabase.anon.key</code></p>
-      <input type="text" id="setup-key-input" placeholder="eyJhbGciOiJIUzI1NiIs...">
-      <div style="height:16px"></div>
-      <button class="primary-btn full" onclick="connectSupabase()">Kết nối</button>
+    <div class="setup-box">
+      <div style="display:flex;justify-content:center;margin-bottom:12px">
+        <div class="brand-seal" style="width:44px;height:44px;font-size:24px">汉</div>
+      </div>
+      <h2 style="font-family:'Noto Serif SC',serif;font-size:24px">Hanzi Studio</h2>
+      <p style="color:var(--ink-soft);font-size:14px;margin-top:8px">Kết nối cơ sở dữ liệu Supabase để học Hán tự</p>
+      <input type="text" id="setup-key-input" placeholder="Dán Supabase Anon Key tại đây...">
+      <button class="primary-action-btn" onclick="connectSupabase()">Bắt đầu học ngay</button>
       <p id="setup-error" style="color:var(--seal-son);font-size:13px;margin-top:12px;display:none"></p>
     </div>
   </div>
 </div>
 
-<!-- HOME -->
+<!-- DESKTOP APP HEADER -->
+<header class="desktop-header" id="app-header" style="display:none">
+  <div class="header-inner">
+    <a class="brand-group" onclick="goBack()" title="Về trang chủ">
+      <div class="brand-seal">汉</div>
+      <div class="brand-text">
+        <span class="brand-title">Hanzi Studio</span>
+        <span class="brand-sub">Học & Luyện tập Hán Tự</span>
+      </div>
+    </a>
+
+    <!-- HSK Segmented Bar in Center -->
+    <div class="hsk-segmented-wrap">
+      <div class="hsk-segmented" id="hsk-tabs"></div>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="header-tools">
+      <button class="tool-btn" onclick="openShortcutsModal()" title="Phím tắt máy tính">
+        <svg viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 4H5v-2h2v2zm0-3H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 7h-2v-2h2v2zm0-3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
+        <span style="display:none;@media(min-width:900px){display:inline}">Phím tắt</span>
+        <kbd>?</kbd>
+      </button>
+
+      <button class="tool-btn tool-icon-btn" id="audio-toggle-btn" onclick="toggleAudioQuick()" title="Âm thanh (Bật/Tắt)">
+        <svg id="audio-icon-on" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        <svg id="audio-icon-off" viewBox="0 0 24 24" style="display:none"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HOME SCREEN -->
 <div id="home-screen" class="screen">
-  <div class="topbar">
-    <button class="icon-btn" onclick="showScreen('settings')" title="Cài đặt">
-      <svg viewBox="0 0 24 24"><path d="M19.14 12.94a7.07 7.07 0 000-1.88l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96a7.04 7.04 0 00-1.63-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84a.48.48 0 00-.48.41l-.36 2.54c-.59.24-1.13.57-1.63.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87a.48.48 0 00.12.61l2.03 1.58a7.07 7.07 0 000 1.88l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.04.7 1.63.94l.36 2.54c.05.24.26.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>
-    </button>
-    <div class="spacer"></div>
-  </div>
-  <div class="content content-scroll">
-    <div class="home-header">
-      <span class="serif serif-sub">Ứng dụng</span>
-      <h1><span>Hanzi Quiz</span><span class="accent-line"></span></h1>
-      <div class="date" id="home-date"></div>
+  <div class="main-wrapper">
+    <div class="home-hero">
+      <div class="home-hero-left">
+        <h1><span>Khám phá & Ôn tập</span></h1>
+        <div class="date-badge">
+          <svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+          <span id="home-date-text"></span>
+        </div>
+      </div>
+      <div class="home-hero-right">
+        <div class="stat-pill" id="home-stats-pill">HSK 1: <b>0</b> buổi ôn tập</div>
+      </div>
     </div>
-    <div class="hsk-row"><div class="chips" id="hsk-chips"></div></div>
-    <div class="list-area">
-      <div id="home-loading" class="spinner" style="display:none"></div>
-      <div id="home-content"></div>
+
+    <!-- Continue Learning Section -->
+    <div id="continue-section" style="display:none;margin-bottom:28px">
+      <div class="section-heading">Tiếp tục phiên học gần nhất</div>
+      <div id="continue-card-container"></div>
+    </div>
+
+    <!-- All Sessions Grid Section -->
+    <div class="section-heading">Danh sách buổi học theo cấp độ</div>
+    <div id="home-loading" class="spinner" style="display:none"></div>
+    <div class="session-grid" id="session-grid"></div>
+    <div id="empty-state" class="empty-state" style="display:none;text-align:center;padding:48px 20px">
+      <div style="font-size:42px;margin-bottom:8px">📖</div>
+      <h3 style="font-size:18px;font-weight:700">Chưa có bài học nào trong cấp độ này</h3>
+      <p style="color:var(--ink-faint);font-size:14px;margin-top:4px">Chọn cấp độ HSK khác ở thanh trên để bắt đầu luyện tập</p>
     </div>
   </div>
 </div>
 
-<!-- WRITE PINYIN -->
+<!-- WRITE PINYIN SCREEN -->
 <div id="write-pinyin-screen" class="screen">
-  <div class="topbar">
-    <button class="icon-btn" onclick="goBack()" title="Quay lại">
-      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-    </button>
-    <span class="topbar-title" style="font-size:18px;margin-left:8px;color:var(--ink-soft)">Viết Pinyin</span>
-  </div>
-  <div class="content content-scroll">
-    <div class="write-area">
-      <div id="wp-loading" class="spinner" style="display:none"></div>
-      
-      <div id="wp-content" style="display:none">
-        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+  <div class="main-wrapper">
+    <div class="studio-container">
+      <div class="studio-bar">
+        <button class="back-btn" onclick="goBack()" title="Quay lại (Esc)">
+          <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <span>Trang chủ</span>
+          <kbd>Esc</kbd>
+        </button>
+        <span class="studio-title-badge badge-wp">✏ Luyện Viết Pinyin</span>
+
+        <div class="progress-wrap">
           <div class="progress-bar"><div class="fill" id="wp-progress-fill"></div></div>
-          <span id="wp-counter" style="font-size:13px;color:var(--ink-soft);white-space:nowrap"></span>
-        </div>
-
-        <div style="text-align:center;margin:12px 0 8px">
-          <span class="wp-badge">✏ Viết Pinyin</span>
-        </div>
-
-        <div class="flashcard" id="wp-flashcard">
-          <div class="grid"></div>
-          <span class="hanzi" id="wp-flashcard-hanzi"></span>
-          <span class="seal">字</span>
-        </div>
-
-        <div style="margin-top:18px;text-align:center">
-          <span class="label-sm" style="font-size:12px;color:var(--ink-soft)">Nhập pinyin cho chữ trên:</span>
-        </div>
-
-        <!-- Input box with inline quick submit button -->
-        <div class="wp-input-wrapper">
-          <input type="text" id="wp-input" class="wp-input" placeholder="VD: xué hoặc xue, xue2..." autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="go">
-          <button id="wp-submit-btn" class="wp-inline-submit" onclick="checkWritePinyinAnswer()" title="Kiểm tra (Enter)">
-            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-          </button>
-        </div>
-
-        <button class="primary-btn full" id="wp-check-btn" onclick="checkWritePinyinAnswer()" style="margin-top:12px">Kiểm tra</button>
-
-        <!-- Feedback Card -->
-        <div id="wp-feedback-card" class="wp-feedback-card" style="display:none">
-          <div class="wp-feedback-header">
-            <span id="wp-feedback-badge" class="wp-status-badge"></span>
-          </div>
-          <div class="wp-feedback-body">
-            <div class="wp-correct-pinyin-row">
-              <span class="wp-label">Pinyin chuẩn:</span>
-              <span id="wp-correct-pinyin" class="wp-target-pinyin"></span>
-            </div>
-            <div class="wp-meaning-row" id="wp-meaning-row">
-              <span class="wp-label">Nghĩa:</span>
-              <span id="wp-correct-meaning" class="wp-target-meaning"></span>
-            </div>
-          </div>
-          <button class="outline-btn wp-next-btn" id="wp-next-btn" onclick="nextWritePinyinWord()" style="margin-top:14px">Tiếp tục</button>
+          <span class="progress-text" id="wp-counter">0/0</span>
         </div>
       </div>
 
-      <!-- Finish screen -->
-      <div id="wp-finish" class="finish" style="display:none">
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-        <h2>Hoàn thành</h2>
-        <span class="subtitle" id="wp-finish-subtitle"></span>
-        <div class="stats">
-          <div class="stat-col"><div class="value" id="wp-finish-correct" style="color:var(--jade)"></div><div class="label">Thuộc được</div></div>
-          <div class="stat-col"><div class="value" id="wp-finish-wrong" style="color:var(--seal-son)"></div><div class="label">Lần sai</div></div>
+      <!-- Studio Card Split View -->
+      <div class="studio-card">
+        <div class="studio-split" id="wp-workspace">
+          <!-- Left: Flashcard -->
+          <div class="flashcard-col">
+            <div class="flashcard" id="wp-flashcard">
+              <div class="grid"></div>
+              <span class="hanzi" id="wp-flashcard-hanzi">字</span>
+              <span class="seal">字</span>
+            </div>
+            <div style="margin-top:12px;font-size:12px;color:var(--ink-faint);text-align:center">
+              Nhìn chữ Hán và gõ Pinyin tương ứng
+            </div>
+          </div>
+
+          <!-- Right: Input & Controls -->
+          <div class="interact-col">
+            <div class="col-label">
+              <span>NHẬP PHIÊN ÂM PINYIN:</span>
+              <span class="kbd-hint">Nhấn <kbd>Enter ↵</kbd> để kiểm tra</span>
+            </div>
+
+            <!-- Input Box -->
+            <div class="pinyin-input-box">
+              <input type="text" id="wp-input" class="pinyin-input" placeholder="VD: xué hoặc xue, xue2..." autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="go">
+              <button id="wp-submit-btn" class="inline-check-btn" onclick="checkWritePinyinAnswer()" title="Kiểm tra (Enter)">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+              </button>
+            </div>
+
+            <!-- Desktop Vowel Toolbar -->
+            <div class="pinyin-toolbar">
+              <div class="toolbar-label">
+                <span>Chèn ký tự có dấu nhanh:</span>
+                <span>(Hỗ trợ cả gõ số: xue2 = xué)</span>
+              </div>
+              <div class="tone-chips-row">
+                <button class="tone-btn" onclick="insertToneChar('ā')">ā</button>
+                <button class="tone-btn" onclick="insertToneChar('á')">á</button>
+                <button class="tone-btn" onclick="insertToneChar('ǎ')">ǎ</button>
+                <button class="tone-btn" onclick="insertToneChar('à')">à</button>
+                <button class="tone-btn" onclick="insertToneChar('ē')">ē</button>
+                <button class="tone-btn" onclick="insertToneChar('é')">é</button>
+                <button class="tone-btn" onclick="insertToneChar('ě')">ě</button>
+                <button class="tone-btn" onclick="insertToneChar('è')">è</button>
+                <button class="tone-btn" onclick="insertToneChar('ī')">ī</button>
+                <button class="tone-btn" onclick="insertToneChar('í')">í</button>
+                <button class="tone-btn" onclick="insertToneChar('ǐ')">ǐ</button>
+                <button class="tone-btn" onclick="insertToneChar('ì')">ì</button>
+                <button class="tone-btn" onclick="insertToneChar('ō')">ō</button>
+                <button class="tone-btn" onclick="insertToneChar('ó')">ó</button>
+                <button class="tone-btn" onclick="insertToneChar('ǒ')">ǒ</button>
+                <button class="tone-btn" onclick="insertToneChar('ò')">ò</button>
+                <button class="tone-btn" onclick="insertToneChar('ū')">ū</button>
+                <button class="tone-btn" onclick="insertToneChar('ú')">ú</button>
+                <button class="tone-btn" onclick="insertToneChar('ǔ')">ǔ</button>
+                <button class="tone-btn" onclick="insertToneChar('ù')">ù</button>
+                <button class="tone-btn" onclick="insertToneChar('ü')">ü</button>
+              </div>
+            </div>
+
+            <button class="primary-action-btn" id="wp-check-btn" onclick="checkWritePinyinAnswer()">
+              <span>Kiểm tra đáp án</span>
+              <kbd style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Enter ↵</kbd>
+            </button>
+
+            <!-- Feedback Box -->
+            <div id="wp-feedback-card" class="feedback-box" style="display:none">
+              <div id="wp-feedback-status" class="feedback-status"></div>
+              <div class="feedback-details">
+                <div><span style="font-size:12px;color:var(--ink-faint)">Pinyin chuẩn: </span><span class="fb-pinyin" id="wp-correct-pinyin"></span></div>
+                <div><span style="font-size:12px;color:var(--ink-faint)">Nghĩa tiếng Việt: </span><span class="fb-meaning" id="wp-correct-meaning"></span></div>
+              </div>
+              <button class="next-btn" id="wp-next-btn" onclick="nextWritePinyinWord()">
+                <span>Tiếp tục từ kế</span>
+                <kbd style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Space ␣</kbd>
+              </button>
+            </div>
+          </div>
         </div>
-        <button class="primary-btn full" style="margin-top:44px;max-width:320px" onclick="goBack()">Về trang chủ</button>
+
+        <!-- Finish State -->
+        <div id="wp-finish" class="finish-view" style="display:none">
+          <svg class="finish-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <div class="finish-title">Hoàn thành bài học!</div>
+          <div class="finish-sub" id="wp-finish-subtitle"></div>
+          <div class="finish-stats-row">
+            <div class="stat-block"><div class="num" id="wp-finish-correct" style="color:var(--jade)"></div><div class="lbl">Thuộc được</div></div>
+            <div class="stat-block"><div class="num" id="wp-finish-wrong" style="color:var(--seal-son)"></div><div class="lbl">Lần gõ sai</div></div>
+          </div>
+          <button class="primary-action-btn" style="max-width:280px" onclick="goBack()">Về trang chủ (Esc)</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- QUIZ -->
+<!-- QUIZ SCREEN -->
 <div id="quiz-screen" class="screen">
-  <div class="topbar">
-    <button class="icon-btn" onclick="goBack()" title="Quay lại">
-      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-    </button>
-    <span class="topbar-title" style="font-size:18px;margin-left:8px;color:var(--ink-soft)">Ôn tập trắc nghiệm</span>
-  </div>
-  <div class="content content-scroll">
-    <div class="quiz-area">
-      <div id="quiz-loading" class="spinner" style="display:none"></div>
-      <div id="quiz-content" style="display:none">
-        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+  <div class="main-wrapper">
+    <div class="studio-container">
+      <div class="studio-bar">
+        <button class="back-btn" onclick="goBack()" title="Quay lại (Esc)">
+          <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <span>Trang chủ</span>
+          <kbd>Esc</kbd>
+        </button>
+        <span class="studio-title-badge badge-qz">🎯 Ôn tập Trắc nghiệm</span>
+
+        <div class="progress-wrap">
           <div class="progress-bar"><div class="fill" id="quiz-progress-fill"></div></div>
-          <span id="quiz-counter" style="font-size:13px;color:var(--ink-soft);white-space:nowrap"></span>
+          <span class="progress-text" id="quiz-counter">0/0</span>
         </div>
-        <div class="step-chips">
-          <span class="step-chip" id="step-pinyin">1 Phiên âm</span>
-          <span style="color:var(--ink-faint);font-size:11px">,</span>
-          <span class="step-chip" id="step-meaning">2 Nghĩa</span>
-        </div>
-        <div class="flashcard" id="flashcard">
-          <div class="grid"></div>
-          <span class="hanzi" id="flashcard-hanzi"></span>
-          <span class="seal">字</span>
-        </div>
-        <div style="margin-top:16px;text-align:center"><span class="label-sm" id="quiz-instruction">Chọn phiên âm đúng:</span></div>
-        <div class="options" id="quiz-options"></div>
-        <div id="quiz-feedback" style="display:none"></div>
       </div>
-      <div id="quiz-finish" class="finish" style="display:none">
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-        <h2>Hoàn thành</h2>
-        <span class="subtitle" id="finish-subtitle"></span>
-        <div class="stats">
-          <div class="stat-col"><div class="value" id="finish-correct" style="color:var(--jade)"></div><div class="label">Thuộc được</div></div>
-          <div class="stat-col"><div class="value" id="finish-wrong" style="color:var(--seal-son)"></div><div class="label">Lần sai</div></div>
+
+      <div class="studio-card">
+        <div class="studio-split" id="quiz-content" style="display:none">
+          <!-- Left: Flashcard -->
+          <div class="flashcard-col">
+            <div class="flashcard" id="flashcard">
+              <div class="grid"></div>
+              <span class="hanzi" id="flashcard-hanzi">字</span>
+              <span class="seal">字</span>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:8px">
+              <span class="stat-pill" id="step-pinyin">Bước 1: Phiên âm</span>
+              <span class="stat-pill" id="step-meaning">Bước 2: Nghĩa</span>
+            </div>
+          </div>
+
+          <!-- Right: Options -->
+          <div class="interact-col">
+            <div class="col-label">
+              <span id="quiz-instruction">CHỌN ĐÁP ÁN ĐÚNG:</span>
+              <span class="kbd-hint">Bấm phím số <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></span>
+            </div>
+
+            <div class="quiz-options-grid" id="quiz-options"></div>
+
+            <div id="quiz-feedback" style="display:none;margin-top:16px"></div>
+          </div>
         </div>
-        <button class="primary-btn full" style="margin-top:44px;max-width:320px" onclick="goBack()">Về trang chủ</button>
+
+        <!-- Finish State -->
+        <div id="quiz-finish" class="finish-view" style="display:none">
+          <svg class="finish-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <div class="finish-title">Hoàn thành ôn tập!</div>
+          <div class="finish-sub" id="finish-subtitle"></div>
+          <div class="finish-stats-row">
+            <div class="stat-block"><div class="num" id="finish-correct" style="color:var(--jade)"></div><div class="lbl">Thuộc được</div></div>
+            <div class="stat-block"><div class="num" id="finish-wrong" style="color:var(--seal-son)"></div><div class="lbl">Lần chọn sai</div></div>
+          </div>
+          <button class="primary-action-btn" style="max-width:280px" onclick="goBack()">Về trang chủ (Esc)</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SETTINGS -->
-<div id="settings-screen" class="screen">
-  <div class="topbar">
-    <button class="icon-btn" onclick="goBack()" title="Quay lại">
-      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-    </button>
-    <span class="topbar-title" style="font-weight:700">Cài đặt</span>
-  </div>
-  <div class="content content-scroll">
-    <div class="settings-area">
-      <div style="font-size:16px;font-weight:600;color:var(--seal-son);margin-bottom:8px">Âm thanh</div>
-      <div class="setting-card audio-row">
-        <div><div class="setting-title">Hiệu ứng âm thanh</div><div class="setting-desc">Bật hoặc tắt âm thanh khi làm bài tập</div></div>
-        <label class="toggle"><input type="checkbox" id="sound-toggle" checked onchange="toggleSound(this.checked)"><span class="slider"></span></label>
-      </div>
+<!-- KEYBOARD SHORTCUTS MODAL -->
+<div class="modal-overlay" id="shortcuts-modal" onclick="if(event.target===this)closeShortcutsModal()">
+  <div class="shortcuts-modal">
+    <div class="modal-title">
+      <span>Bảng phím tắt máy tính</span>
+      <button onclick="closeShortcutsModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:var(--ink-soft)">✕</button>
     </div>
+    <div class="shortcuts-list">
+      <div class="sc-item"><span>Kiểm tra đáp án / Xác nhận</span><kbd>Enter ↵</kbd></div>
+      <div class="sc-item"><span>Chuyển sang từ kế tiếp</span><div><kbd>Space ␣</kbd> hoặc <kbd>Enter ↵</kbd></div></div>
+      <div class="sc-item"><span>Chọn đáp án trắc nghiệm</span><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></div></div>
+      <div class="sc-item"><span>Quay lại trang chủ</span><kbd>Esc</kbd></div>
+      <div class="sc-item"><span>Gõ Pinyin không dấu (vẫn tính đúng)</span><span style="color:var(--jade);font-weight:600">xue = xué</span></div>
+      <div class="sc-item"><span>Gõ Pinyin kèm số thanh điệu</span><span style="color:var(--amber);font-weight:600">xue2 = xué, lv4 = lǜ</span></div>
+    </div>
+    <button class="primary-action-btn" style="margin-top:20px;min-height:40px;font-size:14px" onclick="closeShortcutsModal()">Đã hiểu</button>
   </div>
 </div>
 
@@ -389,6 +1211,7 @@ async function connectSupabase() {
     localStorage.setItem('sb_key', key);
     sb = test;
     document.getElementById('setup-screen').classList.remove('active');
+    document.getElementById('app-header').style.display = 'block';
     document.getElementById('home-screen').classList.add('active');
     state.screen = 'home';
     loadSessions();
@@ -401,24 +1224,28 @@ async function connectSupabase() {
 if (SUPABASE_KEY && typeof window.supabase !== 'undefined') {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   document.getElementById('setup-screen').classList.remove('active');
+  document.getElementById('app-header').style.display = 'block';
   document.getElementById('home-screen').classList.add('active');
 } else {
+  document.getElementById('app-header').style.display = 'none';
   document.getElementById('home-screen').classList.remove('active');
   document.getElementById('setup-screen').classList.add('active');
 }
 
-// ===== STATE =====
+// ===== APPLICATION STATE =====
 var state = {
-  screen: 'home', prevScreen: 'home',
-  sessions: [], selectedHsk: 1,
+  screen: 'home',
+  sessions: [],
+  selectedHsk: parseInt(localStorage.getItem('lastHsk') || '1'),
   lastSessionId: parseInt(localStorage.getItem('lastSessionId') || '-1'),
-  lastHsk: parseInt(localStorage.getItem('lastHsk') || '1'),
   soundEnabled: JSON.parse(localStorage.getItem('soundEnabled') ?? 'true'),
+
   // Quiz state
   quizSessionId: null, vocabQueue: [], currentVocab: null,
   quizStep: 'PINYIN', options: [], isAnswerSelected: false,
   isCorrect: false, selectedAnswer: null,
   correctCount: 0, wrongCount: 0, remainingVocabs: 0,
+
   // Write Pinyin state
   wpSessionId: null, wpQueue: [], wpCurrentVocab: null,
   wpIsChecked: false, wpIsCorrect: false,
@@ -426,7 +1253,7 @@ var state = {
   wpLastActionTime: 0
 };
 
-// ===== AUDIO =====
+// ===== AUDIO SYSTEM =====
 var AudioCtx = window.AudioContext || window.webkitAudioContext;
 var audioCtx = null;
 function getAudioCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
@@ -444,53 +1271,73 @@ function playTone(freq, dur, type) {
 function playCorrect() { playTone(523,.12); setTimeout(function(){playTone(659,.12);},70); setTimeout(function(){playTone(784,.15);},140); }
 function playWrong() { playTone(200,.25,'square'); }
 function playFinish() { playTone(523,.12); setTimeout(function(){playTone(659,.12);},140); setTimeout(function(){playTone(784,.12);},280); setTimeout(function(){playTone(1047,.3);},420); }
-function toggleSound(v) { state.soundEnabled = v; localStorage.setItem('soundEnabled', JSON.stringify(v)); }
+
+function updateAudioUI() {
+  var onIcon = document.getElementById('audio-icon-on');
+  var offIcon = document.getElementById('audio-icon-off');
+  if (onIcon && offIcon) {
+    onIcon.style.display = state.soundEnabled ? 'block' : 'none';
+    offIcon.style.display = state.soundEnabled ? 'none' : 'block';
+  }
+}
+function toggleAudioQuick() {
+  state.soundEnabled = !state.soundEnabled;
+  localStorage.setItem('soundEnabled', JSON.stringify(state.soundEnabled));
+  updateAudioUI();
+  showSnackbar(state.soundEnabled ? 'Đã bật âm thanh' : 'Đã tắt âm thanh');
+}
 
 // ===== NAVIGATION =====
 function showScreen(name, params) {
-  state.prevScreen = state.screen; state.screen = name;
+  state.screen = name;
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   var target = document.getElementById(name + '-screen');
   if (target) target.classList.add('active');
-  if (name === 'home') loadSessions();
-  if (name === 'quiz' && params && params.sessionId) {
+
+  if (name === 'home') {
+    loadSessions();
+  } else if (name === 'quiz' && params && params.sessionId) {
     state.quizSessionId = params.sessionId;
     state.lastSessionId = params.sessionId;
     localStorage.setItem('lastSessionId', params.sessionId);
     startQuiz(params.sessionId);
-  }
-  if (name === 'write-pinyin' && params && params.sessionId) {
+  } else if (name === 'write-pinyin' && params && params.sessionId) {
     state.wpSessionId = params.sessionId;
     state.lastSessionId = params.sessionId;
     localStorage.setItem('lastSessionId', params.sessionId);
     startWritePinyin(params.sessionId);
   }
+  window.scrollTo(0, 0);
 }
 
 function goBack() {
-  if (state.screen === 'quiz' || state.screen === 'write-pinyin') stopConfetti();
+  stopConfetti();
   showScreen('home');
 }
 
-// ===== HOME =====
+// ===== HOME VIEW =====
 function renderDate() {
   var days = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
   var d = new Date();
-  document.getElementById('home-date').textContent = days[d.getDay()] + ', ' + d.getDate() + ' tháng ' + (d.getMonth()+1);
+  var el = document.getElementById('home-date-text');
+  if (el) el.textContent = days[d.getDay()] + ', ngày ' + d.getDate() + ' tháng ' + (d.getMonth() + 1);
 }
 
-function renderHskChips() {
-  var c = document.getElementById('hsk-chips'); c.innerHTML = '';
+function renderHskTabs() {
+  var c = document.getElementById('hsk-tabs');
+  if (!c) return;
+  c.innerHTML = '';
   for (var i = 1; i <= 6; i++) {
     var b = document.createElement('button');
-    b.className = 'chip' + (state.selectedHsk === i ? ' active' : '');
-    b.textContent = 'HSK' + i;
+    b.className = 'hsk-tab' + (state.selectedHsk === i ? ' active' : '');
+    b.textContent = 'HSK ' + i;
     b.setAttribute('data-level', i);
     b.onclick = function() {
       var lv = parseInt(this.getAttribute('data-level'));
-      state.selectedHsk = lv; state.lastHsk = lv;
+      state.selectedHsk = lv;
       localStorage.setItem('lastHsk', lv);
-      renderHskChips(); renderHomeContent();
+      renderHskTabs();
+      renderHomeContent();
     };
     c.appendChild(b);
   }
@@ -498,54 +1345,88 @@ function renderHskChips() {
 
 async function loadSessions() {
   document.getElementById('home-loading').style.display = 'block';
-  document.getElementById('home-content').innerHTML = '';
+  var grid = document.getElementById('session-grid');
+  grid.innerHTML = '';
+  document.getElementById('empty-state').style.display = 'none';
+
   var result = await sb.from('sessions').select('*').order('created_at', { ascending: false });
   document.getElementById('home-loading').style.display = 'none';
-  if (result.error) { document.getElementById('home-content').innerHTML = '<p style="color:var(--seal-son);text-align:center;margin-top:20px">Lỗi tải dữ liệu</p>'; return; }
-  state.sessions = result.data || []; state.selectedHsk = state.lastHsk;
-  renderHskChips(); renderHomeContent();
+  if (result.error) {
+    grid.innerHTML = '<p style="color:var(--seal-son);text-align:center">Lỗi tải dữ liệu</p>';
+    return;
+  }
+  state.sessions = result.data || [];
+  renderHskTabs();
+  renderHomeContent();
 }
 
 function renderHomeContent() {
-  var c = document.getElementById('home-content');
+  var grid = document.getElementById('session-grid');
+  var contContainer = document.getElementById('continue-card-container');
+  var contSection = document.getElementById('continue-section');
+  var emptyState = document.getElementById('empty-state');
+  var statsPill = document.getElementById('home-stats-pill');
+
   var filtered = state.sessions.filter(function(s){return s.hsk_level === state.selectedHsk;});
   var ordinals = ['壹','贰','叁','肆','伍','陆','柒','捌','玖','拾'];
-  var html = '';
+
+  if (statsPill) {
+    statsPill.innerHTML = 'HSK ' + state.selectedHsk + ': <b>' + filtered.length + '</b> buổi học';
+  }
+
+  // Continue section
   var last = state.sessions.find(function(s){return s.id === state.lastSessionId;});
   if (last && last.hsk_level === state.selectedHsk) {
-    html += '<div class="section-label">TIẾP TỤC ÔN TẬP</div>';
-    html += buildSessionCard(last, 1, ordinals);
-  }
-  if (filtered.length === 0) {
-    html += '<div class="empty-state"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><h3>Chưa có buổi ôn tập nào</h3><p>Hiện chưa có bài học nào trong cấp độ HSK này</p></div>';
+    contSection.style.display = 'block';
+    contContainer.innerHTML = buildSessionCardHtml(last, 1, ordinals, true);
   } else {
-    html += '<div class="section-label">CÁC BUỔI ÔN TẬP</div>';
-    filtered.forEach(function(s, i) {
-      html += buildSessionCard(s, i+1, ordinals);
-    });
+    contSection.style.display = 'none';
   }
-  c.innerHTML = html;
+
+  // Main grid
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    emptyState.style.display = 'block';
+  } else {
+    emptyState.style.display = 'none';
+    var html = '';
+    filtered.forEach(function(s, idx) {
+      html += buildSessionCardHtml(s, idx + 1, ordinals, false);
+    });
+    grid.innerHTML = html;
+  }
 }
 
-function buildSessionCard(s, idx, ordinals) {
+function buildSessionCardHtml(s, idx, ordinals, isHighlight) {
   var d = s.created_at ? new Date(s.created_at) : new Date();
   var ds = d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' + d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
   var ordChar = ordinals[(idx - 1) % 10] || '拾';
-  return '<div class="session-card">' +
-    '<div style="display:flex;align-items:center">' +
-      '<div class="ordinal-box"><span class="ordinal">' + ordChar + '</span></div>' +
-      '<div style="flex:1;margin-left:12px;min-width:0">' +
-        '<div class="title">' + escHtml(s.title) + '</div>' +
-        '<div class="meta"><span>' + ds + '</span><span class="hsk-badge">HSK' + s.hsk_level + '</span></div>' +
+  var hlClass = isHighlight ? ' highlighted' : '';
+
+  return '<div class="session-card' + hlClass + '">' +
+    '<div class="card-top">' +
+      '<div class="card-ordinal">' + ordChar + '</div>' +
+      '<div class="card-info">' +
+        '<div class="card-title">' + escHtml(s.title) + '</div>' +
+        '<div class="card-meta">' +
+          '<span>' + ds + '</span>' +
+          '<span class="hsk-pill">HSK ' + s.hsk_level + '</span>' +
+        '</div>' +
       '</div>' +
-      '<button class="delete-btn" onclick="event.stopPropagation();deleteSession(' + s.id + ')" title="Xóa buổi học">' +
+      '<button class="card-del-btn" onclick="event.stopPropagation();deleteSession(' + s.id + ')" title="Xóa buổi học">' +
         '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>' +
       '</button>' +
     '</div>' +
-    '<div class="card-divider"></div>' +
-    '<div class="session-btn-row">' +
-      '<button class="btn-write-pinyin" onclick="showScreen(\'write-pinyin\',{sessionId:' + s.id + '})"><span>✏</span> Viết Pinyin</button>' +
-      '<button class="btn-quiz" onclick="showScreen(\'quiz\',{sessionId:' + s.id + '})">Ôn tập ngay</button>' +
+    '<div class="card-split"></div>' +
+    '<div class="card-actions">' +
+      '<button class="action-btn btn-wp" onclick="showScreen(\'write-pinyin\',{sessionId:' + s.id + '})">' +
+        '<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>' +
+        '<span>Viết Pinyin</span>' +
+      '</button>' +
+      '<button class="action-btn btn-qz" onclick="showScreen(\'quiz\',{sessionId:' + s.id + '})">' +
+        '<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' +
+        '<span>Ôn tập ngay</span>' +
+      '</button>' +
     '</div>' +
   '</div>';
 }
@@ -566,7 +1447,6 @@ var TONE_MAP = {
   'u': ['ū', 'ú', 'ǔ', 'ù', 'u'],
   'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü']
 };
-
 var TONE_MARK_TO_BASE = {};
 for (var baseKey in TONE_MAP) {
   var marks = TONE_MAP[baseKey];
@@ -576,14 +1456,11 @@ for (var baseKey in TONE_MAP) {
 }
 
 function findToneVowelIndex(s) {
-  // Rule 1: a or e gets the tone
   for (var i = 0; i < s.length; i++) {
     if (s[i] === 'a' || s[i] === 'e') return i;
   }
-  // Rule 2: ou -> tone on o
   var ouIdx = s.indexOf('ou');
   if (ouIdx >= 0) return ouIdx;
-  // Rule 3: last vowel in i, o, u, ü
   for (var j = s.length - 1; j >= 0; j--) {
     if ('iouü'.indexOf(s[j]) !== -1) return j;
   }
@@ -633,32 +1510,35 @@ function isPinyinMatch(userInput, targetPinyin) {
   if (!userInput || !targetPinyin) return false;
   var normUser = normalizePinyin(userInput);
   var normTarget = normalizePinyin(targetPinyin);
-
-  // 1. Toned match (exact or tone numbers converted)
   if (normUser === normTarget) return true;
   if (normUser.replace(/\s+/g, '') === normTarget.replace(/\s+/g, '')) return true;
-
-  // 2. Toneless match (e.g. xue matches xué)
   var strippedUser = stripTones(normUser).replace(/\s+/g, '');
   var strippedTarget = stripTones(normTarget).replace(/\s+/g, '');
-
   return strippedUser.length > 0 && strippedUser === strippedTarget;
 }
 
-// ===== WRITE PINYIN FEATURE =====
+function insertToneChar(ch) {
+  var inp = document.getElementById('wp-input');
+  if (!inp || inp.disabled) return;
+  var start = inp.selectionStart || inp.value.length;
+  var end = inp.selectionEnd || inp.value.length;
+  var val = inp.value;
+  inp.value = val.substring(0, start) + ch + val.substring(end);
+  inp.focus();
+  inp.setSelectionRange(start + ch.length, start + ch.length);
+}
+
+// ===== WRITE PINYIN STUDIO =====
 async function startWritePinyin(sessionId) {
-  document.getElementById('wp-loading').style.display = 'block';
-  document.getElementById('wp-content').style.display = 'none';
+  document.getElementById('wp-workspace').style.display = 'grid';
   document.getElementById('wp-finish').style.display = 'none';
 
   var result = await sb.from('vocabulary').select('*').eq('session_id', sessionId);
-  document.getElementById('wp-loading').style.display = 'none';
   if (!result.data || result.data.length === 0) {
     showWritePinyinFinish(0, 0);
     return;
   }
-
-  var review = result.data.filter(function(v) { return v.review_status !== 2; });
+  var review = result.data.filter(function(v){return v.review_status !== 2;});
   if (review.length === 0) {
     showWritePinyinFinish(0, 0);
     return;
@@ -668,8 +1548,6 @@ async function startWritePinyin(sessionId) {
   state.wpCorrectCount = 0;
   state.wpWrongCount = 0;
   state.wpRemainingVocabs = state.wpQueue.length;
-
-  document.getElementById('wp-content').style.display = 'block';
   setupNextWritePinyinWord();
 }
 
@@ -700,22 +1578,17 @@ function setupNextWritePinyinWord() {
   inp.disabled = false;
   document.getElementById('wp-submit-btn').disabled = false;
   document.getElementById('wp-check-btn').disabled = false;
-  document.getElementById('wp-check-btn').style.display = 'inline-flex';
+  document.getElementById('wp-check-btn').style.display = 'flex';
   document.getElementById('wp-feedback-card').style.display = 'none';
 
-  setTimeout(function() {
-    inp.focus();
-  }, 100);
+  setTimeout(function(){ inp.focus(); }, 100);
 }
 
 async function checkWritePinyinAnswer() {
   if (state.wpIsChecked || !state.wpCurrentVocab) return;
   var inp = document.getElementById('wp-input');
   var userInput = inp.value.trim();
-  if (!userInput) {
-    inp.focus();
-    return;
-  }
+  if (!userInput) { inp.focus(); return; }
 
   state.wpIsChecked = true;
   var vocab = state.wpCurrentVocab;
@@ -744,26 +1617,24 @@ async function checkWritePinyinAnswer() {
     }).eq('id', vocab.id);
   }
 
-  var badge = document.getElementById('wp-feedback-badge');
+  var badge = document.getElementById('wp-feedback-status');
   if (isMatch) {
-    badge.className = 'wp-status-badge correct';
-    badge.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Chính xác!';
+    badge.className = 'feedback-status correct';
+    badge.innerHTML = '✓ Chính xác! Rất xuất sắc';
   } else {
-    badge.className = 'wp-status-badge wrong';
-    badge.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg> Chưa đúng';
+    badge.className = 'feedback-status wrong';
+    badge.innerHTML = '✗ Chưa đúng! Từ này sẽ ôn lại cuối hàng';
   }
 
   document.getElementById('wp-correct-pinyin').textContent = vocab.pinyin;
   var meaningText = vocab.meaning;
-  if (vocab.word_type) {
-    meaningText += ' (' + vocab.word_type + ')';
-  }
+  if (vocab.word_type) meaningText += ' (' + vocab.word_type + ')';
   document.getElementById('wp-correct-meaning').textContent = meaningText;
 
   var fbCard = document.getElementById('wp-feedback-card');
   fbCard.style.display = 'block';
 
-  setTimeout(function() {
+  setTimeout(function(){
     var nextBtn = document.getElementById('wp-next-btn');
     if (nextBtn) nextBtn.focus();
   }, 100);
@@ -771,8 +1642,7 @@ async function checkWritePinyinAnswer() {
 
 function nextWritePinyinWord() {
   if (!state.wpIsChecked || !state.wpCurrentVocab) return;
-  // 400ms debounce
-  if (Date.now() - state.wpLastActionTime < 400) return;
+  if (Date.now() - state.wpLastActionTime < 350) return;
   state.wpLastActionTime = Date.now();
 
   var vocab = state.wpQueue.shift();
@@ -783,27 +1653,28 @@ function nextWritePinyinWord() {
 }
 
 function showWritePinyinFinish(correct, wrong) {
-  document.getElementById('wp-content').style.display = 'none';
+  document.getElementById('wp-workspace').style.display = 'none';
   document.getElementById('wp-finish').style.display = 'flex';
-  document.getElementById('wp-finish-subtitle').textContent = 'Hôm nay bạn thuộc được ' + correct + ' từ';
+  document.getElementById('wp-finish-subtitle').textContent = 'Buổi học đã hoàn tất! Bạn đã thuộc được ' + correct + ' từ vựng.';
   document.getElementById('wp-finish-correct').textContent = correct;
   document.getElementById('wp-finish-wrong').textContent = wrong;
   playFinish();
   startConfetti();
 }
 
-// ===== QUIZ =====
+// ===== QUIZ STUDIO =====
 async function startQuiz(sessionId) {
-  document.getElementById('quiz-loading').style.display = 'block';
-  document.getElementById('quiz-content').style.display = 'none';
+  document.getElementById('quiz-content').style.display = 'grid';
   document.getElementById('quiz-finish').style.display = 'none';
+
   var result = await sb.from('vocabulary').select('*').eq('session_id', sessionId);
-  document.getElementById('quiz-loading').style.display = 'none';
   if (!result.data || result.data.length === 0) { showQuizFinish(0,0); return; }
   var review = result.data.filter(function(v){return v.review_status !== 2;});
   if (review.length === 0) { showQuizFinish(0,0); return; }
-  state.vocabQueue = shuffle(review); state.correctCount = 0; state.wrongCount = 0;
-  document.getElementById('quiz-content').style.display = 'block';
+
+  state.vocabQueue = shuffle(review);
+  state.correctCount = 0;
+  state.wrongCount = 0;
   setupNextFlashcard();
 }
 
@@ -812,6 +1683,7 @@ async function setupNextFlashcard() {
   var vocab = state.vocabQueue[0]; state.currentVocab = vocab;
   state.quizStep = 'PINYIN'; state.isAnswerSelected = false; state.selectedAnswer = null;
   state.remainingVocabs = state.vocabQueue.length;
+
   var result = await sb.from('vocabulary').select('pinyin').eq('session_id', state.quizSessionId);
   var dist = (result.data || []).filter(function(v){return v.pinyin !== vocab.pinyin;}).map(function(v){return v.pinyin;});
   state.options = shuffle(dist.slice(0, 3).concat([vocab.pinyin]));
@@ -824,28 +1696,47 @@ function renderQuizUI() {
   var done = total - state.vocabQueue.length - (state.isAnswerSelected && state.isCorrect ? 1 : 0);
   document.getElementById('quiz-progress-fill').style.width = (done / total * 100) + '%';
   document.getElementById('quiz-counter').textContent = done + '/' + total;
-  document.getElementById('step-pinyin').className = 'step-chip' + (state.quizStep === 'PINYIN' ? ' active' : '');
-  document.getElementById('step-meaning').className = 'step-chip' + (state.quizStep === 'MEANING' ? ' active' : '');
-  document.getElementById('quiz-instruction').textContent = state.quizStep === 'PINYIN' ? 'Chọn phiên âm đúng:' : 'Chọn nghĩa đúng:';
-  var fc = document.getElementById('flashcard'); document.getElementById('flashcard-hanzi').textContent = vocab.hanzi;
+
+  document.getElementById('step-pinyin').style.background = state.quizStep === 'PINYIN' ? 'var(--seal-son)' : 'var(--paper-deep)';
+  document.getElementById('step-pinyin').style.color = state.quizStep === 'PINYIN' ? '#fff' : 'var(--ink-faint)';
+  document.getElementById('step-meaning').style.background = state.quizStep === 'MEANING' ? 'var(--seal-son)' : 'var(--paper-deep)';
+  document.getElementById('step-meaning').style.color = state.quizStep === 'MEANING' ? '#fff' : 'var(--ink-faint)';
+  document.getElementById('quiz-instruction').textContent = state.quizStep === 'PINYIN' ? 'CHỌN PHIÊN ÂM ĐÚNG:' : 'CHỌN NGHĨA ĐÚNG:';
+
+  var fc = document.getElementById('flashcard');
+  document.getElementById('flashcard-hanzi').textContent = vocab.hanzi;
   fc.classList.remove('anim-in'); void fc.offsetWidth; fc.classList.add('anim-in');
-  var ordinals = ['甲','乙','丙','丁']; var oel = document.getElementById('quiz-options'); var oh = '';
+
+  var oel = document.getElementById('quiz-options'); var oh = '';
   state.options.forEach(function(opt, i) {
-    var cls = 'option-row', extra = '';
+    var cls = 'opt-card', extra = '';
     if (state.isAnswerSelected) {
       cls += ' disabled';
       var ca = state.quizStep === 'PINYIN' ? vocab.pinyin : vocab.meaning;
-      if (opt === ca) { cls += ' correct anim-correct'; extra = '<svg class="check-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'; }
-      else if (opt === state.selectedAnswer) { cls += ' wrong anim-shake'; extra = '<svg class="check-icon" viewBox="0 0 24 24" style="fill:var(--seal-deep)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>'; }
+      if (opt === ca) { cls += ' correct'; extra = ' ✓'; }
+      else if (opt === state.selectedAnswer) { cls += ' wrong'; extra = ' ✗'; }
     }
-    oh += '<div class="' + cls + '" onclick="selectOption(\'' + escAttr(opt) + '\')"><span class="ord">' + ordinals[i] + '</span><span class="text">' + escHtml(opt) + '</span>' + extra + '</div>';
+    oh += '<div class="' + cls + '" onclick="selectOption(\'' + escAttr(opt) + '\')">' +
+      '<span class="key-badge">' + (i + 1) + '</span>' +
+      '<span class="text">' + escHtml(opt) + extra + '</span>' +
+    '</div>';
   });
   oel.innerHTML = oh;
+
   var fb = document.getElementById('quiz-feedback');
   if (state.isAnswerSelected) {
     fb.style.display = 'block';
-    fb.innerHTML = '<div class="feedback"><div class="label ' + (state.isCorrect ? 'correct-text' : 'wrong-text') + '">' + (state.isCorrect ? 'Chính xác' : 'Chưa đúng') + '</div><button class="outline-btn" style="margin-top:12px" onclick="nextStep()">Tiếp tục</button></div>';
-  } else fb.style.display = 'none';
+    fb.innerHTML = '<div class="feedback-box" style="margin-top:14px">' +
+      '<div class="feedback-status ' + (state.isCorrect ? 'correct' : 'wrong') + '">' +
+        (state.isCorrect ? '✓ Chính xác!' : '✗ Chưa đúng!') +
+      '</div>' +
+      '<button class="next-btn" style="margin-top:10px" onclick="nextStep()">' +
+        '<span>Tiếp tục</span> <kbd style="background:rgba(255,255,255,0.2);color:#fff">Space ␣</kbd>' +
+      '</button>' +
+    '</div>';
+  } else {
+    fb.style.display = 'none';
+  }
 }
 
 function selectOption(answer) {
@@ -875,21 +1766,20 @@ async function nextStep() {
 }
 
 function showQuizFinish(correct, wrong) {
-  state.quizStep = 'FINISHED';
   document.getElementById('quiz-content').style.display = 'none';
   document.getElementById('quiz-finish').style.display = 'flex';
-  document.getElementById('finish-subtitle').textContent = 'Hôm nay bạn thuộc được ' + correct + ' từ';
+  document.getElementById('finish-subtitle').textContent = 'Buổi học đã hoàn tất! Bạn đã thuộc được ' + correct + ' từ vựng.';
   document.getElementById('finish-correct').textContent = correct;
   document.getElementById('finish-wrong').textContent = wrong;
   playFinish(); startConfetti();
 }
 
-// ===== CONFETTI =====
+// ===== CONFETTI ANIMATION =====
 var confettiAnim = null; var confettiParticles = [];
 function startConfetti() {
   var canvas = document.getElementById('confetti-canvas'); var ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-  var colors = ['#E53935','#FFB300','#43A047','#1E88E5','#EC407A','#8E24AA','#FF7043','#00ACC1'];
+  var colors = ['#C63D2D','#8E6206','#2E6958','#39826C','#E57368','#F8F0DC'];
   if (confettiParticles.length === 0) {
     for (var i = 0; i < 60; i++) {
       confettiParticles.push({
@@ -917,14 +1807,15 @@ function startConfetti() {
   }
   draw();
 }
-
 function stopConfetti() {
   if (confettiAnim) { cancelAnimationFrame(confettiAnim); confettiAnim = null; }
   var c = document.getElementById('confetti-canvas');
   if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
 }
 
-// ===== UTILS =====
+// ===== MODAL & UTILS =====
+function openShortcutsModal() { document.getElementById('shortcuts-modal').classList.add('show'); }
+function closeShortcutsModal() { document.getElementById('shortcuts-modal').classList.remove('show'); }
 function shuffle(a) {
   var b = a.slice();
   for (var i = b.length - 1; i > 0; i--) {
@@ -937,11 +1828,25 @@ function escHtml(s) { var d = document.createElement('div'); d.textContent = s |
 function escAttr(s) { return (s || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 function showSnackbar(msg) {
   var el = document.getElementById('snackbar'); el.textContent = msg; el.classList.add('show');
-  setTimeout(function(){el.classList.remove('show');}, 2500);
+  setTimeout(function(){ el.classList.remove('show'); }, 2200);
 }
 
-// ===== KEYBOARD SHORTCUTS =====
+// ===== GLOBAL KEYBOARD LISTENER =====
 document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('shortcuts-modal').classList.contains('show')) {
+      closeShortcutsModal();
+    } else if (state.screen !== 'home') {
+      goBack();
+    }
+    return;
+  }
+
+  if (e.key === '?' && !e.target.matches('input, textarea')) {
+    openShortcutsModal();
+    return;
+  }
+
   if (state.screen === 'write-pinyin') {
     if (!state.wpIsChecked && e.key === 'Enter') {
       e.preventDefault();
@@ -962,8 +1867,8 @@ document.addEventListener('keydown', function(e) {
 });
 
 renderDate();
+updateAudioUI();
 if (sb) loadSessions();
-document.getElementById('sound-toggle').checked = state.soundEnabled;
 </script>
 </body>
 </html>
