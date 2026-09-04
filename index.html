@@ -1203,15 +1203,12 @@
                 <div><span style="font-size:12px;color:var(--ink-faint)">Pinyin chuẩn: </span><span class="fb-pinyin" id="wp-correct-pinyin"></span></div>
                 <div><span style="font-size:12px;color:var(--ink-faint)">Nghĩa tiếng Việt: </span><span class="fb-meaning" id="wp-correct-meaning"></span></div>
               </div>
-              <button class="next-btn" id="wp-next-btn" onclick="nextWritePinyinWord()">
-                <span>Tiếp tục từ kế</span>
-                <kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Space ␣</kbd>
-              </button>
+              <div id="wp-feedback-action-container"></div>
             </div>
           </div>
         </div>
 
-        <!-- Finish State -->
+        <!-- Finish State with Retry Button -->
         <div id="wp-finish" class="finish-view" style="display:none">
           <svg class="finish-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
           <div class="finish-title">Hoàn thành bài học!</div>
@@ -1220,7 +1217,10 @@
             <div class="stat-block"><div class="num" id="wp-finish-correct" style="color:var(--jade)"></div><div class="lbl">Thuộc được</div></div>
             <div class="stat-block"><div class="num" id="wp-finish-wrong" style="color:var(--seal-son)"></div><div class="lbl">Lần gõ sai</div></div>
           </div>
-          <button class="primary-action-btn" style="max-width:280px" onclick="goBack()">Về trang chủ</button>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:340px">
+            <button class="primary-action-btn" onclick="startWritePinyin(state.wpSessionId)">Luyện tập lại buổi này</button>
+            <button class="back-btn" style="padding:12px 20px;font-size:14px;justify-content:center;width:100%" onclick="goBack()">Về trang chủ</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1273,7 +1273,7 @@
           </div>
         </div>
 
-        <!-- Finish State -->
+        <!-- Finish State with Retry Button -->
         <div id="quiz-finish" class="finish-view" style="display:none">
           <svg class="finish-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
           <div class="finish-title">Hoàn thành ôn tập!</div>
@@ -1282,7 +1282,10 @@
             <div class="stat-block"><div class="num" id="finish-correct" style="color:var(--jade)"></div><div class="lbl">Thuộc được</div></div>
             <div class="stat-block"><div class="num" id="finish-wrong" style="color:var(--seal-son)"></div><div class="lbl">Lần chọn sai</div></div>
           </div>
-          <button class="primary-action-btn" style="max-width:280px" onclick="goBack()">Về trang chủ</button>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:340px">
+            <button class="primary-action-btn" onclick="startQuiz(state.quizSessionId)">Ôn tập lại buổi này</button>
+            <button class="back-btn" style="padding:12px 20px;font-size:14px;justify-content:center;width:100%" onclick="goBack()">Về trang chủ</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1670,10 +1673,12 @@ async function startWritePinyin(sessionId) {
     showWritePinyinFinish(0, 0);
     return;
   }
+
+  // Lọc từ cần học (review_status !== 2)
   var review = result.data.filter(function(v){return v.review_status !== 2;});
+  // NẾU TẤT CẢ TỪ ĐÃ THUỘC (học lại lần 2, lần 3...): Cho phép luyện tập lại toàn bộ danh sách từ!
   if (review.length === 0) {
-    showWritePinyinFinish(0, 0);
-    return;
+    review = result.data.slice();
   }
 
   state.wpQueue = shuffle(review);
@@ -1763,6 +1768,27 @@ async function checkWritePinyinAnswer() {
   if (vocab.word_type) meaningText += ' (' + vocab.word_type + ')';
   document.getElementById('wp-correct-meaning').textContent = meaningText;
 
+  // Render feedback action buttons:
+  // Nếu đúng -> chỉ có nút Tiếp tục
+  // Nếu sai -> cho phép người dùng "Thử gõ lại" ngay hoặc "Tiếp tục từ kế"
+  var actionHtml = '';
+  if (isMatch) {
+    actionHtml = '<button class="next-btn" id="wp-next-btn" onclick="nextWritePinyinWord()">' +
+      '<span>Tiếp tục từ kế</span>' +
+      '<kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Space ␣</kbd>' +
+    '</button>';
+  } else {
+    actionHtml = '<div style="display:flex;gap:8px;margin-top:4px">' +
+      '<button class="back-btn" style="flex:1;justify-content:center;min-height:42px;border-color:var(--ink-faint)" onclick="retryCurrentWord()">' +
+        '<span>Thử gõ lại</span>' +
+      '</button>' +
+      '<button class="next-btn" id="wp-next-btn" style="flex:1" onclick="nextWritePinyinWord()">' +
+        '<span>Tiếp tục</span>' +
+      '</button>' +
+    '</div>';
+  }
+  document.getElementById('wp-feedback-action-container').innerHTML = actionHtml;
+
   var fbCard = document.getElementById('wp-feedback-card');
   fbCard.style.display = 'block';
 
@@ -1772,9 +1798,22 @@ async function checkWritePinyinAnswer() {
   }, 100);
 }
 
+function retryCurrentWord() {
+  state.wpIsChecked = false;
+  state.wpIsCorrect = false;
+  var inp = document.getElementById('wp-input');
+  inp.value = '';
+  inp.disabled = false;
+  document.getElementById('wp-submit-btn').disabled = false;
+  document.getElementById('wp-check-btn').disabled = false;
+  document.getElementById('wp-check-btn').style.display = 'flex';
+  document.getElementById('wp-feedback-card').style.display = 'none';
+  setTimeout(function(){ inp.focus(); }, 80);
+}
+
 function nextWritePinyinWord() {
   if (!state.wpIsChecked || !state.wpCurrentVocab) return;
-  if (Date.now() - state.wpLastActionTime < 300) return;
+  if (Date.now() - state.wpLastActionTime < 250) return;
   state.wpLastActionTime = Date.now();
 
   var vocab = state.wpQueue.shift();
@@ -1801,8 +1840,12 @@ async function startQuiz(sessionId) {
 
   var result = await sb.from('vocabulary').select('*').eq('session_id', sessionId);
   if (!result.data || result.data.length === 0) { showQuizFinish(0,0); return; }
+  
   var review = result.data.filter(function(v){return v.review_status !== 2;});
-  if (review.length === 0) { showQuizFinish(0,0); return; }
+  // Cho phép ôn tập lại toàn bộ từ nếu tất cả đã thuộc
+  if (review.length === 0) {
+    review = result.data.slice();
+  }
 
   state.vocabQueue = shuffle(review);
   state.correctCount = 0;
