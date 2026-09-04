@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hanzi Quiz - Học Hán Tự & Pinyin</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --paper:#FAF6EF;--paper-deep:#F3EDE1;--ink:#26221C;--ink-soft:#6B6357;--ink-faint:#A89F90;
+    --hairline:#E5DCC9;--seal-son:#C73E2E;--seal-deep:#A33225;--jade:#35705F;--jade-fill:#3E8A74;
+    --jade-tint:#E9F2EE;--amber:#8F6409;--amber-tint:#F5ECD9;--slate:#5B6770;
+    --slate-tint:#EEF0F2;--red-bg:#F7E5E1;
+    --max-w:540px;
+  }
+  html{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--paper);color:var(--ink);min-height:100%;-webkit-font-smoothing:antialiased}
+  .serif{font-family:Georgia,'Noto Serif SC','SimSun',serif}
+  .screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
+  .topbar{display:flex;align-items:center;padding:10px 16px;min-height:60px;width:100%;max-width:1120px;margin:0 auto}
+  @media(min-width:640px){.topbar{padding:10px 24px}}
+  .topbar-title{font-size:clamp(18px,2vw,22px);font-weight:600;font-family:Georgia,serif;letter-spacing:-.01em}
+  .icon-btn{width:40px;height:40px;border:none;background:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+  .icon-btn:hover{background:var(--paper-deep)}
+  .icon-btn svg{width:22px;height:22px;fill:var(--ink-soft)}
+  .spacer{flex:1}
+  .content{flex:1;padding:0 16px 40px;overflow-y:auto;width:100%;max-width:1120px;margin:0 auto}
+  @media(min-width:640px){.content{padding:0 24px 40px}}
+  .content-scroll{max-height:calc(100dvh - 60px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none;scroll-snap-type:x proximity}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{padding:9px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;border:none;transition:all .2s;flex:0 0 auto;scroll-snap-align:start}
+  .chip.active{background:var(--seal-son);color:#fff}
+  .chip:not(.active){background:var(--paper-deep);color:var(--ink-soft)}
+  .chip:not(.active):hover{background:var(--hairline)}
+
+  /* Session card with dual actions */
+  .session-card{background:var(--paper-deep);border:1.5px solid var(--hairline);border-radius:12px;padding:16px;margin-bottom:14px;transition:all .15s}
+  .session-card:hover{border-color:var(--ink-faint);box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+  .session-card .ordinal-box{width:32px;height:32px;border-radius:8px;background:var(--paper);border:1px solid rgba(229,220,201,0.8);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .session-card .ordinal{font-family:Georgia,'Noto Serif SC',serif;font-size:14px;font-weight:700;color:var(--ink-soft)}
+  .session-card .title{font-weight:600;font-size:16px;color:var(--ink);overflow-wrap:anywhere}
+  .session-card .meta{font-size:12px;color:var(--ink-faint);display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap}
+  .hsk-badge{background:var(--jade-tint);color:var(--jade);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
+  .session-card .delete-btn{width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;transition:background .15s}
+  .session-card .delete-btn:hover{background:var(--red-bg)}
+  .session-card .delete-btn svg{width:18px;height:18px;fill:var(--ink-faint)}
+  
+  .card-divider{height:1px;background:var(--hairline);opacity:.7;margin:12px 0}
+  .session-btn-row{display:flex;gap:10px;align-items:center}
+  .btn-write-pinyin{flex:1;min-height:42px;border-radius:10px;border:1.2px solid rgba(143,100,9,0.4);background:var(--amber-tint);color:var(--amber);font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .15s}
+  .btn-write-pinyin:hover{background:#eedeb8;border-color:var(--amber)}
+  .btn-write-pinyin:active{transform:scale(.98)}
+  .btn-quiz{flex:1;min-height:42px;border-radius:10px;border:none;background:var(--seal-son);color:#fff;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .15s}
+  .btn-quiz:hover{background:var(--seal-deep)}
+  .btn-quiz:active{transform:scale(.98)}
+
+  .primary-btn{border:none;background:var(--seal-son);color:#fff;font-weight:600;font-size:14px;padding:12px 20px;border-radius:10px;cursor:pointer;transition:all .15s;min-height:46px;display:inline-flex;align-items:center;justify-content:center}
+  .primary-btn:hover{background:var(--seal-deep)}
+  .primary-btn:active{transform:scale(.98)}
+  .primary-btn:disabled{opacity:.5;cursor:not-allowed}
+  .primary-btn.full{width:100%}
+  .outline-btn{border:1.5px solid var(--hairline);background:none;color:var(--ink-soft);font-weight:600;font-size:15px;padding:12px 20px;border-radius:10px;cursor:pointer;min-height:46px;transition:all .15s;width:100%;display:flex;align-items:center;justify-content:center}
+  .outline-btn:hover{border-color:var(--ink-faint);background:var(--paper-deep)}
+  .outline-btn:active{transform:scale(.98)}
+  .label-sm{font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase}
+
+  .progress-bar{height:6px;background:var(--hairline);border-radius:9999px;flex:1;overflow:hidden}
+  .progress-bar .fill{height:100%;background:var(--jade-fill);transition:width .3s}
+
+  /* Flashcard */
+  .flashcard{width:min(72vw,320px);aspect-ratio:1;background:var(--paper-deep);border:1.5px solid var(--hairline);border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto}
+  .flashcard .grid{position:absolute;inset:0;pointer-events:none}
+  .flashcard .grid::before,.flashcard .grid::after{content:'';position:absolute;background:var(--hairline);opacity:.4}
+  .flashcard .grid::before{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
+  .flashcard .grid::after{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
+  .flashcard .hanzi{font-family:Georgia,'Noto Serif SC','SimSun',serif;font-size:clamp(58px,12vw,84px);font-weight:900;line-height:1;z-index:1}
+  .flashcard .seal{position:absolute;bottom:10px;right:10px;width:26px;height:26px;background:var(--seal-son);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:11px;color:#fff;font-weight:600}
+  .flashcard.anim-in{animation:cardIn .35s ease-out}
+  @keyframes cardIn{from{opacity:0;transform:scale(.8) translateX(30px)}to{opacity:1;transform:scale(1) translateX(0)}}
+
+  /* Quiz Area */
+  .quiz-area, .write-area{width:100%;max-width:680px;margin:0 auto}
+  .step-chips{display:flex;align-items:center;justify-content:center;gap:4px;margin:12px 0}
+  .step-chip{padding:6px 14px;border-radius:10px;font-size:12px;font-weight:600}
+  .step-chip.active{background:var(--seal-son);color:#fff}
+  .step-chip:not(.active){background:var(--paper-deep);color:var(--ink-faint)}
+  .options{margin-top:10px;width:100%}
+  .option-row{display:flex;align-items:center;padding:14px 16px;border-bottom:.5px solid var(--hairline);cursor:pointer;transition:all .15s;border-left:3px solid transparent;border-radius:4px;min-height:52px}
+  .option-row:hover:not(.disabled){background:var(--paper-deep)}
+  .option-row .ord{font-family:Georgia,serif;font-size:15px;width:24px;color:var(--ink-faint);flex-shrink:0}
+  .option-row .text{flex:1;font-size:15px;margin-left:12px;overflow-wrap:anywhere}
+  .option-row .check-icon{width:20px;height:20px;opacity:0;transition:opacity .2s;flex-shrink:0}
+  .option-row.correct{background:var(--jade-tint);border-left-color:var(--jade)}
+  .option-row.correct .ord,.option-row.correct .text{color:var(--jade);font-weight:600}
+  .option-row.correct .check-icon{opacity:1;fill:var(--jade)}
+  .option-row.wrong{background:var(--red-bg);border-left-color:var(--seal-deep)}
+  .option-row.wrong .ord,.option-row.wrong .text{color:var(--seal-deep)}
+  .option-row.wrong .check-icon{opacity:1}
+  .option-row.disabled{cursor:default}
+  .option-row.correct.anim-correct{animation:popIn .3s cubic-bezier(.3,1.4,.6,1)}
+  .option-row.wrong.anim-shake{animation:shake .3s}
+  @keyframes popIn{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(8px)}50%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .feedback{margin-top:16px;text-align:center;animation:fadeUp .2s ease-out}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .feedback .label{font-size:14px;font-weight:600}
+  .feedback .label.correct-text{color:var(--jade)}
+  .feedback .label.wrong-text{color:var(--seal-deep)}
+
+  /* Write Pinyin Area */
+  .wp-badge{display:inline-block;padding:4px 14px;background:var(--amber-tint);color:var(--amber);border:1px solid rgba(143,100,9,0.3);border-radius:20px;font-size:12px;font-weight:700}
+  .wp-input-wrapper{position:relative;margin-top:12px;display:flex;align-items:center}
+  .wp-input{width:100%;padding:13px 52px 13px 16px;border:2px solid var(--hairline);border-radius:12px;font-size:17px;font-family:inherit;background:var(--paper-deep);color:var(--ink);outline:none;transition:all .2s;box-shadow:inset 0 1px 3px rgba(0,0,0,0.02)}
+  .wp-input:focus{border-color:var(--jade);background:var(--paper);box-shadow:0 0 0 3px var(--jade-tint)}
+  .wp-input:disabled{background:var(--paper-deep);opacity:.85;cursor:not-allowed}
+  .wp-inline-submit{position:absolute;right:8px;width:36px;height:36px;border:none;background:var(--jade);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;color:#fff}
+  .wp-inline-submit:hover:not(:disabled){background:var(--jade-fill);transform:scale(1.04)}
+  .wp-inline-submit:active:not(:disabled){transform:scale(.96)}
+  .wp-inline-submit:disabled{background:var(--hairline);color:var(--ink-faint);cursor:not-allowed;opacity:.5}
+  .wp-inline-submit svg{width:20px;height:20px;fill:currentColor}
+
+  .wp-feedback-card{margin-top:18px;background:var(--paper-deep);border:1.5px solid var(--hairline);border-radius:12px;padding:16px 18px;animation:fadeUp .25s ease-out}
+  .wp-feedback-header{display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .wp-status-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700}
+  .wp-status-badge.correct{background:var(--jade-tint);color:var(--jade);border:1px solid var(--jade)}
+  .wp-status-badge.wrong{background:var(--red-bg);color:var(--seal-deep);border:1px solid var(--seal-deep)}
+  .wp-feedback-body{display:flex;flex-direction:column;gap:8px;background:var(--paper);border:1px solid var(--hairline);border-radius:10px;padding:12px 14px}
+  .wp-correct-pinyin-row, .wp-meaning-row{display:flex;align-items:baseline;gap:8px;font-size:15px}
+  .wp-label{font-size:12px;font-weight:600;color:var(--ink-soft);min-width:82px}
+  .wp-target-pinyin{font-size:18px;font-weight:700;color:var(--seal-son);font-family:Georgia,serif}
+  .wp-target-meaning{font-size:14.5px;font-weight:500;color:var(--ink)}
+  .wp-next-btn{background:var(--paper);border-color:var(--ink-soft);color:var(--ink);font-weight:700}
+  .wp-next-btn:hover{background:var(--paper-deep)}
+
+  .finish{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center}
+  .finish .icon{width:56px;height:56px;color:var(--jade);animation:popIn .5s cubic-bezier(.3,1.4,.6,1)}
+  .finish h2{font-size:24px;font-weight:600;font-family:Georgia,serif;margin:12px 0 4px}
+  .finish .subtitle{font-size:14px;color:var(--ink-soft)}
+  .stats{display:flex;gap:clamp(28px,8vw,64px);margin-top:28px}
+  .stat-col{text-align:center}
+  .stat-col .value{font-size:36px;font-weight:700}
+  .stat-col .label{font-size:11px;font-weight:500;letter-spacing:.02em;color:var(--ink-soft)}
+  .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+  .empty-state{display:flex;flex-direction:column;align-items:center;padding-top:48px;text-align:center}
+  .empty-state .icon{width:48px;height:48px;color:var(--jade);opacity:.5}
+  .empty-state h3{font-size:20px;font-weight:600;margin:16px 0 8px}
+  .empty-state p{font-size:14px;color:var(--ink-faint);margin-bottom:24px;max-width:300px}
+  .spinner{width:32px;height:32px;border:3px solid var(--hairline);border-top-color:var(--jade-fill);border-radius:50%;animation:spin .7s linear infinite;margin:80px auto}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .section-label{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase;margin:18px 0 10px}
+  .snackbar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--paper);padding:12px 24px;border-radius:10px;font-size:14px;z-index:200;transition:transform .3s;pointer-events:none;white-space:nowrap;max-width:calc(100vw - 32px);text-align:center}
+  .snackbar.show{transform:translateX(-50%) translateY(0)}
+
+  .setting-card{background:var(--paper-deep);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+  .setting-card .setting-title{font-weight:600;font-size:15px}
+  .setting-card .setting-desc{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .toggle{position:relative;width:48px;height:26px;cursor:pointer;flex-shrink:0}
+  .toggle input{display:none}
+  .toggle .slider{position:absolute;inset:0;background:var(--hairline);border-radius:13px;transition:background .2s}
+  .toggle .slider::before{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s}
+  .toggle input:checked+.slider{background:var(--jade)}
+  .toggle input:checked+.slider::before{transform:translateX(22px)}
+  .audio-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+
+  .setup-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+  .setup-inner{text-align:center;max-width:440px;width:100%}
+  .setup-inner .serif{font-size:32px;font-weight:600}
+  .setup-inner .accent-line{width:60px;height:2.5px;background:var(--seal-son);margin:8px auto 0}
+  .setup-inner code{background:var(--paper-deep);padding:2px 6px;border-radius:4px;font-size:12px}
+  .setup-inner input{width:100%;padding:12px 14px;border:1.5px solid var(--hairline);border-radius:10px;font-size:13px;background:var(--paper);color:var(--ink);outline:none;font-family:monospace;transition:border-color .2s}
+  .setup-inner input:focus{border-color:var(--jade)}
+
+  .home-header{padding:8px 0 0}
+  .home-header .serif-sub{font-size:16px;color:var(--ink-soft)}
+  .home-header h1{font-size:clamp(28px,4vw,38px);font-weight:600;font-family:Georgia,serif;letter-spacing:-.01em;display:flex;align-items:baseline;gap:8px;margin-top:4px;flex-wrap:wrap}
+  .home-header .accent-line{display:inline-block;width:60px;height:2.5px;background:var(--seal-son)}
+  .home-header .date{color:var(--ink-faint);font-size:13px;margin-top:4px}
+  .hsk-row{padding:0;margin-top:18px}
+  .list-area{padding:0;margin-top:14px}
+  .settings-area{padding:0;margin-top:20px;max-width:680px;margin-left:auto;margin-right:auto}
+
+  @media (min-width: 640px) {
+    .home-header, .hsk-row, .list-area, .quiz-area, .write-area { max-width: 760px; }
+  }
+  @media (min-width: 1024px) {
+    .home-header, .hsk-row, .list-area, .quiz-area, .write-area { max-width: 880px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup-screen" class="screen active">
+  <div class="setup-wrap">
+    <div class="setup-inner">
+      <div class="serif">Hanzi Quiz</div>
+      <div class="accent-line"></div>
+      <p style="color:var(--ink-soft);font-size:14px;margin-top:24px;margin-bottom:8px">Nhập Supabase Anon Key để kết nối dữ liệu.</p>
+      <p style="color:var(--ink-faint);font-size:12px;margin-bottom:20px">Tìm key trong <code>local.properties</code>, dòng <code>supabase.anon.key</code></p>
+      <input type="text" id="setup-key-input" placeholder="eyJhbGciOiJIUzI1NiIs...">
+      <div style="height:16px"></div>
+      <button class="primary-btn full" onclick="connectSupabase()">Kết nối</button>
+      <p id="setup-error" style="color:var(--seal-son);font-size:13px;margin-top:12px;display:none"></p>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="home-screen" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="showScreen('settings')" title="Cài đặt">
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94a7.07 7.07 0 000-1.88l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96a7.04 7.04 0 00-1.63-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84a.48.48 0 00-.48.41l-.36 2.54c-.59.24-1.13.57-1.63.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87a.48.48 0 00.12.61l2.03 1.58a7.07 7.07 0 000 1.88l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.04.7 1.63.94l.36 2.54c.05.24.26.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></svg>
+    </button>
+    <div class="spacer"></div>
+  </div>
+  <div class="content content-scroll">
+    <div class="home-header">
+      <span class="serif serif-sub">Ứng dụng</span>
+      <h1><span>Hanzi Quiz</span><span class="accent-line"></span></h1>
+      <div class="date" id="home-date"></div>
+    </div>
+    <div class="hsk-row"><div class="chips" id="hsk-chips"></div></div>
+    <div class="list-area">
+      <div id="home-loading" class="spinner" style="display:none"></div>
+      <div id="home-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- WRITE PINYIN -->
+<div id="write-pinyin-screen" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goBack()" title="Quay lại">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <span class="topbar-title" style="font-size:18px;margin-left:8px;color:var(--ink-soft)">Viết Pinyin</span>
+  </div>
+  <div class="content content-scroll">
+    <div class="write-area">
+      <div id="wp-loading" class="spinner" style="display:none"></div>
+      
+      <div id="wp-content" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+          <div class="progress-bar"><div class="fill" id="wp-progress-fill"></div></div>
+          <span id="wp-counter" style="font-size:13px;color:var(--ink-soft);white-space:nowrap"></span>
+        </div>
+
+        <div style="text-align:center;margin:12px 0 8px">
+          <span class="wp-badge">✏ Viết Pinyin</span>
+        </div>
+
+        <div class="flashcard" id="wp-flashcard">
+          <div class="grid"></div>
+          <span class="hanzi" id="wp-flashcard-hanzi"></span>
+          <span class="seal">字</span>
+        </div>
+
+        <div style="margin-top:18px;text-align:center">
+          <span class="label-sm" style="font-size:12px;color:var(--ink-soft)">Nhập pinyin cho chữ trên:</span>
+        </div>
+
+        <!-- Input box with inline quick submit button -->
+        <div class="wp-input-wrapper">
+          <input type="text" id="wp-input" class="wp-input" placeholder="VD: xué hoặc xue, xue2..." autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="go">
+          <button id="wp-submit-btn" class="wp-inline-submit" onclick="checkWritePinyinAnswer()" title="Kiểm tra (Enter)">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          </button>
+        </div>
+
+        <button class="primary-btn full" id="wp-check-btn" onclick="checkWritePinyinAnswer()" style="margin-top:12px">Kiểm tra</button>
+
+        <!-- Feedback Card -->
+        <div id="wp-feedback-card" class="wp-feedback-card" style="display:none">
+          <div class="wp-feedback-header">
+            <span id="wp-feedback-badge" class="wp-status-badge"></span>
+          </div>
+          <div class="wp-feedback-body">
+            <div class="wp-correct-pinyin-row">
+              <span class="wp-label">Pinyin chuẩn:</span>
+              <span id="wp-correct-pinyin" class="wp-target-pinyin"></span>
+            </div>
+            <div class="wp-meaning-row" id="wp-meaning-row">
+              <span class="wp-label">Nghĩa:</span>
+              <span id="wp-correct-meaning" class="wp-target-meaning"></span>
+            </div>
+          </div>
+          <button class="outline-btn wp-next-btn" id="wp-next-btn" onclick="nextWritePinyinWord()" style="margin-top:14px">Tiếp tục</button>
+        </div>
+      </div>
+
+      <!-- Finish screen -->
+      <div id="wp-finish" class="finish" style="display:none">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <h2>Hoàn thành</h2>
+        <span class="subtitle" id="wp-finish-subtitle"></span>
+        <div class="stats">
+          <div class="stat-col"><div class="value" id="wp-finish-correct" style="color:var(--jade)"></div><div class="label">Thuộc được</div></div>
+          <div class="stat-col"><div class="value" id="wp-finish-wrong" style="color:var(--seal-son)"></div><div class="label">Lần sai</div></div>
+        </div>
+        <button class="primary-btn full" style="margin-top:44px;max-width:320px" onclick="goBack()">Về trang chủ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-screen" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goBack()" title="Quay lại">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <span class="topbar-title" style="font-size:18px;margin-left:8px;color:var(--ink-soft)">Ôn tập trắc nghiệm</span>
+  </div>
+  <div class="content content-scroll">
+    <div class="quiz-area">
+      <div id="quiz-loading" class="spinner" style="display:none"></div>
+      <div id="quiz-content" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+          <div class="progress-bar"><div class="fill" id="quiz-progress-fill"></div></div>
+          <span id="quiz-counter" style="font-size:13px;color:var(--ink-soft);white-space:nowrap"></span>
+        </div>
+        <div class="step-chips">
+          <span class="step-chip" id="step-pinyin">1 Phiên âm</span>
+          <span style="color:var(--ink-faint);font-size:11px">,</span>
+          <span class="step-chip" id="step-meaning">2 Nghĩa</span>
+        </div>
+        <div class="flashcard" id="flashcard">
+          <div class="grid"></div>
+          <span class="hanzi" id="flashcard-hanzi"></span>
+          <span class="seal">字</span>
+        </div>
+        <div style="margin-top:16px;text-align:center"><span class="label-sm" id="quiz-instruction">Chọn phiên âm đúng:</span></div>
+        <div class="options" id="quiz-options"></div>
+        <div id="quiz-feedback" style="display:none"></div>
+      </div>
+      <div id="quiz-finish" class="finish" style="display:none">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <h2>Hoàn thành</h2>
+        <span class="subtitle" id="finish-subtitle"></span>
+        <div class="stats">
+          <div class="stat-col"><div class="value" id="finish-correct" style="color:var(--jade)"></div><div class="label">Thuộc được</div></div>
+          <div class="stat-col"><div class="value" id="finish-wrong" style="color:var(--seal-son)"></div><div class="label">Lần sai</div></div>
+        </div>
+        <button class="primary-btn full" style="margin-top:44px;max-width:320px" onclick="goBack()">Về trang chủ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings-screen" class="screen">
+  <div class="topbar">
+    <button class="icon-btn" onclick="goBack()" title="Quay lại">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <span class="topbar-title" style="font-weight:700">Cài đặt</span>
+  </div>
+  <div class="content content-scroll">
+    <div class="settings-area">
+      <div style="font-size:16px;font-weight:600;color:var(--seal-son);margin-bottom:8px">Âm thanh</div>
+      <div class="setting-card audio-row">
+        <div><div class="setting-title">Hiệu ứng âm thanh</div><div class="setting-desc">Bật hoặc tắt âm thanh khi làm bài tập</div></div>
+        <label class="toggle"><input type="checkbox" id="sound-toggle" checked onchange="toggleSound(this.checked)"><span class="slider"></span></label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="snackbar" id="snackbar"></div>
+<canvas class="confetti-canvas" id="confetti-canvas"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+var SUPABASE_URL = 'https://qthuomifuzyrzhgcsedx.supabase.co';
+var SUPABASE_KEY = localStorage.getItem('sb_key') || '';
+var sb = null;
+
+async function connectSupabase() {
+  var key = document.getElementById('setup-key-input').value.trim();
+  var errEl = document.getElementById('setup-error');
+  if (!key) { errEl.textContent = 'Vui lòng nhập key'; errEl.style.display = 'block'; return; }
+  try {
+    var test = window.supabase.createClient(SUPABASE_URL, key);
+    var result = await test.from('sessions').select('id').limit(1);
+    if (result.error) throw result.error;
+    SUPABASE_KEY = key;
+    localStorage.setItem('sb_key', key);
+    sb = test;
+    document.getElementById('setup-screen').classList.remove('active');
+    document.getElementById('home-screen').classList.add('active');
+    state.screen = 'home';
+    loadSessions();
+  } catch(e) {
+    errEl.textContent = 'Key không hợp lệ hoặc lỗi kết nối';
+    errEl.style.display = 'block';
+  }
+}
+
+if (SUPABASE_KEY && typeof window.supabase !== 'undefined') {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  document.getElementById('setup-screen').classList.remove('active');
+  document.getElementById('home-screen').classList.add('active');
+} else {
+  document.getElementById('home-screen').classList.remove('active');
+  document.getElementById('setup-screen').classList.add('active');
+}
+
+// ===== STATE =====
+var state = {
+  screen: 'home', prevScreen: 'home',
+  sessions: [], selectedHsk: 1,
+  lastSessionId: parseInt(localStorage.getItem('lastSessionId') || '-1'),
+  lastHsk: parseInt(localStorage.getItem('lastHsk') || '1'),
+  soundEnabled: JSON.parse(localStorage.getItem('soundEnabled') ?? 'true'),
+  // Quiz state
+  quizSessionId: null, vocabQueue: [], currentVocab: null,
+  quizStep: 'PINYIN', options: [], isAnswerSelected: false,
+  isCorrect: false, selectedAnswer: null,
+  correctCount: 0, wrongCount: 0, remainingVocabs: 0,
+  // Write Pinyin state
+  wpSessionId: null, wpQueue: [], wpCurrentVocab: null,
+  wpIsChecked: false, wpIsCorrect: false,
+  wpCorrectCount: 0, wpWrongCount: 0, wpRemainingVocabs: 0,
+  wpLastActionTime: 0
+};
+
+// ===== AUDIO =====
+var AudioCtx = window.AudioContext || window.webkitAudioContext;
+var audioCtx = null;
+function getAudioCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+function playTone(freq, dur, type) {
+  if (!state.soundEnabled) return;
+  type = type || 'sine';
+  try {
+    var ctx = getAudioCtx();
+    var o = ctx.createOscillator(); var g = ctx.createGain();
+    o.type = type; o.frequency.value = freq; g.gain.value = 0.15;
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.connect(g).connect(ctx.destination); o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+function playCorrect() { playTone(523,.12); setTimeout(function(){playTone(659,.12);},70); setTimeout(function(){playTone(784,.15);},140); }
+function playWrong() { playTone(200,.25,'square'); }
+function playFinish() { playTone(523,.12); setTimeout(function(){playTone(659,.12);},140); setTimeout(function(){playTone(784,.12);},280); setTimeout(function(){playTone(1047,.3);},420); }
+function toggleSound(v) { state.soundEnabled = v; localStorage.setItem('soundEnabled', JSON.stringify(v)); }
+
+// ===== NAVIGATION =====
+function showScreen(name, params) {
+  state.prevScreen = state.screen; state.screen = name;
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var target = document.getElementById(name + '-screen');
+  if (target) target.classList.add('active');
+  if (name === 'home') loadSessions();
+  if (name === 'quiz' && params && params.sessionId) {
+    state.quizSessionId = params.sessionId;
+    state.lastSessionId = params.sessionId;
+    localStorage.setItem('lastSessionId', params.sessionId);
+    startQuiz(params.sessionId);
+  }
+  if (name === 'write-pinyin' && params && params.sessionId) {
+    state.wpSessionId = params.sessionId;
+    state.lastSessionId = params.sessionId;
+    localStorage.setItem('lastSessionId', params.sessionId);
+    startWritePinyin(params.sessionId);
+  }
+}
+
+function goBack() {
+  if (state.screen === 'quiz' || state.screen === 'write-pinyin') stopConfetti();
+  showScreen('home');
+}
+
+// ===== HOME =====
+function renderDate() {
+  var days = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+  var d = new Date();
+  document.getElementById('home-date').textContent = days[d.getDay()] + ', ' + d.getDate() + ' tháng ' + (d.getMonth()+1);
+}
+
+function renderHskChips() {
+  var c = document.getElementById('hsk-chips'); c.innerHTML = '';
+  for (var i = 1; i <= 6; i++) {
+    var b = document.createElement('button');
+    b.className = 'chip' + (state.selectedHsk === i ? ' active' : '');
+    b.textContent = 'HSK' + i;
+    b.setAttribute('data-level', i);
+    b.onclick = function() {
+      var lv = parseInt(this.getAttribute('data-level'));
+      state.selectedHsk = lv; state.lastHsk = lv;
+      localStorage.setItem('lastHsk', lv);
+      renderHskChips(); renderHomeContent();
+    };
+    c.appendChild(b);
+  }
+}
+
+async function loadSessions() {
+  document.getElementById('home-loading').style.display = 'block';
+  document.getElementById('home-content').innerHTML = '';
+  var result = await sb.from('sessions').select('*').order('created_at', { ascending: false });
+  document.getElementById('home-loading').style.display = 'none';
+  if (result.error) { document.getElementById('home-content').innerHTML = '<p style="color:var(--seal-son);text-align:center;margin-top:20px">Lỗi tải dữ liệu</p>'; return; }
+  state.sessions = result.data || []; state.selectedHsk = state.lastHsk;
+  renderHskChips(); renderHomeContent();
+}
+
+function renderHomeContent() {
+  var c = document.getElementById('home-content');
+  var filtered = state.sessions.filter(function(s){return s.hsk_level === state.selectedHsk;});
+  var ordinals = ['壹','贰','叁','肆','伍','陆','柒','捌','玖','拾'];
+  var html = '';
+  var last = state.sessions.find(function(s){return s.id === state.lastSessionId;});
+  if (last && last.hsk_level === state.selectedHsk) {
+    html += '<div class="section-label">TIẾP TỤC ÔN TẬP</div>';
+    html += buildSessionCard(last, 1, ordinals);
+  }
+  if (filtered.length === 0) {
+    html += '<div class="empty-state"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg><h3>Chưa có buổi ôn tập nào</h3><p>Hiện chưa có bài học nào trong cấp độ HSK này</p></div>';
+  } else {
+    html += '<div class="section-label">CÁC BUỔI ÔN TẬP</div>';
+    filtered.forEach(function(s, i) {
+      html += buildSessionCard(s, i+1, ordinals);
+    });
+  }
+  c.innerHTML = html;
+}
+
+function buildSessionCard(s, idx, ordinals) {
+  var d = s.created_at ? new Date(s.created_at) : new Date();
+  var ds = d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'}) + ' ' + d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+  var ordChar = ordinals[(idx - 1) % 10] || '拾';
+  return '<div class="session-card">' +
+    '<div style="display:flex;align-items:center">' +
+      '<div class="ordinal-box"><span class="ordinal">' + ordChar + '</span></div>' +
+      '<div style="flex:1;margin-left:12px;min-width:0">' +
+        '<div class="title">' + escHtml(s.title) + '</div>' +
+        '<div class="meta"><span>' + ds + '</span><span class="hsk-badge">HSK' + s.hsk_level + '</span></div>' +
+      '</div>' +
+      '<button class="delete-btn" onclick="event.stopPropagation();deleteSession(' + s.id + ')" title="Xóa buổi học">' +
+        '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>' +
+      '</button>' +
+    '</div>' +
+    '<div class="card-divider"></div>' +
+    '<div class="session-btn-row">' +
+      '<button class="btn-write-pinyin" onclick="showScreen(\'write-pinyin\',{sessionId:' + s.id + '})"><span>✏</span> Viết Pinyin</button>' +
+      '<button class="btn-quiz" onclick="showScreen(\'quiz\',{sessionId:' + s.id + '})">Ôn tập ngay</button>' +
+    '</div>' +
+  '</div>';
+}
+
+async function deleteSession(id) {
+  if (!confirm('Bạn có chắc chắn muốn xóa buổi học này không?')) return;
+  await sb.from('vocabulary').delete().eq('session_id', id);
+  await sb.from('sessions').delete().eq('id', id);
+  loadSessions();
+}
+
+// ===== PINYIN MATCHING ENGINE =====
+var TONE_MAP = {
+  'a': ['ā', 'á', 'ǎ', 'à', 'a'],
+  'e': ['ē', 'é', 'ě', 'è', 'e'],
+  'i': ['ī', 'í', 'ǐ', 'ì', 'i'],
+  'o': ['ō', 'ó', 'ǒ', 'ò', 'o'],
+  'u': ['ū', 'ú', 'ǔ', 'ù', 'u'],
+  'ü': ['ǖ', 'ǘ', 'ǚ', 'ǜ', 'ü']
+};
+
+var TONE_MARK_TO_BASE = {};
+for (var baseKey in TONE_MAP) {
+  var marks = TONE_MAP[baseKey];
+  for (var m = 0; m < marks.length; m++) {
+    TONE_MARK_TO_BASE[marks[m]] = baseKey;
+  }
+}
+
+function findToneVowelIndex(s) {
+  // Rule 1: a or e gets the tone
+  for (var i = 0; i < s.length; i++) {
+    if (s[i] === 'a' || s[i] === 'e') return i;
+  }
+  // Rule 2: ou -> tone on o
+  var ouIdx = s.indexOf('ou');
+  if (ouIdx >= 0) return ouIdx;
+  // Rule 3: last vowel in i, o, u, ü
+  for (var j = s.length - 1; j >= 0; j--) {
+    if ('iouü'.indexOf(s[j]) !== -1) return j;
+  }
+  return -1;
+}
+
+function convertToneNumberToMark(s) {
+  if (!s || s.length === 0) return s;
+  var last = s.charAt(s.length - 1);
+  if (last < '1' || last > '5') return s;
+  var tone = parseInt(last, 10);
+  var base = s.slice(0, -1);
+  if (base.length === 0) return s;
+  var vowelIndex = findToneVowelIndex(base);
+  if (vowelIndex < 0) return s;
+  var vowel = base.charAt(vowelIndex);
+  var toneChars = TONE_MAP[vowel];
+  if (!toneChars) return s;
+  var toned = toneChars[tone - 1];
+  return base.substring(0, vowelIndex) + toned + base.substring(vowelIndex + 1);
+}
+
+function normalizePinyin(input) {
+  if (!input) return '';
+  var s = input.trim().toLowerCase().replace(/v/g, 'ü');
+  var parts = s.split(/\s+/);
+  var converted = [];
+  for (var i = 0; i < parts.length; i++) {
+    converted.push(convertToneNumberToMark(parts[i]));
+  }
+  return converted.join(' ');
+}
+
+function stripTones(input) {
+  if (!input) return '';
+  var s = input.trim().toLowerCase().replace(/v/g, 'ü');
+  var out = '';
+  for (var i = 0; i < s.length; i++) {
+    var ch = s.charAt(i);
+    if (ch >= '1' && ch <= '5') continue;
+    out += TONE_MARK_TO_BASE[ch] || ch;
+  }
+  return out;
+}
+
+function isPinyinMatch(userInput, targetPinyin) {
+  if (!userInput || !targetPinyin) return false;
+  var normUser = normalizePinyin(userInput);
+  var normTarget = normalizePinyin(targetPinyin);
+
+  // 1. Toned match (exact or tone numbers converted)
+  if (normUser === normTarget) return true;
+  if (normUser.replace(/\s+/g, '') === normTarget.replace(/\s+/g, '')) return true;
+
+  // 2. Toneless match (e.g. xue matches xué)
+  var strippedUser = stripTones(normUser).replace(/\s+/g, '');
+  var strippedTarget = stripTones(normTarget).replace(/\s+/g, '');
+
+  return strippedUser.length > 0 && strippedUser === strippedTarget;
+}
+
+// ===== WRITE PINYIN FEATURE =====
+async function startWritePinyin(sessionId) {
+  document.getElementById('wp-loading').style.display = 'block';
+  document.getElementById('wp-content').style.display = 'none';
+  document.getElementById('wp-finish').style.display = 'none';
+
+  var result = await sb.from('vocabulary').select('*').eq('session_id', sessionId);
+  document.getElementById('wp-loading').style.display = 'none';
+  if (!result.data || result.data.length === 0) {
+    showWritePinyinFinish(0, 0);
+    return;
+  }
+
+  var review = result.data.filter(function(v) { return v.review_status !== 2; });
+  if (review.length === 0) {
+    showWritePinyinFinish(0, 0);
+    return;
+  }
+
+  state.wpQueue = shuffle(review);
+  state.wpCorrectCount = 0;
+  state.wpWrongCount = 0;
+  state.wpRemainingVocabs = state.wpQueue.length;
+
+  document.getElementById('wp-content').style.display = 'block';
+  setupNextWritePinyinWord();
+}
+
+function setupNextWritePinyinWord() {
+  if (state.wpQueue.length === 0) {
+    showWritePinyinFinish(state.wpCorrectCount, state.wpWrongCount);
+    return;
+  }
+
+  var vocab = state.wpQueue[0];
+  state.wpCurrentVocab = vocab;
+  state.wpIsChecked = false;
+  state.wpIsCorrect = false;
+
+  var total = state.wpRemainingVocabs;
+  var done = total - state.wpQueue.length;
+  document.getElementById('wp-progress-fill').style.width = (done / total * 100) + '%';
+  document.getElementById('wp-counter').textContent = done + '/' + total;
+
+  var fc = document.getElementById('wp-flashcard');
+  document.getElementById('wp-flashcard-hanzi').textContent = vocab.hanzi;
+  fc.classList.remove('anim-in');
+  void fc.offsetWidth;
+  fc.classList.add('anim-in');
+
+  var inp = document.getElementById('wp-input');
+  inp.value = '';
+  inp.disabled = false;
+  document.getElementById('wp-submit-btn').disabled = false;
+  document.getElementById('wp-check-btn').disabled = false;
+  document.getElementById('wp-check-btn').style.display = 'inline-flex';
+  document.getElementById('wp-feedback-card').style.display = 'none';
+
+  setTimeout(function() {
+    inp.focus();
+  }, 100);
+}
+
+async function checkWritePinyinAnswer() {
+  if (state.wpIsChecked || !state.wpCurrentVocab) return;
+  var inp = document.getElementById('wp-input');
+  var userInput = inp.value.trim();
+  if (!userInput) {
+    inp.focus();
+    return;
+  }
+
+  state.wpIsChecked = true;
+  var vocab = state.wpCurrentVocab;
+  var isMatch = isPinyinMatch(userInput, vocab.pinyin);
+  state.wpIsCorrect = isMatch;
+  state.wpLastActionTime = Date.now();
+
+  inp.disabled = true;
+  document.getElementById('wp-submit-btn').disabled = true;
+  document.getElementById('wp-check-btn').disabled = true;
+  document.getElementById('wp-check-btn').style.display = 'none';
+
+  if (isMatch) playCorrect(); else playWrong();
+
+  if (isMatch) {
+    state.wpCorrectCount++;
+    await sb.from('vocabulary').update({
+      review_status: 2,
+      last_reviewed_at: new Date().toISOString()
+    }).eq('id', vocab.id);
+  } else {
+    state.wpWrongCount++;
+    await sb.from('vocabulary').update({
+      review_status: 1,
+      last_reviewed_at: new Date().toISOString()
+    }).eq('id', vocab.id);
+  }
+
+  var badge = document.getElementById('wp-feedback-badge');
+  if (isMatch) {
+    badge.className = 'wp-status-badge correct';
+    badge.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Chính xác!';
+  } else {
+    badge.className = 'wp-status-badge wrong';
+    badge.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg> Chưa đúng';
+  }
+
+  document.getElementById('wp-correct-pinyin').textContent = vocab.pinyin;
+  var meaningText = vocab.meaning;
+  if (vocab.word_type) {
+    meaningText += ' (' + vocab.word_type + ')';
+  }
+  document.getElementById('wp-correct-meaning').textContent = meaningText;
+
+  var fbCard = document.getElementById('wp-feedback-card');
+  fbCard.style.display = 'block';
+
+  setTimeout(function() {
+    var nextBtn = document.getElementById('wp-next-btn');
+    if (nextBtn) nextBtn.focus();
+  }, 100);
+}
+
+function nextWritePinyinWord() {
+  if (!state.wpIsChecked || !state.wpCurrentVocab) return;
+  // 400ms debounce
+  if (Date.now() - state.wpLastActionTime < 400) return;
+  state.wpLastActionTime = Date.now();
+
+  var vocab = state.wpQueue.shift();
+  if (!state.wpIsCorrect) {
+    state.wpQueue.push(vocab);
+  }
+  setupNextWritePinyinWord();
+}
+
+function showWritePinyinFinish(correct, wrong) {
+  document.getElementById('wp-content').style.display = 'none';
+  document.getElementById('wp-finish').style.display = 'flex';
+  document.getElementById('wp-finish-subtitle').textContent = 'Hôm nay bạn thuộc được ' + correct + ' từ';
+  document.getElementById('wp-finish-correct').textContent = correct;
+  document.getElementById('wp-finish-wrong').textContent = wrong;
+  playFinish();
+  startConfetti();
+}
+
+// ===== QUIZ =====
+async function startQuiz(sessionId) {
+  document.getElementById('quiz-loading').style.display = 'block';
+  document.getElementById('quiz-content').style.display = 'none';
+  document.getElementById('quiz-finish').style.display = 'none';
+  var result = await sb.from('vocabulary').select('*').eq('session_id', sessionId);
+  document.getElementById('quiz-loading').style.display = 'none';
+  if (!result.data || result.data.length === 0) { showQuizFinish(0,0); return; }
+  var review = result.data.filter(function(v){return v.review_status !== 2;});
+  if (review.length === 0) { showQuizFinish(0,0); return; }
+  state.vocabQueue = shuffle(review); state.correctCount = 0; state.wrongCount = 0;
+  document.getElementById('quiz-content').style.display = 'block';
+  setupNextFlashcard();
+}
+
+async function setupNextFlashcard() {
+  if (state.vocabQueue.length === 0) { showQuizFinish(state.correctCount, state.wrongCount); return; }
+  var vocab = state.vocabQueue[0]; state.currentVocab = vocab;
+  state.quizStep = 'PINYIN'; state.isAnswerSelected = false; state.selectedAnswer = null;
+  state.remainingVocabs = state.vocabQueue.length;
+  var result = await sb.from('vocabulary').select('pinyin').eq('session_id', state.quizSessionId);
+  var dist = (result.data || []).filter(function(v){return v.pinyin !== vocab.pinyin;}).map(function(v){return v.pinyin;});
+  state.options = shuffle(dist.slice(0, 3).concat([vocab.pinyin]));
+  renderQuizUI();
+}
+
+function renderQuizUI() {
+  var vocab = state.currentVocab; if (!vocab) return;
+  var total = state.remainingVocabs;
+  var done = total - state.vocabQueue.length - (state.isAnswerSelected && state.isCorrect ? 1 : 0);
+  document.getElementById('quiz-progress-fill').style.width = (done / total * 100) + '%';
+  document.getElementById('quiz-counter').textContent = done + '/' + total;
+  document.getElementById('step-pinyin').className = 'step-chip' + (state.quizStep === 'PINYIN' ? ' active' : '');
+  document.getElementById('step-meaning').className = 'step-chip' + (state.quizStep === 'MEANING' ? ' active' : '');
+  document.getElementById('quiz-instruction').textContent = state.quizStep === 'PINYIN' ? 'Chọn phiên âm đúng:' : 'Chọn nghĩa đúng:';
+  var fc = document.getElementById('flashcard'); document.getElementById('flashcard-hanzi').textContent = vocab.hanzi;
+  fc.classList.remove('anim-in'); void fc.offsetWidth; fc.classList.add('anim-in');
+  var ordinals = ['甲','乙','丙','丁']; var oel = document.getElementById('quiz-options'); var oh = '';
+  state.options.forEach(function(opt, i) {
+    var cls = 'option-row', extra = '';
+    if (state.isAnswerSelected) {
+      cls += ' disabled';
+      var ca = state.quizStep === 'PINYIN' ? vocab.pinyin : vocab.meaning;
+      if (opt === ca) { cls += ' correct anim-correct'; extra = '<svg class="check-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'; }
+      else if (opt === state.selectedAnswer) { cls += ' wrong anim-shake'; extra = '<svg class="check-icon" viewBox="0 0 24 24" style="fill:var(--seal-deep)"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>'; }
+    }
+    oh += '<div class="' + cls + '" onclick="selectOption(\'' + escAttr(opt) + '\')"><span class="ord">' + ordinals[i] + '</span><span class="text">' + escHtml(opt) + '</span>' + extra + '</div>';
+  });
+  oel.innerHTML = oh;
+  var fb = document.getElementById('quiz-feedback');
+  if (state.isAnswerSelected) {
+    fb.style.display = 'block';
+    fb.innerHTML = '<div class="feedback"><div class="label ' + (state.isCorrect ? 'correct-text' : 'wrong-text') + '">' + (state.isCorrect ? 'Chính xác' : 'Chưa đúng') + '</div><button class="outline-btn" style="margin-top:12px" onclick="nextStep()">Tiếp tục</button></div>';
+  } else fb.style.display = 'none';
+}
+
+function selectOption(answer) {
+  if (state.isAnswerSelected || !state.currentVocab) return;
+  var ca = state.quizStep === 'PINYIN' ? state.currentVocab.pinyin : state.currentVocab.meaning;
+  state.isCorrect = answer === ca; state.isAnswerSelected = true; state.selectedAnswer = answer;
+  if (state.isCorrect) playCorrect(); else playWrong();
+  renderQuizUI();
+}
+
+async function nextStep() {
+  var vocab = state.currentVocab; if (!vocab) return;
+  if (state.isCorrect) {
+    if (state.quizStep === 'PINYIN') {
+      state.quizStep = 'MEANING'; state.isAnswerSelected = false; state.selectedAnswer = null;
+      var result = await sb.from('vocabulary').select('meaning').eq('session_id', state.quizSessionId);
+      var dist = (result.data || []).filter(function(v){return v.meaning !== vocab.meaning;}).map(function(v){return v.meaning;});
+      state.options = shuffle(dist.slice(0, 3).concat([vocab.meaning])); renderQuizUI();
+    } else {
+      await sb.from('vocabulary').update({review_status: 2, last_reviewed_at: new Date().toISOString()}).eq('id', vocab.id);
+      state.correctCount++; state.vocabQueue.shift(); setupNextFlashcard();
+    }
+  } else {
+    await sb.from('vocabulary').update({review_status: 1, last_reviewed_at: new Date().toISOString()}).eq('id', vocab.id);
+    state.wrongCount++; state.vocabQueue.shift(); state.vocabQueue.push(vocab); setupNextFlashcard();
+  }
+}
+
+function showQuizFinish(correct, wrong) {
+  state.quizStep = 'FINISHED';
+  document.getElementById('quiz-content').style.display = 'none';
+  document.getElementById('quiz-finish').style.display = 'flex';
+  document.getElementById('finish-subtitle').textContent = 'Hôm nay bạn thuộc được ' + correct + ' từ';
+  document.getElementById('finish-correct').textContent = correct;
+  document.getElementById('finish-wrong').textContent = wrong;
+  playFinish(); startConfetti();
+}
+
+// ===== CONFETTI =====
+var confettiAnim = null; var confettiParticles = [];
+function startConfetti() {
+  var canvas = document.getElementById('confetti-canvas'); var ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  var colors = ['#E53935','#FFB300','#43A047','#1E88E5','#EC407A','#8E24AA','#FF7043','#00ACC1'];
+  if (confettiParticles.length === 0) {
+    for (var i = 0; i < 60; i++) {
+      confettiParticles.push({
+        x: Math.random(), y: Math.random(),
+        speed: Math.random() * .6 + .3,
+        size: Math.random() * 7 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+  }
+  var progress = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    progress += 0.008;
+    if (progress > 1) progress = 0;
+    confettiParticles.forEach(function(p) {
+      var y = ((p.y + progress * p.speed) % 1.05) * canvas.height;
+      var sway = Math.sin((progress * 6 + p.x * 10)) * 20;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x * canvas.width + sway, y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    confettiAnim = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function stopConfetti() {
+  if (confettiAnim) { cancelAnimationFrame(confettiAnim); confettiAnim = null; }
+  var c = document.getElementById('confetti-canvas');
+  if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+// ===== UTILS =====
+function shuffle(a) {
+  var b = a.slice();
+  for (var i = b.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = b[i]; b[i] = b[j]; b[j] = t;
+  }
+  return b;
+}
+function escHtml(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function escAttr(s) { return (s || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+function showSnackbar(msg) {
+  var el = document.getElementById('snackbar'); el.textContent = msg; el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');}, 2500);
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown', function(e) {
+  if (state.screen === 'write-pinyin') {
+    if (!state.wpIsChecked && e.key === 'Enter') {
+      e.preventDefault();
+      checkWritePinyinAnswer();
+    } else if (state.wpIsChecked && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      nextWritePinyinWord();
+    }
+  } else if (state.screen === 'quiz') {
+    if (!state.isAnswerSelected) {
+      var idx = ['1','2','3','4'].indexOf(e.key);
+      if (idx >= 0 && idx < state.options.length) selectOption(state.options[idx]);
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      nextStep();
+    }
+  }
+});
+
+renderDate();
+if (sb) loadSessions();
+document.getElementById('sound-toggle').checked = state.soundEnabled;
+</script>
+</body>
+</html>

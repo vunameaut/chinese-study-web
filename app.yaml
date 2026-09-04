@@ -1,0 +1,11 @@
+name: chinese_study
+app_id: da_nYYILtXU11NY
+owner: vuhoainam_dev
+package: .
+kind: wasmer.io/App.v0
+annotations:
+  anybuild.run/config:
+    name: out
+  anybuild.run/provider: staticfile
+  anybuild.run/version: 0.27.2
+  wasmer.io/version: 7.2.1
