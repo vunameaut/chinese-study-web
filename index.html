@@ -1380,12 +1380,14 @@ var state = {
   quizStep: 'PINYIN', options: [], isAnswerSelected: false,
   isCorrect: false, selectedAnswer: null,
   correctCount: 0, wrongCount: 0, remainingVocabs: 0,
+  quizIsRepractice: false,
 
   // Write Pinyin state
   wpSessionId: null, wpQueue: [], wpCurrentVocab: null,
   wpIsChecked: false, wpIsCorrect: false,
   wpCorrectCount: 0, wpWrongCount: 0, wpRemainingVocabs: 0,
-  wpLastActionTime: 0
+  wpLastActionTime: 0,
+  wpIsRepractice: false
 };
 
 // ===== AUDIO SYSTEM =====
@@ -1677,9 +1679,11 @@ async function startWritePinyin(sessionId) {
   // Lọc từ cần học (review_status !== 2)
   var review = result.data.filter(function(v){return v.review_status !== 2;});
   // NẾU TẤT CẢ TỪ ĐÃ THUỘC (học lại lần 2, lần 3...): Cho phép luyện tập lại toàn bộ danh sách từ!
-  if (review.length === 0) {
+  var isRepractice = (review.length === 0);
+  if (isRepractice) {
     review = result.data.slice();
   }
+  state.wpIsRepractice = isRepractice;
 
   state.wpQueue = shuffle(review);
   state.wpCorrectCount = 0;
@@ -1742,16 +1746,22 @@ async function checkWritePinyinAnswer() {
 
   if (isMatch) {
     state.wpCorrectCount++;
-    await sb.from('vocabulary').update({
-      review_status: 2,
-      last_reviewed_at: new Date().toISOString()
-    }).eq('id', vocab.id);
+    // Chỉ cập nhật vào Supabase nếu KHÔNG PHẢI chế độ ôn lại và từ chưa thuộc
+    if (!state.wpIsRepractice && vocab.review_status !== 2) {
+      await sb.from('vocabulary').update({
+        review_status: 2,
+        last_reviewed_at: new Date().toISOString()
+      }).eq('id', vocab.id);
+    }
   } else {
     state.wpWrongCount++;
-    await sb.from('vocabulary').update({
-      review_status: 1,
-      last_reviewed_at: new Date().toISOString()
-    }).eq('id', vocab.id);
+    // Chỉ cập nhật trạng thái sai vào Supabase nếu KHÔNG PHẢI chế độ ôn lại
+    if (!state.wpIsRepractice && vocab.review_status !== 2) {
+      await sb.from('vocabulary').update({
+        review_status: 1,
+        last_reviewed_at: new Date().toISOString()
+      }).eq('id', vocab.id);
+    }
   }
 
   var badge = document.getElementById('wp-feedback-status');
@@ -1826,7 +1836,11 @@ function nextWritePinyinWord() {
 function showWritePinyinFinish(correct, wrong) {
   document.getElementById('wp-workspace').style.display = 'none';
   document.getElementById('wp-finish').style.display = 'flex';
-  document.getElementById('wp-finish-subtitle').textContent = 'Buổi học đã hoàn tất! Bạn đã thuộc được ' + correct + ' từ vựng.';
+  if (state.wpIsRepractice) {
+    document.getElementById('wp-finish-subtitle').textContent = 'Hoàn tất lượt ôn lại! (Kết quả ôn lại không tính vào thống kê tiến độ)';
+  } else {
+    document.getElementById('wp-finish-subtitle').textContent = 'Buổi học đã hoàn tất! Bạn đã thuộc được ' + correct + ' từ vựng.';
+  }
   document.getElementById('wp-finish-correct').textContent = correct;
   document.getElementById('wp-finish-wrong').textContent = wrong;
   playFinish();
@@ -1843,9 +1857,11 @@ async function startQuiz(sessionId) {
   
   var review = result.data.filter(function(v){return v.review_status !== 2;});
   // Cho phép ôn tập lại toàn bộ từ nếu tất cả đã thuộc
-  if (review.length === 0) {
+  var isRepractice = (review.length === 0);
+  if (isRepractice) {
     review = result.data.slice();
   }
+  state.quizIsRepractice = isRepractice;
 
   state.vocabQueue = shuffle(review);
   state.correctCount = 0;
@@ -1932,11 +1948,15 @@ async function nextStep() {
       var dist = (result.data || []).filter(function(v){return v.meaning !== vocab.meaning;}).map(function(v){return v.meaning;});
       state.options = shuffle(dist.slice(0, 3).concat([vocab.meaning])); renderQuizUI();
     } else {
-      await sb.from('vocabulary').update({review_status: 2, last_reviewed_at: new Date().toISOString()}).eq('id', vocab.id);
+      if (!state.quizIsRepractice && vocab.review_status !== 2) {
+        await sb.from('vocabulary').update({review_status: 2, last_reviewed_at: new Date().toISOString()}).eq('id', vocab.id);
+      }
       state.correctCount++; state.vocabQueue.shift(); setupNextFlashcard();
     }
   } else {
-    await sb.from('vocabulary').update({review_status: 1, last_reviewed_at: new Date().toISOString()}).eq('id', vocab.id);
+    if (!state.quizIsRepractice && vocab.review_status !== 2) {
+      await sb.from('vocabulary').update({review_status: 1, last_reviewed_at: new Date().toISOString()}).eq('id', vocab.id);
+    }
     state.wrongCount++; state.vocabQueue.shift(); state.vocabQueue.push(vocab); setupNextFlashcard();
   }
 }
@@ -1944,7 +1964,11 @@ async function nextStep() {
 function showQuizFinish(correct, wrong) {
   document.getElementById('quiz-content').style.display = 'none';
   document.getElementById('quiz-finish').style.display = 'flex';
-  document.getElementById('finish-subtitle').textContent = 'Buổi học đã hoàn tất! Bạn đã thuộc được ' + correct + ' từ vựng.';
+  if (state.quizIsRepractice) {
+    document.getElementById('finish-subtitle').textContent = 'Hoàn tất lượt ôn lại! (Kết quả ôn lại không tính vào thống kê tiến độ)';
+  } else {
+    document.getElementById('finish-subtitle').textContent = 'Buổi học đã hoàn tất! Bạn đã thuộc được ' + correct + ' từ vựng.';
+  }
   document.getElementById('finish-correct').textContent = correct;
   document.getElementById('finish-wrong').textContent = wrong;
   playFinish(); startConfetti();
