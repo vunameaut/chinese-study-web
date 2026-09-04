@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Hanzi Studio 汉字 - Học & Luyện tập Hán Tự, Pinyin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,6 +48,15 @@
   }
   .serif{font-family:'Noto Serif SC',Georgia,serif}
 
+  /* Search input reset to prevent cancel icon */
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    display: none;
+  }
+
   /* Screens */
   .screen{display:none;min-height:100vh;flex-direction:column}
   .screen.active{display:flex}
@@ -57,7 +66,7 @@
     position:sticky;
     top:0;
     z-index:50;
-    background:rgba(252,249,242,0.92);
+    background:rgba(252,249,242,0.94);
     backdrop-filter:blur(12px);
     -webkit-backdrop-filter:blur(12px);
     border-bottom:1px solid var(--hairline);
@@ -66,11 +75,11 @@
   .header-inner{
     max-width:1240px;
     margin:0 auto;
-    padding:10px 20px;
+    padding:8px 16px;
     display:flex;
     align-items:center;
-    gap:16px;
-    min-height:64px;
+    gap:14px;
+    min-height:58px;
   }
   .brand-group{
     display:flex;
@@ -82,8 +91,8 @@
     flex-shrink:0;
   }
   .brand-seal{
-    width:34px;
-    height:34px;
+    width:32px;
+    height:32px;
     background:var(--seal-son);
     border:1.5px solid #E57368;
     border-radius:6px;
@@ -92,12 +101,12 @@
     justify-content:center;
     color:#fff;
     font-family:'Noto Serif SC',serif;
-    font-size:18px;
+    font-size:17px;
     font-weight:900;
     box-shadow:0 2px 6px rgba(198,61,45,0.3);
   }
   .brand-text{display:flex;flex-direction:column}
-  .brand-title{font-size:18px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+  .brand-title{font-size:17px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
   .brand-sub{font-size:11px;color:var(--ink-soft);font-weight:500}
 
   /* HSK Segmented Bar */
@@ -107,20 +116,21 @@
     justify-content:center;
     overflow-x:auto;
     scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
   }
   .hsk-segmented-wrap::-webkit-scrollbar{display:none}
   .hsk-segmented{
     display:flex;
     background:var(--paper-deep);
-    padding:4px;
+    padding:3px;
     border-radius:30px;
     border:1px solid var(--hairline);
     gap:2px;
   }
   .hsk-tab{
-    padding:6px 16px;
-    border-radius:24px;
-    font-size:13px;
+    padding:5px 14px;
+    border-radius:20px;
+    font-size:12.5px;
     font-weight:600;
     color:var(--ink-soft);
     background:none;
@@ -147,17 +157,17 @@
     flex-shrink:0;
   }
   .tool-btn{
-    height:36px;
-    padding:0 12px;
+    height:34px;
+    padding:0 10px;
     background:var(--paper-deep);
     border:1px solid var(--hairline);
     border-radius:8px;
     color:var(--ink-soft);
-    font-size:12.5px;
+    font-size:12px;
     font-weight:600;
     display:inline-flex;
     align-items:center;
-    gap:6px;
+    gap:5px;
     cursor:pointer;
     transition:all .15s;
   }
@@ -168,8 +178,8 @@
   }
   .tool-btn svg{width:16px;height:16px;fill:currentColor}
   .tool-icon-btn{
-    width:36px;
-    height:36px;
+    width:34px;
+    height:34px;
     padding:0;
     justify-content:center;
     border-radius:50%;
@@ -180,7 +190,7 @@
     max-width:1240px;
     width:100%;
     margin:0 auto;
-    padding:24px 20px 48px;
+    padding:20px 16px 40px;
     flex:1;
   }
 
@@ -189,23 +199,23 @@
     display:flex;
     align-items:flex-end;
     justify-content:space-between;
-    padding-bottom:18px;
+    padding-bottom:16px;
     border-bottom:1px solid var(--hairline);
-    margin-bottom:24px;
+    margin-bottom:20px;
     flex-wrap:wrap;
-    gap:16px;
+    gap:12px;
   }
   .home-hero-left h1{
-    font-size:clamp(24px,3.2vw,36px);
+    font-size:clamp(22px,3vw,34px);
     font-family:'Noto Serif SC',Georgia,serif;
     font-weight:700;
     color:var(--ink);
     display:flex;
     align-items:baseline;
-    gap:12px;
+    gap:10px;
   }
   .home-hero-left .date-badge{
-    font-size:13px;
+    font-size:12.5px;
     color:var(--ink-soft);
     margin-top:4px;
     display:flex;
@@ -218,27 +228,27 @@
     gap:10px;
   }
   .stat-pill{
-    padding:6px 14px;
+    padding:5px 12px;
     background:var(--paper-deep);
     border:1px solid var(--hairline);
     border-radius:20px;
-    font-size:12.5px;
+    font-size:12px;
     font-weight:600;
     color:var(--ink-soft);
   }
-  .stat-pill b{color:var(--seal-son);font-size:14px}
+  .stat-pill b{color:var(--seal-son);font-size:13.5px}
 
   /* Section Title */
   .section-heading{
     display:flex;
     align-items:center;
     gap:8px;
-    font-size:12px;
+    font-size:11.5px;
     font-weight:700;
     letter-spacing:.08em;
     color:var(--ink-soft);
     text-transform:uppercase;
-    margin-bottom:16px;
+    margin-bottom:14px;
   }
   .section-heading::after{
     content:'';
@@ -251,11 +261,11 @@
   .session-grid{
     display:grid;
     grid-template-columns:1fr;
-    gap:16px;
-    margin-bottom:32px;
+    gap:14px;
+    margin-bottom:28px;
   }
   @media(min-width:680px){
-    .session-grid{grid-template-columns:repeat(2,1fr);gap:18px}
+    .session-grid{grid-template-columns:repeat(2,1fr);gap:16px}
   }
   @media(min-width:1040px){
     .session-grid{grid-template-columns:repeat(3,1fr);gap:20px}
@@ -266,7 +276,7 @@
     background:var(--paper-card);
     border:1.5px solid var(--hairline);
     border-radius:14px;
-    padding:18px 20px;
+    padding:16px 18px;
     transition:all .2s cubic-bezier(0.16, 1, 0.3, 1);
     display:flex;
     flex-direction:column;
@@ -289,24 +299,23 @@
     gap:12px;
   }
   .card-ordinal{
-    width:36px;
-    height:36px;
-    border-radius:10px;
+    width:34px;
+    height:34px;
+    border-radius:9px;
     background:var(--paper);
     border:1.2px solid rgba(223,213,191,0.9);
     display:flex;
     align-items:center;
     justify-content:center;
     font-family:'Noto Serif SC',serif;
-    font-size:16px;
+    font-size:15px;
     font-weight:700;
     color:var(--seal-son);
     flex-shrink:0;
-    box-shadow:0 1px 3px rgba(0,0,0,0.02);
   }
   .card-info{flex:1;min-width:0}
   .card-title{
-    font-size:16px;
+    font-size:15.5px;
     font-weight:700;
     color:var(--ink);
     line-height:1.3;
@@ -316,22 +325,22 @@
     display:flex;
     align-items:center;
     gap:8px;
-    margin-top:5px;
-    font-size:12px;
+    margin-top:4px;
+    font-size:11.5px;
     color:var(--ink-faint);
     flex-wrap:wrap;
   }
   .hsk-pill{
     background:var(--jade-tint);
     color:var(--jade);
-    font-size:10.5px;
+    font-size:10px;
     font-weight:700;
-    padding:2px 7px;
+    padding:2px 6px;
     border-radius:4px;
   }
   .card-del-btn{
-    width:30px;
-    height:30px;
+    width:28px;
+    height:28px;
     border:none;
     background:none;
     cursor:pointer;
@@ -348,12 +357,12 @@
     background:var(--seal-tint);
     color:var(--seal-son);
   }
-  .card-del-btn svg{width:17px;height:17px;fill:currentColor}
+  .card-del-btn svg{width:16px;height:16px;fill:currentColor}
 
   .card-split{
     height:1px;
     background:var(--hairline);
-    margin:16px 0 14px;
+    margin:14px 0 12px;
     opacity:0.8;
   }
   .card-actions{
@@ -363,7 +372,7 @@
   }
   .action-btn{
     flex:1;
-    min-height:42px;
+    min-height:40px;
     border-radius:10px;
     font-size:13.5px;
     font-weight:600;
@@ -396,36 +405,36 @@
 
   /* Practice Studio (Write Pinyin & Quiz) */
   .studio-container{
-    max-width:980px;
+    max-width:960px;
     margin:0 auto;
     width:100%;
   }
   .studio-bar{
     display:flex;
     align-items:center;
-    gap:12px;
-    margin-bottom:20px;
+    gap:10px;
+    margin-bottom:16px;
   }
   .back-btn{
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    padding:8px 14px;
+    gap:5px;
+    padding:7px 12px;
     background:var(--paper-card);
     border:1px solid var(--hairline);
     border-radius:8px;
-    font-size:13px;
+    font-size:12.5px;
     font-weight:600;
     color:var(--ink-soft);
     cursor:pointer;
     transition:all .15s;
   }
   .back-btn:hover{background:var(--paper-deep);color:var(--ink)}
-  .back-btn svg{width:18px;height:18px;fill:currentColor}
+  .back-btn svg{width:16px;height:16px;fill:currentColor}
   .studio-title-badge{
-    font-size:13px;
+    font-size:12.5px;
     font-weight:700;
-    padding:5px 12px;
+    padding:4px 10px;
     border-radius:20px;
   }
   .badge-wp{background:var(--amber-tint);color:var(--amber);border:1px solid rgba(142,98,6,0.3)}
@@ -435,13 +444,13 @@
     flex:1;
     display:flex;
     align-items:center;
-    gap:10px;
-    max-width:320px;
+    gap:8px;
+    max-width:300px;
     margin-left:auto;
   }
   .progress-bar{
     flex:1;
-    height:8px;
+    height:7px;
     background:var(--hairline);
     border-radius:99px;
     overflow:hidden;
@@ -451,26 +460,26 @@
     background:var(--jade-fill);
     transition:width .3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .progress-text{font-size:13px;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+  .progress-text{font-size:12.5px;font-weight:700;color:var(--ink-soft);white-space:nowrap}
 
   /* Studio Split Layout (Desktop 2-Col) */
   .studio-card{
     background:var(--paper-card);
     border:1.5px solid var(--hairline);
-    border-radius:18px;
-    padding:28px;
+    border-radius:16px;
+    padding:24px;
     box-shadow:var(--shadow-md);
   }
   .studio-split{
     display:grid;
     grid-template-columns:1fr;
-    gap:28px;
+    gap:20px;
     align-items:start;
   }
   @media(min-width:820px){
     .studio-split{
-      grid-template-columns:300px 1fr;
-      gap:36px;
+      grid-template-columns:280px 1fr;
+      gap:32px;
     }
   }
 
@@ -502,7 +511,7 @@
   .flashcard .grid::after{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
   .flashcard .hanzi{
     font-family:'Noto Serif SC',Georgia,serif;
-    font-size:clamp(74px,11vw,96px);
+    font-size:clamp(70px,10vw,92px);
     font-weight:900;
     line-height:1;
     z-index:1;
@@ -510,32 +519,31 @@
   }
   .flashcard .seal{
     position:absolute;
-    bottom:12px;
-    right:12px;
-    width:28px;
-    height:28px;
+    bottom:10px;
+    right:10px;
+    width:26px;
+    height:26px;
     background:var(--seal-son);
-    border-radius:6px;
+    border-radius:5px;
     display:flex;
     align-items:center;
     justify-content:center;
     font-family:'Noto Serif SC',serif;
-    font-size:12px;
+    font-size:11px;
     color:#fff;
     font-weight:700;
   }
-  .flashcard.anim-in{animation:cardIn .35s ease-out}
-  @keyframes cardIn{from{opacity:0;transform:scale(.85) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .flashcard.anim-in{animation:cardIn .3s ease-out}
+  @keyframes cardIn{from{opacity:0;transform:scale(.88) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
 
   /* Interaction Column */
   .interact-col{
     display:flex;
     flex-direction:column;
     justify-content:center;
-    min-height:280px;
   }
   .col-label{
-    font-size:13px;
+    font-size:12.5px;
     font-weight:700;
     color:var(--ink-soft);
     margin-bottom:8px;
@@ -567,10 +575,10 @@
   }
   .pinyin-input{
     width:100%;
-    padding:14px 54px 14px 18px;
+    padding:13px 52px 13px 16px;
     border:2px solid var(--hairline);
     border-radius:12px;
-    font-size:18px;
+    font-size:17px;
     font-family:inherit;
     background:var(--paper);
     color:var(--ink);
@@ -590,8 +598,8 @@
   .inline-check-btn{
     position:absolute;
     right:8px;
-    width:38px;
-    height:38px;
+    width:36px;
+    height:36px;
     border:none;
     background:var(--jade);
     border-radius:8px;
@@ -605,15 +613,15 @@
   .inline-check-btn:hover:not(:disabled){background:var(--jade-fill);transform:scale(1.04)}
   .inline-check-btn:active:not(:disabled){transform:scale(.96)}
   .inline-check-btn:disabled{background:var(--hairline);color:var(--ink-faint);cursor:not-allowed;opacity:.5}
-  .inline-check-btn svg{width:22px;height:22px;fill:currentColor}
+  .inline-check-btn svg{width:20px;height:20px;fill:currentColor}
 
-  /* Pinyin Quick Toolbar for Desktop */
+  /* Pinyin Quick Toolbar (Desktop only) */
   .pinyin-toolbar{
     background:var(--paper);
     border:1px solid var(--hairline);
     border-radius:10px;
     padding:8px 10px;
-    margin-bottom:16px;
+    margin-bottom:14px;
   }
   .toolbar-label{
     font-size:11px;
@@ -629,7 +637,7 @@
     gap:4px;
   }
   .tone-btn{
-    padding:4px 8px;
+    padding:3px 7px;
     border-radius:6px;
     border:1px solid rgba(223,213,191,0.8);
     background:var(--paper-deep);
@@ -649,12 +657,12 @@
   /* Buttons */
   .primary-action-btn{
     width:100%;
-    min-height:48px;
+    min-height:46px;
     border:none;
     border-radius:10px;
     background:var(--seal-son);
     color:#fff;
-    font-size:15px;
+    font-size:14.5px;
     font-weight:700;
     cursor:pointer;
     transition:all .15s;
@@ -669,11 +677,11 @@
 
   /* Feedback Card */
   .feedback-box{
-    margin-top:16px;
+    margin-top:14px;
     background:var(--paper);
     border:1.5px solid var(--hairline);
     border-radius:12px;
-    padding:16px 18px;
+    padding:14px 16px;
     animation:fadeUp .22s ease-out;
   }
   @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -685,20 +693,20 @@
     border-radius:20px;
     font-size:12.5px;
     font-weight:700;
-    margin-bottom:10px;
+    margin-bottom:8px;
   }
   .feedback-status.correct{background:var(--jade-tint);color:var(--jade);border:1px solid var(--jade)}
   .feedback-status.wrong{background:var(--seal-tint);color:var(--seal-son);border:1px solid var(--seal-son)}
   .feedback-details{
     display:flex;
     flex-direction:column;
-    gap:6px;
-    font-size:14.5px;
-    margin-bottom:14px;
+    gap:5px;
+    font-size:14px;
+    margin-bottom:12px;
   }
   .fb-pinyin{
     font-family:'Noto Serif SC',Georgia,serif;
-    font-size:20px;
+    font-size:19px;
     font-weight:700;
     color:var(--seal-son);
   }
@@ -708,7 +716,7 @@
   }
   .next-btn{
     width:100%;
-    min-height:44px;
+    min-height:42px;
     border:1.5px solid var(--ink);
     background:var(--ink);
     color:var(--paper);
@@ -745,7 +753,7 @@
     border-radius:10px;
     cursor:pointer;
     transition:all .15s;
-    min-height:52px;
+    min-height:50px;
   }
   .opt-card:hover:not(.disabled){
     border-color:var(--ink-faint);
@@ -769,7 +777,7 @@
   }
   .opt-card .text{
     flex:1;
-    font-size:15px;
+    font-size:14.5px;
     font-weight:500;
     color:var(--ink);
     overflow-wrap:anywhere;
@@ -790,36 +798,36 @@
   /* Finish Screen */
   .finish-view{
     text-align:center;
-    padding:40px 20px;
+    padding:36px 16px;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
   }
   .finish-icon{
-    width:64px;
-    height:64px;
+    width:56px;
+    height:56px;
     color:var(--jade);
-    margin-bottom:16px;
+    margin-bottom:14px;
   }
   .finish-title{
-    font-size:28px;
+    font-size:26px;
     font-family:'Noto Serif SC',serif;
     font-weight:700;
     color:var(--ink);
   }
   .finish-sub{
-    font-size:15px;
+    font-size:14px;
     color:var(--ink-soft);
     margin-top:6px;
   }
   .finish-stats-row{
     display:flex;
-    gap:40px;
-    margin:32px 0;
+    gap:36px;
+    margin:28px 0;
   }
-  .stat-block .num{font-size:42px;font-weight:700;line-height:1}
-  .stat-block .lbl{font-size:12px;font-weight:600;color:var(--ink-soft);margin-top:6px}
+  .stat-block .num{font-size:38px;font-weight:700;line-height:1}
+  .stat-block .lbl{font-size:11.5px;font-weight:600;color:var(--ink-soft);margin-top:5px}
 
   /* Shortcuts Modal */
   .modal-overlay{
@@ -856,8 +864,8 @@
     background:var(--paper-card);
     border:1.5px solid var(--hairline);
     border-radius:16px;
-    padding:36px;
-    max-width:460px;
+    padding:32px 24px;
+    max-width:440px;
     width:100%;
     text-align:center;
     box-shadow:var(--shadow-md);
@@ -875,13 +883,13 @@
   }
 
   .spinner{
-    width:36px;
-    height:36px;
+    width:34px;
+    height:34px;
     border:3px solid var(--hairline);
     border-top-color:var(--seal-son);
     border-radius:50%;
     animation:spin .7s linear infinite;
-    margin:60px auto;
+    margin:50px auto;
   }
   @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -902,11 +910,121 @@
   }
   .snackbar.show{transform:translateX(-50%) translateY(0)}
 
-  @media(max-width:720px){
-    .header-inner{flex-wrap:wrap;padding:10px 16px}
-    .hsk-segmented-wrap{order:3;width:100%;justify-content:flex-start}
-    .brand-sub{display:none}
-    .flashcard{width:220px;height:220px}
+  /* =======================================================
+     MOBILE RESPONSIVE & CLEANUP: HIDE DESKTOP SHORTCUTS/HINTS
+     ======================================================= */
+  @media (max-width: 768px), (pointer: coarse), (hover: none) {
+    .desktop-only,
+    .kbd-hint,
+    kbd,
+    .pinyin-toolbar {
+      display: none !important;
+    }
+
+    .main-wrapper {
+      padding: 12px 14px 32px;
+    }
+
+    .studio-bar {
+      margin-bottom: 12px;
+    }
+
+    .studio-card {
+      padding: 14px 16px !important;
+      border-radius: 14px;
+    }
+
+    .studio-split {
+      gap: 12px !important;
+    }
+
+    /* Compact flashcard so it stays visible with keyboard open */
+    .flashcard {
+      width: 136px !important;
+      height: 136px !important;
+      border-radius: 12px;
+    }
+
+    .flashcard .hanzi {
+      font-size: 56px !important;
+    }
+
+    .flashcard .seal {
+      width: 20px !important;
+      height: 20px !important;
+      font-size: 9.5px !important;
+      bottom: 6px !important;
+      right: 6px !important;
+    }
+
+    .flashcard-col {
+      margin-bottom: 2px;
+    }
+
+    .flashcard-col .hint-sub {
+      display: none !important;
+    }
+
+    .col-label {
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .pinyin-input {
+      padding: 12px 48px 12px 14px;
+      font-size: 16px;
+    }
+
+    .inline-check-btn {
+      width: 34px;
+      height: 34px;
+      right: 6px;
+    }
+
+    .primary-action-btn {
+      min-height: 44px;
+      font-size: 14px;
+    }
+
+    .header-inner {
+      flex-wrap: wrap;
+      padding: 8px 12px;
+    }
+
+    .hsk-segmented-wrap {
+      order: 3;
+      width: 100%;
+      justify-content: flex-start;
+      margin-top: 4px;
+    }
+
+    .brand-sub {
+      display: none;
+    }
+  }
+
+  /* Specific rule for body.is-mobile class */
+  body.is-mobile .desktop-only,
+  body.is-mobile .kbd-hint,
+  body.is-mobile kbd,
+  body.is-mobile .pinyin-toolbar {
+    display: none !important;
+  }
+  body.is-mobile .flashcard {
+    width: 136px !important;
+    height: 136px !important;
+  }
+  body.is-mobile .flashcard .hanzi {
+    font-size: 56px !important;
+  }
+  body.is-mobile .studio-card {
+    padding: 14px 16px !important;
+  }
+  body.is-mobile .studio-split {
+    gap: 12px !important;
+  }
+  body.is-mobile .flashcard-col .hint-sub {
+    display: none !important;
   }
 </style>
 </head>
@@ -917,11 +1035,11 @@
   <div class="setup-wrap">
     <div class="setup-box">
       <div style="display:flex;justify-content:center;margin-bottom:12px">
-        <div class="brand-seal" style="width:44px;height:44px;font-size:24px">汉</div>
+        <div class="brand-seal" style="width:40px;height:40px;font-size:22px">汉</div>
       </div>
-      <h2 style="font-family:'Noto Serif SC',serif;font-size:24px">Hanzi Studio</h2>
-      <p style="color:var(--ink-soft);font-size:14px;margin-top:8px">Kết nối cơ sở dữ liệu Supabase để học Hán tự</p>
-      <input type="text" id="setup-key-input" placeholder="Dán Supabase Anon Key tại đây...">
+      <h2 style="font-family:'Noto Serif SC',serif;font-size:22px">Hanzi Studio</h2>
+      <p style="color:var(--ink-soft);font-size:13.5px;margin-top:6px">Kết nối cơ sở dữ liệu Supabase để học Hán tự</p>
+      <input type="text" id="setup-key-input" placeholder="Dán Supabase Anon Key tại đây..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-form-type="other">
       <button class="primary-action-btn" onclick="connectSupabase()">Bắt đầu học ngay</button>
       <p id="setup-error" style="color:var(--seal-son);font-size:13px;margin-top:12px;display:none"></p>
     </div>
@@ -946,9 +1064,9 @@
 
     <!-- Right Controls -->
     <div class="header-tools">
-      <button class="tool-btn" onclick="openShortcutsModal()" title="Phím tắt máy tính">
+      <button class="tool-btn desktop-only" id="btn-shortcuts" onclick="openShortcutsModal()" title="Phím tắt máy tính">
         <svg viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 4H5v-2h2v2zm0-3H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 7h-2v-2h2v2zm0-3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
-        <span style="display:none;@media(min-width:900px){display:inline}">Phím tắt</span>
+        <span>Phím tắt</span>
         <kbd>?</kbd>
       </button>
 
@@ -967,7 +1085,7 @@
       <div class="home-hero-left">
         <h1><span>Khám phá & Ôn tập</span></h1>
         <div class="date-badge">
-          <svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+          <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
           <span id="home-date-text"></span>
         </div>
       </div>
@@ -977,7 +1095,7 @@
     </div>
 
     <!-- Continue Learning Section -->
-    <div id="continue-section" style="display:none;margin-bottom:28px">
+    <div id="continue-section" style="display:none;margin-bottom:24px">
       <div class="section-heading">Tiếp tục phiên học gần nhất</div>
       <div id="continue-card-container"></div>
     </div>
@@ -987,9 +1105,9 @@
     <div id="home-loading" class="spinner" style="display:none"></div>
     <div class="session-grid" id="session-grid"></div>
     <div id="empty-state" class="empty-state" style="display:none;text-align:center;padding:48px 20px">
-      <div style="font-size:42px;margin-bottom:8px">📖</div>
-      <h3 style="font-size:18px;font-weight:700">Chưa có bài học nào trong cấp độ này</h3>
-      <p style="color:var(--ink-faint);font-size:14px;margin-top:4px">Chọn cấp độ HSK khác ở thanh trên để bắt đầu luyện tập</p>
+      <div style="font-size:40px;margin-bottom:8px">📖</div>
+      <h3 style="font-size:17px;font-weight:700">Chưa có bài học nào trong cấp độ này</h3>
+      <p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px">Chọn cấp độ HSK khác ở thanh trên để bắt đầu luyện tập</p>
     </div>
   </div>
 </div>
@@ -999,10 +1117,10 @@
   <div class="main-wrapper">
     <div class="studio-container">
       <div class="studio-bar">
-        <button class="back-btn" onclick="goBack()" title="Quay lại (Esc)">
+        <button class="back-btn" onclick="goBack()" title="Quay lại">
           <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
           <span>Trang chủ</span>
-          <kbd>Esc</kbd>
+          <kbd class="desktop-only">Esc</kbd>
         </button>
         <span class="studio-title-badge badge-wp">✏ Luyện Viết Pinyin</span>
 
@@ -1022,7 +1140,7 @@
               <span class="hanzi" id="wp-flashcard-hanzi">字</span>
               <span class="seal">字</span>
             </div>
-            <div style="margin-top:12px;font-size:12px;color:var(--ink-faint);text-align:center">
+            <div class="hint-sub desktop-only" style="margin-top:10px;font-size:12px;color:var(--ink-faint);text-align:center">
               Nhìn chữ Hán và gõ Pinyin tương ứng
             </div>
           </div>
@@ -1031,19 +1149,19 @@
           <div class="interact-col">
             <div class="col-label">
               <span>NHẬP PHIÊN ÂM PINYIN:</span>
-              <span class="kbd-hint">Nhấn <kbd>Enter ↵</kbd> để kiểm tra</span>
+              <span class="kbd-hint desktop-only">Nhấn <kbd>Enter ↵</kbd> để kiểm tra</span>
             </div>
 
-            <!-- Input Box -->
+            <!-- Input Box: anti-autofill, type="search" to prevent Chrome mobile credentials bar -->
             <div class="pinyin-input-box">
-              <input type="text" id="wp-input" class="pinyin-input" placeholder="VD: xué hoặc xue, xue2..." autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="go">
-              <button id="wp-submit-btn" class="inline-check-btn" onclick="checkWritePinyinAnswer()" title="Kiểm tra (Enter)">
+              <input type="search" role="searchbox" id="wp-input" name="search_pinyin_term" class="pinyin-input" placeholder="VD: xué hoặc xue, xue2..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="go" data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-dashlane-ignore="true" aria-autocomplete="none">
+              <button id="wp-submit-btn" class="inline-check-btn" onclick="checkWritePinyinAnswer()" title="Kiểm tra">
                 <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
               </button>
             </div>
 
-            <!-- Desktop Vowel Toolbar -->
-            <div class="pinyin-toolbar">
+            <!-- Desktop Vowel Toolbar (Hidden on mobile) -->
+            <div class="pinyin-toolbar desktop-only">
               <div class="toolbar-label">
                 <span>Chèn ký tự có dấu nhanh:</span>
                 <span>(Hỗ trợ cả gõ số: xue2 = xué)</span>
@@ -1075,7 +1193,7 @@
 
             <button class="primary-action-btn" id="wp-check-btn" onclick="checkWritePinyinAnswer()">
               <span>Kiểm tra đáp án</span>
-              <kbd style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Enter ↵</kbd>
+              <kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Enter ↵</kbd>
             </button>
 
             <!-- Feedback Box -->
@@ -1087,7 +1205,7 @@
               </div>
               <button class="next-btn" id="wp-next-btn" onclick="nextWritePinyinWord()">
                 <span>Tiếp tục từ kế</span>
-                <kbd style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Space ␣</kbd>
+                <kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Space ␣</kbd>
               </button>
             </div>
           </div>
@@ -1102,7 +1220,7 @@
             <div class="stat-block"><div class="num" id="wp-finish-correct" style="color:var(--jade)"></div><div class="lbl">Thuộc được</div></div>
             <div class="stat-block"><div class="num" id="wp-finish-wrong" style="color:var(--seal-son)"></div><div class="lbl">Lần gõ sai</div></div>
           </div>
-          <button class="primary-action-btn" style="max-width:280px" onclick="goBack()">Về trang chủ (Esc)</button>
+          <button class="primary-action-btn" style="max-width:280px" onclick="goBack()">Về trang chủ</button>
         </div>
       </div>
     </div>
@@ -1114,10 +1232,10 @@
   <div class="main-wrapper">
     <div class="studio-container">
       <div class="studio-bar">
-        <button class="back-btn" onclick="goBack()" title="Quay lại (Esc)">
+        <button class="back-btn" onclick="goBack()" title="Quay lại">
           <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
           <span>Trang chủ</span>
-          <kbd>Esc</kbd>
+          <kbd class="desktop-only">Esc</kbd>
         </button>
         <span class="studio-title-badge badge-qz">🎯 Ôn tập Trắc nghiệm</span>
 
@@ -1136,9 +1254,9 @@
               <span class="hanzi" id="flashcard-hanzi">字</span>
               <span class="seal">字</span>
             </div>
-            <div style="margin-top:14px;display:flex;gap:8px">
-              <span class="stat-pill" id="step-pinyin">Bước 1: Phiên âm</span>
-              <span class="stat-pill" id="step-meaning">Bước 2: Nghĩa</span>
+            <div style="margin-top:12px;display:flex;gap:6px">
+              <span class="stat-pill" id="step-pinyin" style="font-size:11px">1. Phiên âm</span>
+              <span class="stat-pill" id="step-meaning" style="font-size:11px">2. Nghĩa</span>
             </div>
           </div>
 
@@ -1146,12 +1264,12 @@
           <div class="interact-col">
             <div class="col-label">
               <span id="quiz-instruction">CHỌN ĐÁP ÁN ĐÚNG:</span>
-              <span class="kbd-hint">Bấm phím số <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></span>
+              <span class="kbd-hint desktop-only">Bấm phím số <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></span>
             </div>
 
             <div class="quiz-options-grid" id="quiz-options"></div>
 
-            <div id="quiz-feedback" style="display:none;margin-top:16px"></div>
+            <div id="quiz-feedback" style="display:none;margin-top:14px"></div>
           </div>
         </div>
 
@@ -1164,14 +1282,14 @@
             <div class="stat-block"><div class="num" id="finish-correct" style="color:var(--jade)"></div><div class="lbl">Thuộc được</div></div>
             <div class="stat-block"><div class="num" id="finish-wrong" style="color:var(--seal-son)"></div><div class="lbl">Lần chọn sai</div></div>
           </div>
-          <button class="primary-action-btn" style="max-width:280px" onclick="goBack()">Về trang chủ (Esc)</button>
+          <button class="primary-action-btn" style="max-width:280px" onclick="goBack()">Về trang chủ</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- KEYBOARD SHORTCUTS MODAL -->
+<!-- KEYBOARD SHORTCUTS MODAL (DESKTOP ONLY) -->
 <div class="modal-overlay" id="shortcuts-modal" onclick="if(event.target===this)closeShortcutsModal()">
   <div class="shortcuts-modal">
     <div class="modal-title">
@@ -1198,6 +1316,20 @@
 var SUPABASE_URL = 'https://qthuomifuzyrzhgcsedx.supabase.co';
 var SUPABASE_KEY = localStorage.getItem('sb_key') || '';
 var sb = null;
+
+// Device Detection
+function checkMobileDevice() {
+  var isMob = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    || ('ontouchstart' in window)
+    || (window.innerWidth <= 768);
+  if (isMob) {
+    document.body.classList.add('is-mobile');
+  } else {
+    document.body.classList.remove('is-mobile');
+  }
+}
+checkMobileDevice();
+window.addEventListener('resize', checkMobileDevice);
 
 async function connectSupabase() {
   var key = document.getElementById('setup-key-input').value.trim();
@@ -1581,7 +1713,7 @@ function setupNextWritePinyinWord() {
   document.getElementById('wp-check-btn').style.display = 'flex';
   document.getElementById('wp-feedback-card').style.display = 'none';
 
-  setTimeout(function(){ inp.focus(); }, 100);
+  setTimeout(function(){ inp.focus(); }, 120);
 }
 
 async function checkWritePinyinAnswer() {
@@ -1620,10 +1752,10 @@ async function checkWritePinyinAnswer() {
   var badge = document.getElementById('wp-feedback-status');
   if (isMatch) {
     badge.className = 'feedback-status correct';
-    badge.innerHTML = '✓ Chính xác! Rất xuất sắc';
+    badge.innerHTML = '✓ Chính xác!';
   } else {
     badge.className = 'feedback-status wrong';
-    badge.innerHTML = '✗ Chưa đúng! Từ này sẽ ôn lại cuối hàng';
+    badge.innerHTML = '✗ Chưa đúng';
   }
 
   document.getElementById('wp-correct-pinyin').textContent = vocab.pinyin;
@@ -1642,7 +1774,7 @@ async function checkWritePinyinAnswer() {
 
 function nextWritePinyinWord() {
   if (!state.wpIsChecked || !state.wpCurrentVocab) return;
-  if (Date.now() - state.wpLastActionTime < 350) return;
+  if (Date.now() - state.wpLastActionTime < 300) return;
   state.wpLastActionTime = Date.now();
 
   var vocab = state.wpQueue.shift();
@@ -1707,6 +1839,7 @@ function renderQuizUI() {
   document.getElementById('flashcard-hanzi').textContent = vocab.hanzi;
   fc.classList.remove('anim-in'); void fc.offsetWidth; fc.classList.add('anim-in');
 
+  var ords = ['A', 'B', 'C', 'D'];
   var oel = document.getElementById('quiz-options'); var oh = '';
   state.options.forEach(function(opt, i) {
     var cls = 'opt-card', extra = '';
@@ -1717,7 +1850,7 @@ function renderQuizUI() {
       else if (opt === state.selectedAnswer) { cls += ' wrong'; extra = ' ✗'; }
     }
     oh += '<div class="' + cls + '" onclick="selectOption(\'' + escAttr(opt) + '\')">' +
-      '<span class="key-badge">' + (i + 1) + '</span>' +
+      '<span class="key-badge">' + ords[i] + '</span>' +
       '<span class="text">' + escHtml(opt) + extra + '</span>' +
     '</div>';
   });
@@ -1726,12 +1859,12 @@ function renderQuizUI() {
   var fb = document.getElementById('quiz-feedback');
   if (state.isAnswerSelected) {
     fb.style.display = 'block';
-    fb.innerHTML = '<div class="feedback-box" style="margin-top:14px">' +
+    fb.innerHTML = '<div class="feedback-box" style="margin-top:12px">' +
       '<div class="feedback-status ' + (state.isCorrect ? 'correct' : 'wrong') + '">' +
         (state.isCorrect ? '✓ Chính xác!' : '✗ Chưa đúng!') +
       '</div>' +
-      '<button class="next-btn" style="margin-top:10px" onclick="nextStep()">' +
-        '<span>Tiếp tục</span> <kbd style="background:rgba(255,255,255,0.2);color:#fff">Space ␣</kbd>' +
+      '<button class="next-btn" style="margin-top:8px" onclick="nextStep()">' +
+        '<span>Tiếp tục</span> <kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff">Space ␣</kbd>' +
       '</button>' +
     '</div>';
   } else {
