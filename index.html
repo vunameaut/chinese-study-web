@@ -1977,35 +1977,58 @@ function showQuizFinish(correct, wrong) {
 // ===== CONFETTI ANIMATION =====
 var confettiAnim = null; var confettiParticles = [];
 function startConfetti() {
-  var canvas = document.getElementById('confetti-canvas'); var ctx = canvas.getContext('2d');
+  var canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
   var colors = ['#C63D2D','#8E6206','#2E6958','#39826C','#E57368','#F8F0DC'];
-  if (confettiParticles.length === 0) {
-    for (var i = 0; i < 60; i++) {
-      confettiParticles.push({
-        x: Math.random(), y: Math.random(),
-        speed: Math.random() * .6 + .3,
-        size: Math.random() * 7 + 4,
-        color: colors[Math.floor(Math.random() * colors.length)]
-      });
-    }
+  
+  confettiParticles = [];
+  for (var i = 0; i < 60; i++) {
+    confettiParticles.push({
+      x: Math.random(),
+      y: -Math.random() * 0.2,
+      speed: Math.random() * 0.5 + 0.7,
+      size: Math.random() * 6 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)]
+    });
   }
-  var progress = 0;
-  function draw() {
+
+  if (confettiAnim) { cancelAnimationFrame(confettiAnim); confettiAnim = null; }
+  var startTime = performance.now();
+  var duration = 2800;
+
+  function draw(now) {
+    var elapsed = now - startTime;
+    var progress = Math.min(elapsed / duration, 1);
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    progress += 0.008;
-    if (progress > 1) progress = 0;
+    
+    if (progress >= 1) {
+      stopConfetti();
+      return;
+    }
+    
+    var alpha = 1;
+    if (progress > 0.65) {
+      alpha = 1 - (progress - 0.65) / 0.35;
+    }
+    
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
     confettiParticles.forEach(function(p) {
-      var y = ((p.y + progress * p.speed) % 1.05) * canvas.height;
-      var sway = Math.sin((progress * 6 + p.x * 10)) * 20;
+      var y = (p.y + progress * p.speed) * canvas.height;
+      var sway = Math.sin((progress * 8 + p.x * 10)) * 24;
       ctx.fillStyle = p.color;
       ctx.beginPath();
       ctx.arc(p.x * canvas.width + sway, y, p.size, 0, Math.PI * 2);
       ctx.fill();
     });
+    ctx.restore();
+
     confettiAnim = requestAnimationFrame(draw);
   }
-  draw();
+  confettiAnim = requestAnimationFrame(draw);
 }
 function stopConfetti() {
   if (confettiAnim) { cancelAnimationFrame(confettiAnim); confettiAnim = null; }
