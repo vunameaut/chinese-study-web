@@ -700,19 +700,74 @@
   .feedback-details{
     display:flex;
     flex-direction:column;
-    gap:5px;
+    gap:6px;
     font-size:14px;
     margin-bottom:12px;
+  }
+  .fb-answer-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .fb-pinyin-group{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .fb-label{
+    font-size:12px;
+    color:var(--ink-faint);
   }
   .fb-pinyin{
     font-family:'Noto Serif SC',Georgia,serif;
     font-size:19px;
     font-weight:700;
     color:var(--seal-son);
+    letter-spacing:0.02em;
   }
   .fb-meaning{
     color:var(--ink);
     font-weight:500;
+  }
+  .fb-speaker-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:1.5px solid var(--hairline);
+    background:var(--paper-deep);
+    color:var(--seal-son);
+    cursor:pointer;
+    transition:all .18s ease;
+    flex-shrink:0;
+    padding:0;
+  }
+  .fb-speaker-btn:hover{
+    background:var(--seal-tint);
+    border-color:var(--seal-son);
+    transform:scale(1.08);
+  }
+  .fb-speaker-btn:active{
+    transform:scale(0.94);
+  }
+  .fb-speaker-btn.speaking{
+    background:var(--seal-son);
+    border-color:var(--seal-son);
+    color:#fff;
+    animation:pulseSpeaker 1s infinite alternate;
+  }
+  @keyframes pulseSpeaker{
+    0%{box-shadow:0 0 0 0 rgba(198,61,45,0.4)}
+    100%{box-shadow:0 0 0 8px rgba(198,61,45,0)}
+  }
+  .fb-speaker-btn svg{
+    width:18px;
+    height:18px;
+    fill:currentColor;
   }
   .next-btn{
     width:100%;
@@ -857,6 +912,206 @@
   .modal-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
   .shortcuts-list{display:flex;flex-direction:column;gap:12px;font-size:13.5px}
   .sc-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--hairline)}
+
+  /* Audio Settings Modal */
+  .audio-settings-modal {
+    background: var(--paper);
+    border: 1.5px solid var(--hairline);
+    border-radius: 18px;
+    padding: 22px 24px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+  }
+  .audio-channel-card {
+    background: var(--paper-card);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 13px 15px;
+    margin-bottom: 11px;
+    transition: opacity .2s, border-color .2s;
+  }
+  .audio-channel-card.disabled-channel {
+    opacity: 0.52;
+  }
+  .channel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .channel-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .channel-icon {
+    font-size: 17px;
+    line-height: 1;
+  }
+  .channel-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .channel-desc {
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--hairline);
+    transition: .2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px;
+  }
+  .toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  }
+  .toggle-switch input:checked + .toggle-slider {
+    background-color: var(--jade);
+  }
+  .toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(18px);
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .custom-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--hairline);
+    outline: none;
+    cursor: pointer;
+  }
+  .custom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--seal-son);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(198,61,45,0.35);
+    transition: transform .12s ease;
+  }
+  .custom-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.18);
+  }
+  .custom-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: var(--seal-son);
+    cursor: pointer;
+  }
+  .slider-val-badge {
+    min-width: 38px;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .test-sound-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+    flex-shrink: 0;
+  }
+  .test-sound-btn:hover {
+    background: var(--amber-tint);
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .test-sound-btn:active {
+    transform: scale(0.96);
+  }
+  .test-sound-btn svg {
+    width: 13px;
+    height: 13px;
+    fill: currentColor;
+  }
+  .speed-group {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .speed-chip {
+    flex: 1;
+    padding: 5px 6px;
+    border-radius: 6px;
+    border: 1.5px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s ease;
+  }
+  .speed-chip:hover:not(.active) {
+    border-color: var(--ink-faint);
+    color: var(--ink);
+  }
+  .speed-chip.active {
+    border-color: var(--seal-son);
+    background: var(--seal-tint);
+    color: var(--seal-son);
+    font-weight: 700;
+  }
+  .sub-option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 8px;
+    margin-top: 8px;
+    border-top: 1px dashed var(--hairline);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
 
   /* Setup Screen */
   .setup-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
@@ -1070,9 +1325,10 @@
         <kbd>?</kbd>
       </button>
 
-      <button class="tool-btn tool-icon-btn" id="audio-toggle-btn" onclick="toggleAudioQuick()" title="Âm thanh (Bật/Tắt)">
-        <svg id="audio-icon-on" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-        <svg id="audio-icon-off" viewBox="0 0 24 24" style="display:none"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+      <button class="tool-btn" id="audio-settings-btn" onclick="openAudioSettingsModal()" title="Cài đặt âm thanh">
+        <svg id="audio-icon-on" style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        <svg id="audio-icon-off" style="width:16px;height:16px;fill:currentColor;display:none" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+        <span class="desktop-only" style="font-size:12px;font-weight:600">Âm thanh</span>
       </button>
     </div>
   </div>
@@ -1200,8 +1456,16 @@
             <div id="wp-feedback-card" class="feedback-box" style="display:none">
               <div id="wp-feedback-status" class="feedback-status"></div>
               <div class="feedback-details">
-                <div><span style="font-size:12px;color:var(--ink-faint)">Pinyin chuẩn: </span><span class="fb-pinyin" id="wp-correct-pinyin"></span></div>
-                <div><span style="font-size:12px;color:var(--ink-faint)">Nghĩa tiếng Việt: </span><span class="fb-meaning" id="wp-correct-meaning"></span></div>
+                <div class="fb-answer-row">
+                  <div class="fb-pinyin-group">
+                    <span class="fb-label">Pinyin chuẩn:</span>
+                    <span class="fb-pinyin" id="wp-correct-pinyin"></span>
+                  </div>
+                  <button type="button" class="fb-speaker-btn" id="wp-speaker-btn" onclick="speakCurrentVocab('wp', true)" title="Nghe lại phát âm">
+                    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                  </button>
+                </div>
+                <div><span class="fb-label">Nghĩa tiếng Việt: </span><span class="fb-meaning" id="wp-correct-meaning"></span></div>
               </div>
               <div id="wp-feedback-action-container"></div>
             </div>
@@ -1304,10 +1568,147 @@
       <div class="sc-item"><span>Chuyển sang từ kế tiếp</span><div><kbd>Space ␣</kbd> hoặc <kbd>Enter ↵</kbd></div></div>
       <div class="sc-item"><span>Chọn đáp án trắc nghiệm</span><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></div></div>
       <div class="sc-item"><span>Quay lại trang chủ</span><kbd>Esc</kbd></div>
+      <div class="sc-item"><span>Nghe lại phát âm Pinyin</span><div><kbd>R</kbd> hoặc bấm biểu tượng <b style="color:var(--seal-son)">🔊</b></div></div>
       <div class="sc-item"><span>Gõ Pinyin không dấu (vẫn tính đúng)</span><span style="color:var(--jade);font-weight:600">xue = xué</span></div>
       <div class="sc-item"><span>Gõ Pinyin kèm số thanh điệu</span><span style="color:var(--amber);font-weight:600">xue2 = xué, lv4 = lǜ</span></div>
     </div>
     <button class="primary-action-btn" style="margin-top:20px;min-height:40px;font-size:14px" onclick="closeShortcutsModal()">Đã hiểu</button>
+  </div>
+</div>
+
+<!-- AUDIO SETTINGS MODAL -->
+<div class="modal-overlay" id="audio-settings-modal" onclick="if(event.target===this)closeAudioSettingsModal()">
+  <div class="audio-settings-modal">
+    <div class="modal-title">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">🎛️</span>
+        <span>Cài đặt âm thanh</span>
+      </div>
+      <button onclick="closeAudioSettingsModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:var(--ink-soft)" title="Đóng">✕</button>
+    </div>
+
+    <!-- 1. Master Volume Card -->
+    <div class="audio-channel-card" id="card-master">
+      <div class="channel-header">
+        <div class="channel-info">
+          <span class="channel-icon">🔊</span>
+          <div>
+            <div class="channel-title">Âm lượng tổng thể</div>
+            <div class="channel-desc">Bật/tắt và điều chỉnh mức âm lượng toàn app</div>
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-master" onchange="updateAudioSetting('masterEnabled', this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="slider-row">
+        <input type="range" class="custom-slider" id="slider-master" min="0" max="100" value="100" oninput="updateAudioSetting('masterVolume', parseInt(this.value))">
+        <span class="slider-val-badge" id="val-master">100%</span>
+      </div>
+    </div>
+
+    <!-- 2. Speech/Pronunciation Card -->
+    <div class="audio-channel-card" id="card-speech">
+      <div class="channel-header">
+        <div class="channel-info">
+          <span class="channel-icon">🗣️</span>
+          <div>
+            <div class="channel-title">Giọng đọc phát âm (Pinyin & Hán tự)</div>
+            <div class="channel-desc">Phát âm tiếng Trung chuẩn khi học từ vựng</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" class="test-sound-btn" onclick="testAudioSound('speech')" title="Nghe thử giọng đọc">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Thử
+          </button>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-speech" onchange="updateAudioSetting('speechEnabled', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="slider-row">
+        <input type="range" class="custom-slider" id="slider-speech" min="0" max="100" value="100" oninput="updateAudioSetting('speechVolume', parseInt(this.value))">
+        <span class="slider-val-badge" id="val-speech">100%</span>
+      </div>
+      <div class="sub-option-row">
+        <span>Tự động đọc sau khi chọn/viết đáp án:</span>
+        <label class="toggle-switch" style="width:38px;height:22px">
+          <input type="checkbox" id="toggle-speech-autoplay" onchange="updateAudioSetting('speechAutoPlay', this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div style="margin-top:10px">
+        <div style="font-size:11.5px;font-weight:600;color:var(--ink-faint);margin-bottom:4px">Tốc độ giọng đọc:</div>
+        <div class="speed-group">
+          <button type="button" class="speed-chip" id="speed-chip-07" onclick="updateAudioSetting('speechRate', 0.7)">0.7x (Chậm)</button>
+          <button type="button" class="speed-chip" id="speed-chip-085" onclick="updateAudioSetting('speechRate', 0.85)">0.85x (Khuyên dùng)</button>
+          <button type="button" class="speed-chip" id="speed-chip-10" onclick="updateAudioSetting('speechRate', 1.0)">1.0x (Tự nhiên)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. SFX Card (Correct / Wrong) -->
+    <div class="audio-channel-card" id="card-sfx">
+      <div class="channel-header">
+        <div class="channel-info">
+          <span class="channel-icon">🔔</span>
+          <div>
+            <div class="channel-title">Hiệu ứng kiểm tra (Đúng / Sai)</div>
+            <div class="channel-desc">Âm thanh phản hồi khi bạn trả lời</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" class="test-sound-btn" onclick="testAudioSound('sfx')" title="Nghe thử hiệu ứng">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Thử
+          </button>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-sfx" onchange="updateAudioSetting('sfxEnabled', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="slider-row">
+        <input type="range" class="custom-slider" id="slider-sfx" min="0" max="100" value="80" oninput="updateAudioSetting('sfxVolume', parseInt(this.value))">
+        <span class="slider-val-badge" id="val-sfx">80%</span>
+      </div>
+    </div>
+
+    <!-- 4. Finish Card -->
+    <div class="audio-channel-card" id="card-finish">
+      <div class="channel-header">
+        <div class="channel-info">
+          <span class="channel-icon">🎉</span>
+          <div>
+            <div class="channel-title">Âm thanh hoàn thành buổi học</div>
+            <div class="channel-desc">Giai điệu chúc mừng khi hoàn tất danh sách từ</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" class="test-sound-btn" onclick="testAudioSound('finish')" title="Nghe thử nhạc chúc mừng">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Thử
+          </button>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-finish" onchange="updateAudioSetting('finishEnabled', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="slider-row">
+        <input type="range" class="custom-slider" id="slider-finish" min="0" max="100" value="90" oninput="updateAudioSetting('finishVolume', parseInt(this.value))">
+        <span class="slider-val-badge" id="val-finish">90%</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button type="button" class="back-btn" style="flex:1;justify-content:center;padding:9px 12px;font-size:13px;border-color:var(--hairline)" onclick="resetAudioSettings()">
+        <span>Đặt lại mặc định</span>
+      </button>
+      <button type="button" class="primary-action-btn" style="flex:1.4;min-height:38px;font-size:13.5px" onclick="closeAudioSettingsModal()">
+        <span>Đã hiểu & Đóng</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1367,13 +1768,48 @@ if (SUPABASE_KEY && typeof window.supabase !== 'undefined') {
   document.getElementById('setup-screen').classList.add('active');
 }
 
+var DEFAULT_AUDIO_SETTINGS = {
+  masterEnabled: true,
+  masterVolume: 100,
+  sfxEnabled: true,
+  sfxVolume: 80,
+  speechEnabled: true,
+  speechAutoPlay: true,
+  speechVolume: 100,
+  speechRate: 0.85,
+  finishEnabled: true,
+  finishVolume: 90
+};
+
+function loadAudioSettings() {
+  try {
+    var saved = localStorage.getItem('hanzi_audio_settings');
+    if (saved) {
+      return Object.assign({}, DEFAULT_AUDIO_SETTINGS, JSON.parse(saved));
+    }
+  } catch(e) {}
+  var legacy = localStorage.getItem('soundEnabled');
+  var s = Object.assign({}, DEFAULT_AUDIO_SETTINGS);
+  if (legacy !== null) {
+    try { s.masterEnabled = JSON.parse(legacy); } catch(e) {}
+  }
+  return s;
+}
+
+function saveAudioSettings() {
+  try {
+    localStorage.setItem('hanzi_audio_settings', JSON.stringify(state.audioSettings));
+    localStorage.setItem('soundEnabled', JSON.stringify(state.audioSettings.masterEnabled));
+  } catch(e) {}
+}
+
 // ===== APPLICATION STATE =====
 var state = {
   screen: 'home',
   sessions: [],
   selectedHsk: parseInt(localStorage.getItem('lastHsk') || '1'),
   lastSessionId: parseInt(localStorage.getItem('lastSessionId') || '-1'),
-  soundEnabled: JSON.parse(localStorage.getItem('soundEnabled') ?? 'true'),
+  audioSettings: loadAudioSettings(),
 
   // Quiz state
   quizSessionId: null, vocabQueue: [], currentVocab: null,
@@ -1390,38 +1826,326 @@ var state = {
   wpIsRepractice: false
 };
 
+// Getter for backward compatibility
+Object.defineProperty(state, 'soundEnabled', {
+  get: function() { return this.audioSettings.masterEnabled; },
+  set: function(v) { this.audioSettings.masterEnabled = !!v; saveAudioSettings(); }
+});
+
 // ===== AUDIO SYSTEM =====
 var AudioCtx = window.AudioContext || window.webkitAudioContext;
 var audioCtx = null;
 function getAudioCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
-function playTone(freq, dur, type) {
-  if (!state.soundEnabled) return;
+
+function getEffectiveGain(channel) {
+  var s = state.audioSettings;
+  if (!s.masterEnabled || s.masterVolume <= 0) return 0;
+  var masterScale = s.masterVolume / 100;
+  if (channel === 'sfx') {
+    if (!s.sfxEnabled) return 0;
+    return masterScale * (s.sfxVolume / 100);
+  }
+  if (channel === 'finish') {
+    if (!s.finishEnabled) return 0;
+    return masterScale * (s.finishVolume / 100);
+  }
+  if (channel === 'speech') {
+    if (!s.speechEnabled) return 0;
+    return masterScale * (s.speechVolume / 100);
+  }
+  return masterScale;
+}
+
+function playTone(freq, dur, type, channel) {
+  channel = channel || 'sfx';
+  var scale = getEffectiveGain(channel);
+  if (scale <= 0) return;
   type = type || 'sine';
   try {
     var ctx = getAudioCtx();
-    var o = ctx.createOscillator(); var g = ctx.createGain();
-    o.type = type; o.frequency.value = freq; g.gain.value = 0.15;
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-    o.connect(g).connect(ctx.destination); o.start(); o.stop(ctx.currentTime + dur);
+    var o = ctx.createOscillator();
+    var g = ctx.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    var baseGain = (channel === 'finish') ? 0.18 : 0.15;
+    g.gain.value = baseGain * scale;
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    o.connect(g).connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime + dur);
   } catch(e) {}
 }
-function playCorrect() { playTone(523,.12); setTimeout(function(){playTone(659,.12);},70); setTimeout(function(){playTone(784,.15);},140); }
-function playWrong() { playTone(200,.25,'square'); }
-function playFinish() { playTone(523,.12); setTimeout(function(){playTone(659,.12);},140); setTimeout(function(){playTone(784,.12);},280); setTimeout(function(){playTone(1047,.3);},420); }
+
+function playCorrect() {
+  playTone(523, .12, 'sine', 'sfx');
+  setTimeout(function(){ playTone(659, .12, 'sine', 'sfx'); }, 70);
+  setTimeout(function(){ playTone(784, .15, 'sine', 'sfx'); }, 140);
+}
+
+function playWrong() {
+  playTone(200, .25, 'square', 'sfx');
+}
+
+function playFinish() {
+  playTone(523, .12, 'sine', 'finish');
+  setTimeout(function(){ playTone(659, .12, 'sine', 'finish'); }, 140);
+  setTimeout(function(){ playTone(784, .12, 'sine', 'finish'); }, 280);
+  setTimeout(function(){ playTone(1047, .3, 'sine', 'finish'); }, 420);
+}
+
+// ===== AUDIO SETTINGS MODAL & CONTROLS =====
+function openAudioSettingsModal() {
+  renderAudioSettingsUI();
+  var m = document.getElementById('audio-settings-modal');
+  if (m) m.classList.add('show');
+}
+
+function closeAudioSettingsModal() {
+  var m = document.getElementById('audio-settings-modal');
+  if (m) m.classList.remove('show');
+}
+
+function updateAudioSetting(key, val) {
+  state.audioSettings[key] = val;
+  saveAudioSettings();
+  renderAudioSettingsUI();
+  updateAudioUI();
+}
+
+function resetAudioSettings() {
+  state.audioSettings = Object.assign({}, DEFAULT_AUDIO_SETTINGS);
+  saveAudioSettings();
+  renderAudioSettingsUI();
+  updateAudioUI();
+  showSnackbar('Đã khôi phục cài đặt âm thanh mặc định');
+}
+
+function testAudioSound(type) {
+  if (type === 'sfx') {
+    playTone(523, .12, 'sine', 'sfx');
+    setTimeout(function(){ playTone(784, .16, 'sine', 'sfx'); }, 90);
+  } else if (type === 'speech') {
+    speakVocabText('你好，学习', 'nǐ hǎo, xué xí', true);
+  } else if (type === 'finish') {
+    playFinish();
+  }
+}
+
+function renderAudioSettingsUI() {
+  var s = state.audioSettings;
+
+  // Master
+  var tMaster = document.getElementById('toggle-master');
+  if (tMaster) tMaster.checked = !!s.masterEnabled;
+  var sMaster = document.getElementById('slider-master');
+  if (sMaster) sMaster.value = s.masterVolume;
+  var vMaster = document.getElementById('val-master');
+  if (vMaster) vMaster.textContent = s.masterVolume + '%';
+  var cardMaster = document.getElementById('card-master');
+  if (cardMaster) cardMaster.classList.toggle('disabled-channel', !s.masterEnabled);
+
+  // Speech
+  var tSpeech = document.getElementById('toggle-speech');
+  if (tSpeech) tSpeech.checked = !!s.speechEnabled;
+  var sSpeech = document.getElementById('slider-speech');
+  if (sSpeech) sSpeech.value = s.speechVolume;
+  var vSpeech = document.getElementById('val-speech');
+  if (vSpeech) vSpeech.textContent = s.speechVolume + '%';
+  var tAuto = document.getElementById('toggle-speech-autoplay');
+  if (tAuto) tAuto.checked = !!s.speechAutoPlay;
+  var cardSpeech = document.getElementById('card-speech');
+  if (cardSpeech) cardSpeech.classList.toggle('disabled-channel', !s.masterEnabled || !s.speechEnabled);
+
+  ['07', '085', '10'].forEach(function(code) {
+    var btn = document.getElementById('speed-chip-' + code);
+    if (btn) {
+      var rate = (code === '07' ? 0.7 : (code === '085' ? 0.85 : 1.0));
+      btn.classList.toggle('active', Math.abs(s.speechRate - rate) < 0.05);
+    }
+  });
+
+  // SFX
+  var tSfx = document.getElementById('toggle-sfx');
+  if (tSfx) tSfx.checked = !!s.sfxEnabled;
+  var sSfx = document.getElementById('slider-sfx');
+  if (sSfx) sSfx.value = s.sfxVolume;
+  var vSfx = document.getElementById('val-sfx');
+  if (vSfx) vSfx.textContent = s.sfxVolume + '%';
+  var cardSfx = document.getElementById('card-sfx');
+  if (cardSfx) cardSfx.classList.toggle('disabled-channel', !s.masterEnabled || !s.sfxEnabled);
+
+  // Finish
+  var tFinish = document.getElementById('toggle-finish');
+  if (tFinish) tFinish.checked = !!s.finishEnabled;
+  var sFinish = document.getElementById('slider-finish');
+  if (sFinish) sFinish.value = s.finishVolume;
+  var vFinish = document.getElementById('val-finish');
+  if (vFinish) vFinish.textContent = s.finishVolume + '%';
+  var cardFinish = document.getElementById('card-finish');
+  if (cardFinish) cardFinish.classList.toggle('disabled-channel', !s.masterEnabled || !s.finishEnabled);
+}
 
 function updateAudioUI() {
   var onIcon = document.getElementById('audio-icon-on');
   var offIcon = document.getElementById('audio-icon-off');
+  var isAudioActive = state.audioSettings.masterEnabled && state.audioSettings.masterVolume > 0;
   if (onIcon && offIcon) {
-    onIcon.style.display = state.soundEnabled ? 'block' : 'none';
-    offIcon.style.display = state.soundEnabled ? 'none' : 'block';
+    onIcon.style.display = isAudioActive ? 'block' : 'none';
+    offIcon.style.display = isAudioActive ? 'none' : 'block';
   }
 }
+
 function toggleAudioQuick() {
-  state.soundEnabled = !state.soundEnabled;
-  localStorage.setItem('soundEnabled', JSON.stringify(state.soundEnabled));
-  updateAudioUI();
-  showSnackbar(state.soundEnabled ? 'Đã bật âm thanh' : 'Đã tắt âm thanh');
+  openAudioSettingsModal();
+}
+
+// ===== PINYIN & CHINESE SPEECH AUDIO ENGINE =====
+var currentSpeechAudio = null;
+var speakDelayTimer = null;
+var speechEndSafetyTimer = null;
+
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = function() {
+    try { window.speechSynthesis.getVoices(); } catch(e) {}
+  };
+}
+
+function setSpeakerButtonsActive(isActive) {
+  var btns = document.querySelectorAll('.fb-speaker-btn');
+  btns.forEach(function(btn) {
+    if (isActive) btn.classList.add('speaking');
+    else btn.classList.remove('speaking');
+  });
+}
+
+function stopVocabAudio() {
+  if (speakDelayTimer) {
+    clearTimeout(speakDelayTimer);
+    speakDelayTimer = null;
+  }
+  if (speechEndSafetyTimer) {
+    clearTimeout(speechEndSafetyTimer);
+    speechEndSafetyTimer = null;
+  }
+  if ('speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch(e) {}
+  }
+  if (currentSpeechAudio) {
+    try {
+      currentSpeechAudio.pause();
+      currentSpeechAudio.currentTime = 0;
+    } catch(e) {}
+    currentSpeechAudio = null;
+  }
+  setSpeakerButtonsActive(false);
+}
+
+function playFallbackAudio(text, volume) {
+  try {
+    var url = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' + encodeURIComponent(text) + '&tl=zh-CN&client=tw-ob';
+    currentSpeechAudio = new Audio(url);
+    if (typeof volume === 'number') currentSpeechAudio.volume = Math.max(0, Math.min(1, volume));
+    currentSpeechAudio.onended = function() {
+      setSpeakerButtonsActive(false);
+      currentSpeechAudio = null;
+    };
+    currentSpeechAudio.onerror = function() {
+      setSpeakerButtonsActive(false);
+      currentSpeechAudio = null;
+    };
+    currentSpeechAudio.play().catch(function() {
+      setSpeakerButtonsActive(false);
+      currentSpeechAudio = null;
+    });
+  } catch(e) {
+    setSpeakerButtonsActive(false);
+  }
+}
+
+function speakVocabText(text, pinyinFallback, forcePlay) {
+  var toSpeak = text || pinyinFallback;
+  if (!toSpeak) return;
+
+  var s = state.audioSettings;
+  if (!forcePlay) {
+    if (!s.masterEnabled || !s.speechEnabled || s.masterVolume <= 0 || s.speechVolume <= 0) {
+      return;
+    }
+  }
+
+  stopVocabAudio();
+  setSpeakerButtonsActive(true);
+
+  var effectiveVolume = (s.masterVolume / 100) * (s.speechVolume / 100);
+  if (forcePlay && effectiveVolume <= 0) {
+    effectiveVolume = 0.8;
+  }
+  effectiveVolume = Math.max(0, Math.min(1, effectiveVolume));
+  var effectiveRate = s.speechRate || 0.85;
+
+  if ('speechSynthesis' in window) {
+    try {
+      var utterance = new SpeechSynthesisUtterance(toSpeak);
+      utterance.lang = 'zh-CN';
+      utterance.rate = effectiveRate;
+      utterance.volume = effectiveVolume;
+
+      var voices = window.speechSynthesis.getVoices() || [];
+      var zhVoice = voices.find(function(v) {
+        return v.lang && (v.lang === 'zh-CN' || v.lang === 'zh_CN' || v.lang.startsWith('zh-') || v.lang.startsWith('zh_') || v.lang.startsWith('cmn'));
+      });
+      if (zhVoice) {
+        utterance.voice = zhVoice;
+      }
+
+      utterance.onend = function() {
+        if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
+        setSpeakerButtonsActive(false);
+      };
+      utterance.onerror = function(err) {
+        if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
+        setSpeakerButtonsActive(false);
+        playFallbackAudio(toSpeak, effectiveVolume);
+      };
+
+      speechEndSafetyTimer = setTimeout(function() {
+        setSpeakerButtonsActive(false);
+      }, 3500);
+
+      window.speechSynthesis.speak(utterance);
+      return;
+    } catch(e) {
+      console.warn('SpeechSynthesis error, using audio fallback:', e);
+    }
+  }
+
+  playFallbackAudio(toSpeak, effectiveVolume);
+}
+
+function playVocabAudio(vocab, delayMs, forcePlay) {
+  if (!vocab) return;
+  var s = state.audioSettings;
+  if (!forcePlay) {
+    if (!s.masterEnabled || !s.speechEnabled || !s.speechAutoPlay || s.masterVolume <= 0 || s.speechVolume <= 0) {
+      return;
+    }
+  }
+
+  delayMs = (delayMs !== undefined) ? delayMs : 0;
+  if (speakDelayTimer) clearTimeout(speakDelayTimer);
+
+  speakDelayTimer = setTimeout(function() {
+    speakVocabText(vocab.hanzi, vocab.pinyin, forcePlay);
+  }, delayMs);
+}
+
+function speakCurrentVocab(mode, forcePlay) {
+  var vocab = (mode === 'wp') ? state.wpCurrentVocab : state.currentVocab;
+  if (vocab) {
+    playVocabAudio(vocab, 0, forcePlay !== undefined ? forcePlay : true);
+  }
 }
 
 // ===== NAVIGATION =====
@@ -1448,6 +2172,7 @@ function showScreen(name, params) {
 }
 
 function goBack() {
+  stopVocabAudio();
   stopConfetti();
   showScreen('home');
 }
@@ -1693,6 +2418,7 @@ async function startWritePinyin(sessionId) {
 }
 
 function setupNextWritePinyinWord() {
+  stopVocabAudio();
   if (state.wpQueue.length === 0) {
     showWritePinyinFinish(state.wpCorrectCount, state.wpWrongCount);
     return;
@@ -1743,6 +2469,7 @@ async function checkWritePinyinAnswer() {
   document.getElementById('wp-check-btn').style.display = 'none';
 
   if (isMatch) playCorrect(); else playWrong();
+  playVocabAudio(vocab, 260);
 
   if (isMatch) {
     state.wpCorrectCount++;
@@ -1809,6 +2536,7 @@ async function checkWritePinyinAnswer() {
 }
 
 function retryCurrentWord() {
+  stopVocabAudio();
   state.wpIsChecked = false;
   state.wpIsCorrect = false;
   var inp = document.getElementById('wp-input');
@@ -1824,6 +2552,7 @@ function retryCurrentWord() {
 function nextWritePinyinWord() {
   if (!state.wpIsChecked || !state.wpCurrentVocab) return;
   if (Date.now() - state.wpLastActionTime < 250) return;
+  stopVocabAudio();
   state.wpLastActionTime = Date.now();
 
   var vocab = state.wpQueue.shift();
@@ -1834,6 +2563,7 @@ function nextWritePinyinWord() {
 }
 
 function showWritePinyinFinish(correct, wrong) {
+  stopVocabAudio();
   document.getElementById('wp-workspace').style.display = 'none';
   document.getElementById('wp-finish').style.display = 'flex';
   if (state.wpIsRepractice) {
@@ -1870,6 +2600,7 @@ async function startQuiz(sessionId) {
 }
 
 async function setupNextFlashcard() {
+  stopVocabAudio();
   if (state.vocabQueue.length === 0) { showQuizFinish(state.correctCount, state.wrongCount); return; }
   var vocab = state.vocabQueue[0]; state.currentVocab = vocab;
   state.quizStep = 'PINYIN'; state.isAnswerSelected = false; state.selectedAnswer = null;
@@ -1918,14 +2649,33 @@ function renderQuizUI() {
   var fb = document.getElementById('quiz-feedback');
   if (state.isAnswerSelected) {
     fb.style.display = 'block';
+    var meaningText = vocab.meaning;
+    if (vocab.word_type) meaningText += ' (' + vocab.word_type + ')';
+
     fb.innerHTML = '<div class="feedback-box" style="margin-top:12px">' +
       '<div class="feedback-status ' + (state.isCorrect ? 'correct' : 'wrong') + '">' +
         (state.isCorrect ? '✓ Chính xác!' : '✗ Chưa đúng!') +
       '</div>' +
-      '<button class="next-btn" style="margin-top:8px" onclick="nextStep()">' +
+      '<div class="feedback-details">' +
+        '<div class="fb-answer-row">' +
+          '<div class="fb-pinyin-group">' +
+            '<span class="fb-label">Đáp án chuẩn:</span>' +
+            '<span class="fb-pinyin">' + escHtml(vocab.pinyin) + '</span>' +
+          '</div>' +
+          '<button type="button" class="fb-speaker-btn" id="quiz-speaker-btn" onclick="speakCurrentVocab(\'quiz\', true)" title="Nghe lại phát âm">' +
+            '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div><span class="fb-label">Nghĩa tiếng Việt: </span><span class="fb-meaning">' + escHtml(meaningText) + '</span></div>' +
+      '</div>' +
+      '<button class="next-btn" id="quiz-next-btn" style="margin-top:8px" onclick="nextStep()">' +
         '<span>Tiếp tục</span> <kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff">Space ␣</kbd>' +
       '</button>' +
     '</div>';
+    setTimeout(function(){
+      var nextBtn = document.getElementById('quiz-next-btn');
+      if (nextBtn) nextBtn.focus();
+    }, 100);
   } else {
     fb.style.display = 'none';
   }
@@ -1937,9 +2687,11 @@ function selectOption(answer) {
   state.isCorrect = answer === ca; state.isAnswerSelected = true; state.selectedAnswer = answer;
   if (state.isCorrect) playCorrect(); else playWrong();
   renderQuizUI();
+  playVocabAudio(state.currentVocab, 260);
 }
 
 async function nextStep() {
+  stopVocabAudio();
   var vocab = state.currentVocab; if (!vocab) return;
   if (state.isCorrect) {
     if (state.quizStep === 'PINYIN') {
@@ -1962,6 +2714,7 @@ async function nextStep() {
 }
 
 function showQuizFinish(correct, wrong) {
+  stopVocabAudio();
   document.getElementById('quiz-content').style.display = 'none';
   document.getElementById('quiz-finish').style.display = 'flex';
   if (state.quizIsRepractice) {
@@ -2059,6 +2812,8 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     if (document.getElementById('shortcuts-modal').classList.contains('show')) {
       closeShortcutsModal();
+    } else if (document.getElementById('audio-settings-modal') && document.getElementById('audio-settings-modal').classList.contains('show')) {
+      closeAudioSettingsModal();
     } else if (state.screen !== 'home') {
       goBack();
     }
@@ -2068,6 +2823,18 @@ document.addEventListener('keydown', function(e) {
   if (e.key === '?' && !e.target.matches('input, textarea')) {
     openShortcutsModal();
     return;
+  }
+
+  if ((e.key === 'r' || e.key === 'R') && !e.target.matches('input:not(:disabled), textarea')) {
+    if (state.screen === 'write-pinyin' && state.wpIsChecked) {
+      e.preventDefault();
+      speakCurrentVocab('wp', true);
+      return;
+    } else if (state.screen === 'quiz' && state.isAnswerSelected) {
+      e.preventDefault();
+      speakCurrentVocab('quiz', true);
+      return;
+    }
   }
 
   if (state.screen === 'write-pinyin') {
