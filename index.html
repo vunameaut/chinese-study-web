@@ -1137,6 +1137,44 @@
     font-size: 12.5px;
     color: var(--ink-soft);
   }
+  .voice-select-wrap {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--hairline);
+  }
+  .voice-select-dropdown {
+    width: 100%;
+    margin-top: 6px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1.5px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .voice-select-dropdown:hover {
+    border-color: var(--ink-faint);
+  }
+  .voice-select-dropdown:focus {
+    border-color: var(--seal-son);
+    box-shadow: 0 0 0 3px rgba(198,61,45,0.12);
+  }
+  .voice-select-dropdown optgroup {
+    font-weight: 700;
+    color: var(--ink-faint);
+    background: var(--paper-deep);
+  }
+  .voice-select-dropdown option {
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 4px 6px;
+  }
 
   /* Setup Screen */
   .setup-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
@@ -1678,6 +1716,15 @@
           <button type="button" class="speed-chip" id="speed-chip-10" onclick="updateAudioSetting('speechRate', 1.0)">1.0x (Tự nhiên)</button>
         </div>
       </div>
+      <div class="voice-select-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:11.5px;font-weight:600;color:var(--ink-faint)">Giọng đọc tiếng Trung:</span>
+          <span style="font-size:11px;color:var(--seal-son);cursor:pointer;font-weight:600" onclick="testAudioSound('speech')">▶ Nghe thử</span>
+        </div>
+        <select class="voice-select-dropdown" id="select-speech-voice" onchange="updateAudioSetting('speechVoice', this.value); testAudioSound('speech');">
+          <option value="google-online">🌟 Google TTS (Phát âm chuẩn quốc tế - To & Rõ)</option>
+        </select>
+      </div>
     </div>
 
     <!-- 3. SFX Card (Correct / Wrong) -->
@@ -1814,6 +1861,7 @@ var DEFAULT_AUDIO_SETTINGS = {
   speechAutoPlay: true,
   speechVolume: 100,
   speechRate: 0.85,
+  speechVoice: 'google-online',
   finishEnabled: true,
   finishVolume: 100
 };
@@ -1989,7 +2037,7 @@ function testAudioSound(type) {
     playTone(523, .12, 'sine', 'sfx');
     setTimeout(function(){ playTone(784, .16, 'sine', 'sfx'); }, 90);
   } else if (type === 'speech') {
-    speakVocabText('你好，学习', 'nǐ hǎo, xué xí', true);
+    speakVocabText('你好，学习中文', 'nǐ hǎo, xué xí zhōng wén', true);
   } else if (type === 'finish') {
     playFinish();
   }
@@ -2050,6 +2098,138 @@ function renderAudioSettingsUI() {
       }
     }
   });
+
+  // Populate and sync voice list
+  populateVoiceList();
+}
+
+function populateVoiceList() {
+  var select = document.getElementById('select-speech-voice');
+  if (!select) return;
+  var currentVal = (state.audioSettings && state.audioSettings.speechVoice) || 'google-online';
+
+  select.innerHTML = '';
+
+  // 1. Online Studio Voices (Guaranteed 100% distinct, loud & authentic)
+  var grpOnline = document.createElement('optgroup');
+  grpOnline.label = 'Giọng Online (Chất lượng cao - Khuyên dùng)';
+
+  var optGoogle = document.createElement('option');
+  optGoogle.value = 'google-online';
+  optGoogle.textContent = '🌟 Google TTS (Nữ - Chuẩn phổ thông - To & Rõ) [Mặc định]';
+  grpOnline.appendChild(optGoogle);
+
+  var optBaidu = document.createElement('option');
+  optBaidu.value = 'baidu-online';
+  optBaidu.textContent = '🌟 Baidu TTS (Nữ - Giọng đọc Baidu bản xứ Trung Quốc)';
+  grpOnline.appendChild(optBaidu);
+
+  var optGoogleTW = document.createElement('option');
+  optGoogleTW.value = 'google-tw';
+  optGoogleTW.textContent = '🌟 Google TTS Đài Loan (Nữ - Giọng phồn thể)';
+  grpOnline.appendChild(optGoogleTW);
+
+  select.appendChild(grpOnline);
+
+  // 2. System / Device Voices (Deduplicated & with clear labels)
+  if ('speechSynthesis' in window) {
+    try {
+      var voices = window.speechSynthesis.getVoices() || [];
+      var zhVoices = voices.filter(function(v) {
+        if (!v.lang) return false;
+        var l = v.lang.toLowerCase();
+        return l === 'zh-cn' || l === 'zh_cn' || l.startsWith('zh-') || l.startsWith('zh_') || l.startsWith('cmn');
+      });
+
+      if (zhVoices.length > 0) {
+        var grpSystem = document.createElement('optgroup');
+        grpSystem.label = 'Giọng trên thiết bị (Hệ thống)';
+
+        var voiceDict = {
+          'huihui': { name: 'Huihui', gender: 'Nữ', desc: 'Chuẩn miền Bắc TQ' },
+          'kangkang': { name: 'Kangkang', gender: 'Nam', desc: 'Giọng nam trầm, dứt khoát' },
+          'yaoyao': { name: 'Yaoyao', gender: 'Nữ', desc: 'Giọng trẻ trong trẻo' },
+          'xiaoxiao': { name: 'Xiaoxiao (晓晓)', gender: 'Nữ', desc: 'Tự nhiên, truyền cảm' },
+          'yunxi': { name: 'Yunxi (云希)', gender: 'Nam', desc: 'Tự nhiên, ấm áp' },
+          'yunjian': { name: 'Yunjian (云健)', gender: 'Nam', desc: 'Rõ ràng, dứt khoát' },
+          'xiaoyi': { name: 'Xiaoyi (晓伊)', gender: 'Nữ', desc: 'Dịu dàng, nhẹ nhàng' },
+          'yunyang': { name: 'Yunyang (云扬)', gender: 'Nam', desc: 'Trẻ trung, thanh thoát' },
+          'yunlong': { name: 'Yunlong (雲龍)', gender: 'Nam', desc: 'Giọng Đài Loan' },
+          'xiaojia': { name: 'Xiaojia (晓佳)', gender: 'Nữ', desc: 'Giọng Hồng Kông / Quảng Đông' },
+          'tingting': { name: 'Ting-Ting', gender: 'Nữ', desc: 'Giọng Đài Loan' },
+          'sinji': { name: 'Sin-Ji', gender: 'Nữ', desc: 'Giọng Quảng Đông' },
+          'mei-jia': { name: 'Mei-Jia', gender: 'Nữ', desc: 'Giọng Đài Loan' }
+        };
+
+        var seenKeys = {};
+        var addedCount = 0;
+
+        zhVoices.forEach(function(v) {
+          var rawName = v.name || '';
+          var lowName = rawName.toLowerCase();
+
+          // Find key
+          var matchedKey = null;
+          var keys = Object.keys(voiceDict);
+          for (var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            if (lowName.indexOf(k) !== -1) {
+              matchedKey = k;
+              break;
+            }
+          }
+          // Also match Chinese characters directly
+          if (!matchedKey) {
+            if (rawName.indexOf('晓晓') !== -1) matchedKey = 'xiaoxiao';
+            else if (rawName.indexOf('云希') !== -1) matchedKey = 'yunxi';
+            else if (rawName.indexOf('云健') !== -1) matchedKey = 'yunjian';
+            else if (rawName.indexOf('晓伊') !== -1) matchedKey = 'xiaoyi';
+            else if (rawName.indexOf('云扬') !== -1) matchedKey = 'yunyang';
+            else if (rawName.indexOf('雲龍') !== -1 || rawName.indexOf('云龙') !== -1) matchedKey = 'yunlong';
+            else if (rawName.indexOf('晓佳') !== -1) matchedKey = 'xiaojia';
+          }
+
+          var normKey = matchedKey || rawName.replace(/Microsoft\s*/i, '').replace(/Desktop\s*/i, '').replace(/Online\s*\(Natural\)\s*/i, '').replace(/-\s*Chinese.*$/i, '').trim().toLowerCase();
+
+          // Strictly deduplicate by normalized key
+          if (seenKeys[normKey]) {
+            return; // Skip duplicate!
+          }
+          seenKeys[normKey] = true;
+
+          var opt = document.createElement('option');
+          opt.value = v.name;
+
+          var displayLabel = '';
+          if (matchedKey && voiceDict[matchedKey]) {
+            var info = voiceDict[matchedKey];
+            displayLabel = (info.gender === 'Nam' ? '👨 ' : '👩 ') + info.name + ' (' + info.gender + ' - ' + info.desc + ')';
+          } else {
+            var clean = rawName
+              .replace(/Microsoft\s*/i, '')
+              .replace(/Desktop\s*/i, '')
+              .replace(/Online\s*\(Natural\)\s*/i, '')
+              .replace(/-\s*Chinese.*$/i, '')
+              .trim();
+            displayLabel = '🗣️ ' + clean + ' (' + (v.lang || 'zh-CN') + ')';
+          }
+
+          opt.textContent = displayLabel;
+          grpSystem.appendChild(opt);
+          addedCount++;
+        });
+
+        if (addedCount > 0) {
+          select.appendChild(grpSystem);
+        }
+      }
+    } catch(e) {}
+  }
+
+  select.value = currentVal;
+  if (!select.value) {
+    select.value = 'google-online';
+  }
 }
 
 function updateAudioUI() {
@@ -2073,8 +2253,15 @@ var speechEndSafetyTimer = null;
 
 if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = function() {
-    try { window.speechSynthesis.getVoices(); } catch(e) {}
+    try {
+      window.speechSynthesis.getVoices();
+      populateVoiceList();
+    } catch(e) {}
   };
+  try {
+    window.speechSynthesis.getVoices();
+    populateVoiceList();
+  } catch(e) {}
 }
 
 function setSpeakerButtonsActive(isActive) {
@@ -2109,27 +2296,84 @@ function stopVocabAudio() {
   setSpeakerButtonsActive(false);
 }
 
-function speakViaWebSpeech(text, vol, rate) {
+function playAudioUrl(url, vol, rate, fallbackText) {
+  try {
+    currentSpeechAudio = new Audio(url);
+    currentSpeechAudio.volume = vol;
+    currentSpeechAudio.playbackRate = rate || 1.0;
+
+    currentSpeechAudio.onended = function() {
+      if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
+      setSpeakerButtonsActive(false);
+      currentSpeechAudio = null;
+    };
+    currentSpeechAudio.onerror = function() {
+      currentSpeechAudio = null;
+      speakViaWebSpeech(fallbackText, vol, rate);
+    };
+
+    speechEndSafetyTimer = setTimeout(function() {
+      setSpeakerButtonsActive(false);
+    }, 4000);
+
+    var p = currentSpeechAudio.play();
+    if (p !== undefined) {
+      p.catch(function() {
+        currentSpeechAudio = null;
+        speakViaWebSpeech(fallbackText, vol, rate);
+      });
+    }
+  } catch(e) {
+    currentSpeechAudio = null;
+    speakViaWebSpeech(fallbackText, vol, rate);
+  }
+}
+
+function speakViaWebSpeech(text, vol, rate, specificVoiceName) {
   if (!('speechSynthesis' in window)) {
     setSpeakerButtonsActive(false);
     return;
   }
   try {
+    window.speechSynthesis.cancel();
     var utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'zh-CN';
-    utterance.rate = rate;
     utterance.volume = vol;
-    utterance.pitch = 1.05;
+    utterance.rate = rate;
 
     var voices = window.speechSynthesis.getVoices() || [];
-    var zhVoices = voices.filter(function(v) {
-      return v.lang && (v.lang === 'zh-CN' || v.lang === 'zh_CN' || v.lang.startsWith('zh-') || v.lang.startsWith('cmn'));
-    });
-    var zhVoice = zhVoices.find(function(v) {
-      var n = (v.name || '').toLowerCase();
-      return n.includes('natural') || n.includes('neural') || n.includes('google') || n.includes('online');
-    }) || zhVoices[0];
-    if (zhVoice) utterance.voice = zhVoice;
+    var zhVoice = null;
+    if (specificVoiceName) {
+      zhVoice = voices.find(function(v) { return v.name === specificVoiceName; });
+    }
+    if (!zhVoice) {
+      var zhVoices = voices.filter(function(v) {
+        if (!v.lang) return false;
+        var l = v.lang.toLowerCase();
+        return l === 'zh-cn' || l === 'zh_cn' || l.startsWith('zh-') || l.startsWith('zh_') || l.startsWith('cmn');
+      });
+      zhVoice = zhVoices.find(function(v) {
+        var n = (v.name || '').toLowerCase();
+        return n.includes('natural') || n.includes('huihui') || n.includes('xiaoxiao') || n.includes('google');
+      }) || zhVoices[0];
+    }
+
+    if (zhVoice) {
+      utterance.voice = zhVoice;
+      utterance.lang = zhVoice.lang || 'zh-CN';
+
+      // Pitch adjustment for genuine distinction between male / child / female voices
+      var vn = (zhVoice.name || '').toLowerCase();
+      if (vn.includes('kangkang') || vn.includes('yunxi') || vn.includes('yunjian') || vn.includes('yunlong') || vn.includes('yunyang')) {
+        utterance.pitch = 0.92; // Male voice tone
+      } else if (vn.includes('yaoyao')) {
+        utterance.pitch = 1.15; // Younger / sweet tone
+      } else {
+        utterance.pitch = 1.0;
+      }
+    } else {
+      utterance.lang = 'zh-CN';
+      utterance.pitch = 1.0;
+    }
 
     utterance.onend = function() {
       if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
@@ -2142,7 +2386,7 @@ function speakViaWebSpeech(text, vol, rate) {
 
     speechEndSafetyTimer = setTimeout(function() {
       setSpeakerButtonsActive(false);
-    }, 3500);
+    }, 4000);
 
     window.speechSynthesis.speak(utterance);
   } catch(err) {
@@ -2169,39 +2413,30 @@ function speakVocabText(text, pinyinFallback, forcePlay) {
 
   var vol = Math.max(0, Math.min(1.0, scale >= 1.0 ? 1.0 : scale));
   var rate = s.speechRate || 0.85;
+  var voiceChoice = s.speechVoice || 'google-online';
 
-  // Try Google TTS first for studio-grade, loud, punchy Chinese pronunciation
-  try {
+  // 1. Google TTS Online (zh-CN)
+  if (voiceChoice === 'google-online') {
     var url = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' + encodeURIComponent(toSpeak) + '&tl=zh-CN&client=tw-ob';
-    currentSpeechAudio = new Audio(url);
-    currentSpeechAudio.volume = vol;
-    currentSpeechAudio.playbackRate = rate;
-
-    currentSpeechAudio.onended = function() {
-      if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
-      setSpeakerButtonsActive(false);
-      currentSpeechAudio = null;
-    };
-    currentSpeechAudio.onerror = function() {
-      currentSpeechAudio = null;
-      speakViaWebSpeech(toSpeak, vol, rate);
-    };
-
-    speechEndSafetyTimer = setTimeout(function() {
-      setSpeakerButtonsActive(false);
-    }, 3500);
-
-    var p = currentSpeechAudio.play();
-    if (p !== undefined) {
-      p.catch(function() {
-        currentSpeechAudio = null;
-        speakViaWebSpeech(toSpeak, vol, rate);
-      });
-    }
-  } catch(e) {
-    currentSpeechAudio = null;
-    speakViaWebSpeech(toSpeak, vol, rate);
+    playAudioUrl(url, vol, rate, toSpeak);
+    return;
   }
+  // 2. Baidu TTS Online
+  if (voiceChoice === 'baidu-online') {
+    var bSpeed = (rate <= 0.75) ? '4' : (rate >= 1.0 ? '6' : '5');
+    var url = 'https://fanyi.baidu.com/gettts?lan=zh&text=' + encodeURIComponent(toSpeak) + '&spd=' + bSpeed + '&source=web';
+    playAudioUrl(url, vol, 1.0, toSpeak);
+    return;
+  }
+  // 3. Google TTS Online Taiwan (zh-TW)
+  if (voiceChoice === 'google-tw') {
+    var url = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' + encodeURIComponent(toSpeak) + '&tl=zh-TW&client=tw-ob';
+    playAudioUrl(url, vol, rate, toSpeak);
+    return;
+  }
+
+  // 4. System / Device voice via Web Speech API
+  speakViaWebSpeech(toSpeak, vol, rate, voiceChoice);
 }
 
 function playVocabAudio(vocab, delayMs, forcePlay) {
@@ -2763,11 +2998,15 @@ function renderQuizUI() {
 
 function selectOption(answer) {
   if (state.isAnswerSelected || !state.currentVocab) return;
-  var ca = state.quizStep === 'PINYIN' ? state.currentVocab.pinyin : state.currentVocab.meaning;
+  var isPinyinStep = state.quizStep === 'PINYIN';
+  var ca = isPinyinStep ? state.currentVocab.pinyin : state.currentVocab.meaning;
   state.isCorrect = answer === ca; state.isAnswerSelected = true; state.selectedAnswer = answer;
   if (state.isCorrect) playCorrect(); else playWrong();
   renderQuizUI();
-  playVocabAudio(state.currentVocab, 260);
+  // Chỉ phát âm khi vừa hoàn thành bước chọn Pinyin, không phát âm khi chọn Nghĩa
+  if (isPinyinStep) {
+    playVocabAudio(state.currentVocab, 260);
+  }
 }
 
 async function nextStep() {
@@ -2938,6 +3177,7 @@ document.addEventListener('keydown', function(e) {
 
 renderDate();
 updateAudioUI();
+populateVoiceList();
 if (sb) loadSessions();
 </script>
 </body>
