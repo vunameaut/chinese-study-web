@@ -1003,11 +1003,30 @@
   .slider-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     margin-top: 6px;
   }
-  .custom-slider {
+  .slider-track-wrap {
+    position: relative;
     flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .slider-center-notch {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 12px;
+    background: var(--ink-faint);
+    opacity: 0.65;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    border-radius: 1px;
+    z-index: 1;
+  }
+  .custom-slider {
+    width: 100%;
     -webkit-appearance: none;
     appearance: none;
     height: 6px;
@@ -1015,6 +1034,8 @@
     background: var(--hairline);
     outline: none;
     cursor: pointer;
+    position: relative;
+    z-index: 2;
   }
   .custom-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -1039,12 +1060,16 @@
     cursor: pointer;
   }
   .slider-val-badge {
-    min-width: 38px;
+    min-width: 48px;
     text-align: right;
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 700;
     color: var(--ink-soft);
     font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
   }
   .test-sound-btn {
     display: inline-flex;
@@ -1603,7 +1628,10 @@
         </label>
       </div>
       <div class="slider-row">
-        <input type="range" class="custom-slider" id="slider-master" min="0" max="100" value="100" oninput="updateAudioSetting('masterVolume', parseInt(this.value))">
+        <div class="slider-track-wrap">
+          <input type="range" class="custom-slider" id="slider-master" min="0" max="200" value="100" oninput="updateAudioSetting('masterVolume', parseInt(this.value))">
+          <div class="slider-center-notch" title="Mặc định 100%"></div>
+        </div>
         <span class="slider-val-badge" id="val-master">100%</span>
       </div>
     </div>
@@ -1629,7 +1657,10 @@
         </div>
       </div>
       <div class="slider-row">
-        <input type="range" class="custom-slider" id="slider-speech" min="0" max="100" value="100" oninput="updateAudioSetting('speechVolume', parseInt(this.value))">
+        <div class="slider-track-wrap">
+          <input type="range" class="custom-slider" id="slider-speech" min="0" max="200" value="100" oninput="updateAudioSetting('speechVolume', parseInt(this.value))">
+          <div class="slider-center-notch" title="Mặc định 100%"></div>
+        </div>
         <span class="slider-val-badge" id="val-speech">100%</span>
       </div>
       <div class="sub-option-row">
@@ -1670,8 +1701,11 @@
         </div>
       </div>
       <div class="slider-row">
-        <input type="range" class="custom-slider" id="slider-sfx" min="0" max="100" value="80" oninput="updateAudioSetting('sfxVolume', parseInt(this.value))">
-        <span class="slider-val-badge" id="val-sfx">80%</span>
+        <div class="slider-track-wrap">
+          <input type="range" class="custom-slider" id="slider-sfx" min="0" max="200" value="100" oninput="updateAudioSetting('sfxVolume', parseInt(this.value))">
+          <div class="slider-center-notch" title="Mặc định 100%"></div>
+        </div>
+        <span class="slider-val-badge" id="val-sfx">100%</span>
       </div>
     </div>
 
@@ -1696,8 +1730,11 @@
         </div>
       </div>
       <div class="slider-row">
-        <input type="range" class="custom-slider" id="slider-finish" min="0" max="100" value="90" oninput="updateAudioSetting('finishVolume', parseInt(this.value))">
-        <span class="slider-val-badge" id="val-finish">90%</span>
+        <div class="slider-track-wrap">
+          <input type="range" class="custom-slider" id="slider-finish" min="0" max="200" value="100" oninput="updateAudioSetting('finishVolume', parseInt(this.value))">
+          <div class="slider-center-notch" title="Mặc định 100%"></div>
+        </div>
+        <span class="slider-val-badge" id="val-finish">100%</span>
       </div>
     </div>
 
@@ -1772,20 +1809,23 @@ var DEFAULT_AUDIO_SETTINGS = {
   masterEnabled: true,
   masterVolume: 100,
   sfxEnabled: true,
-  sfxVolume: 80,
+  sfxVolume: 100,
   speechEnabled: true,
   speechAutoPlay: true,
   speechVolume: 100,
   speechRate: 0.85,
   finishEnabled: true,
-  finishVolume: 90
+  finishVolume: 100
 };
 
 function loadAudioSettings() {
   try {
     var saved = localStorage.getItem('hanzi_audio_settings');
     if (saved) {
-      return Object.assign({}, DEFAULT_AUDIO_SETTINGS, JSON.parse(saved));
+      var parsed = JSON.parse(saved);
+      if (parsed.sfxVolume === 80) parsed.sfxVolume = 100;
+      if (parsed.finishVolume === 90) parsed.finishVolume = 100;
+      return Object.assign({}, DEFAULT_AUDIO_SETTINGS, parsed);
     }
   } catch(e) {}
   var legacy = localStorage.getItem('soundEnabled');
@@ -1835,7 +1875,30 @@ Object.defineProperty(state, 'soundEnabled', {
 // ===== AUDIO SYSTEM =====
 var AudioCtx = window.AudioContext || window.webkitAudioContext;
 var audioCtx = null;
-function getAudioCtx() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+var audioCompressor = null;
+
+function getAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new AudioCtx();
+    try {
+      audioCompressor = audioCtx.createDynamicsCompressor();
+      audioCompressor.threshold.value = -10;
+      audioCompressor.knee.value = 24;
+      audioCompressor.ratio.value = 10;
+      audioCompressor.attack.value = 0.003;
+      audioCompressor.release.value = 0.2;
+      audioCompressor.connect(audioCtx.destination);
+    } catch(e) {
+      audioCompressor = null;
+    }
+  }
+  return audioCtx;
+}
+
+function getAudioDestination() {
+  var ctx = getAudioCtx();
+  return audioCompressor || ctx.destination;
+}
 
 function getEffectiveGain(channel) {
   var s = state.audioSettings;
@@ -1867,10 +1930,11 @@ function playTone(freq, dur, type, channel) {
     var g = ctx.createGain();
     o.type = type;
     o.frequency.value = freq;
-    var baseGain = (channel === 'finish') ? 0.18 : 0.15;
-    g.gain.value = baseGain * scale;
+    var baseGain = (channel === 'finish') ? 0.60 : 0.55;
+    var targetGain = Math.min(0.95, baseGain * scale);
+    g.gain.value = targetGain;
     g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
-    o.connect(g).connect(ctx.destination);
+    o.connect(g).connect(getAudioDestination());
     o.start();
     o.stop(ctx.currentTime + dur);
   } catch(e) {}
@@ -1937,20 +2001,12 @@ function renderAudioSettingsUI() {
   // Master
   var tMaster = document.getElementById('toggle-master');
   if (tMaster) tMaster.checked = !!s.masterEnabled;
-  var sMaster = document.getElementById('slider-master');
-  if (sMaster) sMaster.value = s.masterVolume;
-  var vMaster = document.getElementById('val-master');
-  if (vMaster) vMaster.textContent = s.masterVolume + '%';
   var cardMaster = document.getElementById('card-master');
   if (cardMaster) cardMaster.classList.toggle('disabled-channel', !s.masterEnabled);
 
   // Speech
   var tSpeech = document.getElementById('toggle-speech');
   if (tSpeech) tSpeech.checked = !!s.speechEnabled;
-  var sSpeech = document.getElementById('slider-speech');
-  if (sSpeech) sSpeech.value = s.speechVolume;
-  var vSpeech = document.getElementById('val-speech');
-  if (vSpeech) vSpeech.textContent = s.speechVolume + '%';
   var tAuto = document.getElementById('toggle-speech-autoplay');
   if (tAuto) tAuto.checked = !!s.speechAutoPlay;
   var cardSpeech = document.getElementById('card-speech');
@@ -1967,22 +2023,33 @@ function renderAudioSettingsUI() {
   // SFX
   var tSfx = document.getElementById('toggle-sfx');
   if (tSfx) tSfx.checked = !!s.sfxEnabled;
-  var sSfx = document.getElementById('slider-sfx');
-  if (sSfx) sSfx.value = s.sfxVolume;
-  var vSfx = document.getElementById('val-sfx');
-  if (vSfx) vSfx.textContent = s.sfxVolume + '%';
   var cardSfx = document.getElementById('card-sfx');
   if (cardSfx) cardSfx.classList.toggle('disabled-channel', !s.masterEnabled || !s.sfxEnabled);
 
   // Finish
   var tFinish = document.getElementById('toggle-finish');
   if (tFinish) tFinish.checked = !!s.finishEnabled;
-  var sFinish = document.getElementById('slider-finish');
-  if (sFinish) sFinish.value = s.finishVolume;
-  var vFinish = document.getElementById('val-finish');
-  if (vFinish) vFinish.textContent = s.finishVolume + '%';
   var cardFinish = document.getElementById('card-finish');
   if (cardFinish) cardFinish.classList.toggle('disabled-channel', !s.masterEnabled || !s.finishEnabled);
+
+  // Render all 4 sliders and badges (0 - 200% Discord style)
+  ['master', 'speech', 'sfx', 'finish'].forEach(function(key) {
+    var val = s[key + 'Volume'] !== undefined ? s[key + 'Volume'] : 100;
+    var slider = document.getElementById('slider-' + key);
+    if (slider) slider.value = val;
+    var badge = document.getElementById('val-' + key);
+    if (badge) {
+      if (val > 100) {
+        badge.innerHTML = val + '% <span style="font-size:10px;color:var(--seal-son)">⚡</span>';
+        badge.style.color = 'var(--seal-son)';
+        badge.style.fontWeight = '800';
+      } else {
+        badge.textContent = val + '%';
+        badge.style.color = 'var(--ink-soft)';
+        badge.style.fontWeight = '700';
+      }
+    }
+  });
 }
 
 function updateAudioUI() {
@@ -2042,24 +2109,43 @@ function stopVocabAudio() {
   setSpeakerButtonsActive(false);
 }
 
-function playFallbackAudio(text, volume) {
+function speakViaWebSpeech(text, vol, rate) {
+  if (!('speechSynthesis' in window)) {
+    setSpeakerButtonsActive(false);
+    return;
+  }
   try {
-    var url = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' + encodeURIComponent(text) + '&tl=zh-CN&client=tw-ob';
-    currentSpeechAudio = new Audio(url);
-    if (typeof volume === 'number') currentSpeechAudio.volume = Math.max(0, Math.min(1, volume));
-    currentSpeechAudio.onended = function() {
-      setSpeakerButtonsActive(false);
-      currentSpeechAudio = null;
-    };
-    currentSpeechAudio.onerror = function() {
-      setSpeakerButtonsActive(false);
-      currentSpeechAudio = null;
-    };
-    currentSpeechAudio.play().catch(function() {
-      setSpeakerButtonsActive(false);
-      currentSpeechAudio = null;
+    var utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN';
+    utterance.rate = rate;
+    utterance.volume = vol;
+    utterance.pitch = 1.05;
+
+    var voices = window.speechSynthesis.getVoices() || [];
+    var zhVoices = voices.filter(function(v) {
+      return v.lang && (v.lang === 'zh-CN' || v.lang === 'zh_CN' || v.lang.startsWith('zh-') || v.lang.startsWith('cmn'));
     });
-  } catch(e) {
+    var zhVoice = zhVoices.find(function(v) {
+      var n = (v.name || '').toLowerCase();
+      return n.includes('natural') || n.includes('neural') || n.includes('google') || n.includes('online');
+    }) || zhVoices[0];
+    if (zhVoice) utterance.voice = zhVoice;
+
+    utterance.onend = function() {
+      if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
+      setSpeakerButtonsActive(false);
+    };
+    utterance.onerror = function() {
+      if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
+      setSpeakerButtonsActive(false);
+    };
+
+    speechEndSafetyTimer = setTimeout(function() {
+      setSpeakerButtonsActive(false);
+    }, 3500);
+
+    window.speechSynthesis.speak(utterance);
+  } catch(err) {
     setSpeakerButtonsActive(false);
   }
 }
@@ -2078,50 +2164,44 @@ function speakVocabText(text, pinyinFallback, forcePlay) {
   stopVocabAudio();
   setSpeakerButtonsActive(true);
 
-  var effectiveVolume = (s.masterVolume / 100) * (s.speechVolume / 100);
-  if (forcePlay && effectiveVolume <= 0) {
-    effectiveVolume = 0.8;
-  }
-  effectiveVolume = Math.max(0, Math.min(1, effectiveVolume));
-  var effectiveRate = s.speechRate || 0.85;
+  var scale = (s.masterVolume / 100) * (s.speechVolume / 100);
+  if (forcePlay && scale <= 0) scale = 1.0;
 
-  if ('speechSynthesis' in window) {
-    try {
-      var utterance = new SpeechSynthesisUtterance(toSpeak);
-      utterance.lang = 'zh-CN';
-      utterance.rate = effectiveRate;
-      utterance.volume = effectiveVolume;
+  var vol = Math.max(0, Math.min(1.0, scale >= 1.0 ? 1.0 : scale));
+  var rate = s.speechRate || 0.85;
 
-      var voices = window.speechSynthesis.getVoices() || [];
-      var zhVoice = voices.find(function(v) {
-        return v.lang && (v.lang === 'zh-CN' || v.lang === 'zh_CN' || v.lang.startsWith('zh-') || v.lang.startsWith('zh_') || v.lang.startsWith('cmn'));
+  // Try Google TTS first for studio-grade, loud, punchy Chinese pronunciation
+  try {
+    var url = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' + encodeURIComponent(toSpeak) + '&tl=zh-CN&client=tw-ob';
+    currentSpeechAudio = new Audio(url);
+    currentSpeechAudio.volume = vol;
+    currentSpeechAudio.playbackRate = rate;
+
+    currentSpeechAudio.onended = function() {
+      if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
+      setSpeakerButtonsActive(false);
+      currentSpeechAudio = null;
+    };
+    currentSpeechAudio.onerror = function() {
+      currentSpeechAudio = null;
+      speakViaWebSpeech(toSpeak, vol, rate);
+    };
+
+    speechEndSafetyTimer = setTimeout(function() {
+      setSpeakerButtonsActive(false);
+    }, 3500);
+
+    var p = currentSpeechAudio.play();
+    if (p !== undefined) {
+      p.catch(function() {
+        currentSpeechAudio = null;
+        speakViaWebSpeech(toSpeak, vol, rate);
       });
-      if (zhVoice) {
-        utterance.voice = zhVoice;
-      }
-
-      utterance.onend = function() {
-        if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
-        setSpeakerButtonsActive(false);
-      };
-      utterance.onerror = function(err) {
-        if (speechEndSafetyTimer) clearTimeout(speechEndSafetyTimer);
-        setSpeakerButtonsActive(false);
-        playFallbackAudio(toSpeak, effectiveVolume);
-      };
-
-      speechEndSafetyTimer = setTimeout(function() {
-        setSpeakerButtonsActive(false);
-      }, 3500);
-
-      window.speechSynthesis.speak(utterance);
-      return;
-    } catch(e) {
-      console.warn('SpeechSynthesis error, using audio fallback:', e);
     }
+  } catch(e) {
+    currentSpeechAudio = null;
+    speakViaWebSpeech(toSpeak, vol, rate);
   }
-
-  playFallbackAudio(toSpeak, effectiveVolume);
 }
 
 function playVocabAudio(vocab, delayMs, forcePlay) {
