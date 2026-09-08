@@ -2964,8 +2964,23 @@ function renderQuizUI() {
   var fb = document.getElementById('quiz-feedback');
   if (state.isAnswerSelected) {
     fb.style.display = 'block';
-    var meaningText = vocab.meaning;
-    if (vocab.word_type) meaningText += ' (' + vocab.word_type + ')';
+    var isPinyinStep = state.quizStep === 'PINYIN';
+    var correctAnswer = isPinyinStep ? vocab.pinyin : vocab.meaning;
+
+    var detailHtml = '';
+    // Khi vừa chọn xong Pinyin thì chưa hiện nghĩa tiếng Việt và từ loại (tránh lộ đáp án bước 2)
+    // Chỉ khi đã chọn xong nghĩa, mới hiện theo cấu trúc: "hán tự : pinyin: từ loại: nghĩa tv"
+    if (!isPinyinStep) {
+      var parts = [vocab.hanzi, vocab.pinyin];
+      if (vocab.word_type && vocab.word_type.trim()) {
+        parts.push(vocab.word_type.trim());
+      }
+      parts.push(vocab.meaning);
+      var fullStructure = parts.join(' : ');
+      detailHtml = '<div style="margin-top:4px">' +
+        '<span class="fb-meaning" style="font-weight:600;font-size:14.5px;color:var(--ink);font-family:\'Noto Serif SC\',Outfit,-apple-system,sans-serif">' + escHtml(fullStructure) + '</span>' +
+      '</div>';
+    }
 
     fb.innerHTML = '<div class="feedback-box" style="margin-top:12px">' +
       '<div class="feedback-status ' + (state.isCorrect ? 'correct' : 'wrong') + '">' +
@@ -2975,13 +2990,13 @@ function renderQuizUI() {
         '<div class="fb-answer-row">' +
           '<div class="fb-pinyin-group">' +
             '<span class="fb-label">Đáp án chuẩn:</span>' +
-            '<span class="fb-pinyin">' + escHtml(vocab.pinyin) + '</span>' +
+            '<span class="fb-pinyin">' + escHtml(correctAnswer) + '</span>' +
           '</div>' +
           '<button type="button" class="fb-speaker-btn" id="quiz-speaker-btn" onclick="speakCurrentVocab(\'quiz\', true)" title="Nghe lại phát âm">' +
             '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>' +
           '</button>' +
         '</div>' +
-        '<div><span class="fb-label">Nghĩa tiếng Việt: </span><span class="fb-meaning">' + escHtml(meaningText) + '</span></div>' +
+        detailHtml +
       '</div>' +
       '<button class="next-btn" id="quiz-next-btn" style="margin-top:8px" onclick="nextStep()">' +
         '<span>Tiếp tục</span> <kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff">Space ␣</kbd>' +
