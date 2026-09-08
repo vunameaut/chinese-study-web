@@ -2893,6 +2893,168 @@ function showWritePinyinFinish(correct, wrong) {
 }
 
 // ===== QUIZ STUDIO =====
+var FALLBACK_PINYIN_BY_SYLLABLE = {
+  1: [
+    'chá', 'mā', 'bà', 'shuǐ', 'hǎo', 'dà', 'xiǎo', 'duō', 'shǎo', 'chī',
+    'hē', 'kàn', 'tīng', 'shuō', 'mǎi', 'mài', 'rén', 'tiān', 'nián', 'yuè',
+    'rì', 'shàng', 'xià', 'qián', 'hòu', 'zuǒ', 'yòu', 'mén', 'kāi', 'guān',
+    'shū', 'bǐ', 'zì', 'huà', 'qián', 'bái', 'hēi', 'hóng', 'lǜ', 'kuài'
+  ],
+  2: [
+    'bāo zi', 'yáng ròu', 'shǒu jī', 'fēi jī', 'píng guǒ', 'xī guā', 'kā fēi', 'mǐ fàn',
+    'miàn tiáo', 'péng you', 'lǎo shī', 'xué sheng', 'yī shēng', 'hù shi', 'jī chǎng',
+    'fàn guǎn', 'shāng diàn', 'yín háng', 'běi jīng', 'shàng hǎi', 'shí jiān', 'jīn tiān',
+    'míng tiān', 'zuó tiān', 'shēng rì', 'xīng qī', 'gōng zuò', 'xué xí', 'xǐ huan', 'zhòng yào'
+  ],
+  3: [
+    'tú shū guǎn', 'chū zū chē', 'bīng xiāng lǐ', 'fēi jī chǎng', 'diàn yǐng yuàn',
+    'huǒ chē zhàn', 'shǒu jī hào', 'shāng diàn lǐ', 'gōng sī lǐ', 'fàn guǎn lǐ',
+    'xué xiào lǐ', 'jiā tíng lǐ', 'yī yuàn lǐ', 'běi jīng lǐ', 'shàng hǎi lǐ',
+    'diàn nǎo shàng', 'zhuō zi shàng', 'yǐ zi shàng', 'mǎi dōng xi', 'kàn diàn yǐng',
+    'tīng yīn yuè', 'chī zǎo fàn', 'chī wǔ fàn', 'chī wǎn fàn', 'shuāi jiāo le'
+  ],
+  4: [
+    'gōng gòng qì chē', 'wǔ yán liù sè', 'yī mó yī yàng', 'bù zhī bù jué',
+    'zì yán zì yǔ', 'fēng hé rì lì', 'xīn xiǎng shì chéng', 'wàn shì rú yì',
+    'yī lù píng ān', 'qiān fāng bǎi jì', 'huā tiān jiǔ dì', 'sì miàn bā fāng'
+  ]
+};
+
+function getSyllableCount(vocab) {
+  if (!vocab) return 1;
+  // Ưu tiên 1: Đếm số chữ Hán trong hanzi (mỗi chữ Hán là 1 âm tiết)
+  if (vocab.hanzi) {
+    var cleanHz = vocab.hanzi.replace(/[^\u4e00-\u9fa5]/g, '');
+    if (cleanHz.length > 0) return cleanHz.length;
+  }
+  // Ưu tiên 2: Đếm số từ trong pinyin (cách nhau bởi khoảng trắng hoặc dấu gạch ngang)
+  if (vocab.pinyin) {
+    var pParts = vocab.pinyin.trim().split(/[\s\-]+/);
+    if (pParts.length > 0) return pParts.length;
+  }
+  return 1;
+}
+
+async function getPinyinDistractors(vocab) {
+  var targetCount = getSyllableCount(vocab);
+  var targetPinyin = (vocab.pinyin || '').trim().toLowerCase();
+  var candidates = [];
+  var seen = new Set();
+  seen.add(targetPinyin);
+
+  // Mức 1: Tìm trong buổi học hiện tại (ưu tiên từ cùng số âm tiết)
+  var sessionList = state.sessionVocabList || [];
+  sessionList.forEach(function(v) {
+    if (!v || !v.pinyin) return;
+    var p = v.pinyin.trim();
+    if (getSyllableCount(v) === targetCount && !seen.has(p.toLowerCase())) {
+      seen.add(p.toLowerCase());
+      candidates.push(p);
+    }
+  });
+
+  // Mức 2: Nếu chưa đủ 3 đáp án nhiễu, lấy từ database các buổi học khác
+  if (candidates.length < 3) {
+    if (!state.globalVocabList) {
+      try {
+        var res = await sb.from('vocabulary').select('hanzi, pinyin, meaning');
+        state.globalVocabList = res.data || [];
+      } catch (err) {
+        state.globalVocabList = [];
+      }
+    }
+    (state.globalVocabList || []).forEach(function(v) {
+      if (!v || !v.pinyin) return;
+      var p = v.pinyin.trim();
+      if (getSyllableCount(v) === targetCount && !seen.has(p.toLowerCase())) {
+        seen.add(p.toLowerCase());
+        candidates.push(p);
+      }
+    });
+  }
+
+  // Mức 3: Dùng kho dự phòng chuẩn theo số âm tiết (HSK 1-4)
+  if (candidates.length < 3) {
+    var pool = FALLBACK_PINYIN_BY_SYLLABLE[targetCount] || FALLBACK_PINYIN_BY_SYLLABLE[Math.min(targetCount, 4)] || FALLBACK_PINYIN_BY_SYLLABLE[2] || [];
+    shuffle(pool.slice()).forEach(function(p) {
+      if (candidates.length < 3 && !seen.has(p.toLowerCase())) {
+        seen.add(p.toLowerCase());
+        candidates.push(p);
+      }
+    });
+  }
+
+  // Mức 4: Fallback bất kỳ nếu từ quá đặc biệt
+  if (candidates.length < 3) {
+    sessionList.forEach(function(v) {
+      if (!v || !v.pinyin) return;
+      var p = v.pinyin.trim();
+      if (!seen.has(p.toLowerCase())) {
+        seen.add(p.toLowerCase());
+        candidates.push(p);
+      }
+    });
+  }
+
+  return shuffle(candidates).slice(0, 3);
+}
+
+async function getMeaningDistractors(vocab) {
+  var targetMeaning = (vocab.meaning || '').trim().toLowerCase();
+  var candidates = [];
+  var seen = new Set();
+  seen.add(targetMeaning);
+
+  // Mức 1: Tìm trong buổi học hiện tại
+  var sessionList = state.sessionVocabList || [];
+  sessionList.forEach(function(v) {
+    if (!v || !v.meaning) return;
+    var m = v.meaning.trim();
+    if (!seen.has(m.toLowerCase())) {
+      seen.add(m.toLowerCase());
+      candidates.push(m);
+    }
+  });
+
+  // Mức 2: Mở rộng sang database nếu buổi học có quá ít từ
+  if (candidates.length < 3) {
+    if (!state.globalVocabList) {
+      try {
+        var res = await sb.from('vocabulary').select('hanzi, pinyin, meaning');
+        state.globalVocabList = res.data || [];
+      } catch (err) {
+        state.globalVocabList = [];
+      }
+    }
+    (state.globalVocabList || []).forEach(function(v) {
+      if (!v || !v.meaning) return;
+      var m = v.meaning.trim();
+      if (!seen.has(m.toLowerCase())) {
+        seen.add(m.toLowerCase());
+        candidates.push(m);
+      }
+    });
+  }
+
+  // Mức 3: Kho nghĩa dự phòng
+  var FALLBACK_MEANINGS = [
+    'trà', 'nước', 'người', 'ngày', 'năm', 'tháng', 'lớn', 'nhỏ', 'nhiều', 'ít',
+    'bánh bao', 'thịt dê', 'điện thoại', 'máy bay', 'quả táo', 'dưa hấu', 'cà phê',
+    'cơm', 'mì sợi', 'bạn bè', 'thầy giáo', 'học sinh', 'bác sĩ', 'y tá', 'sân bay',
+    'nhà hàng', 'cửa hàng', 'ngân hàng', 'thư viện', 'xe taxi', 'bệnh viện', 'trường học'
+  ];
+  if (candidates.length < 3) {
+    shuffle(FALLBACK_MEANINGS.slice()).forEach(function(m) {
+      if (candidates.length < 3 && !seen.has(m.toLowerCase())) {
+        seen.add(m.toLowerCase());
+        candidates.push(m);
+      }
+    });
+  }
+
+  return shuffle(candidates).slice(0, 3);
+}
+
 async function startQuiz(sessionId) {
   document.getElementById('quiz-content').style.display = 'grid';
   document.getElementById('quiz-finish').style.display = 'none';
@@ -2900,6 +3062,7 @@ async function startQuiz(sessionId) {
   var result = await sb.from('vocabulary').select('*').eq('session_id', sessionId);
   if (!result.data || result.data.length === 0) { showQuizFinish(0,0); return; }
   
+  state.sessionVocabList = result.data || [];
   var review = result.data.filter(function(v){return v.review_status !== 2;});
   // Cho phép ôn tập lại toàn bộ từ nếu tất cả đã thuộc
   var isRepractice = (review.length === 0);
@@ -2921,9 +3084,8 @@ async function setupNextFlashcard() {
   state.quizStep = 'PINYIN'; state.isAnswerSelected = false; state.selectedAnswer = null;
   state.remainingVocabs = state.vocabQueue.length;
 
-  var result = await sb.from('vocabulary').select('pinyin').eq('session_id', state.quizSessionId);
-  var dist = (result.data || []).filter(function(v){return v.pinyin !== vocab.pinyin;}).map(function(v){return v.pinyin;});
-  state.options = shuffle(dist.slice(0, 3).concat([vocab.pinyin]));
+  var dist = await getPinyinDistractors(vocab);
+  state.options = shuffle(dist.concat([vocab.pinyin]));
   renderQuizUI();
 }
 
@@ -3030,9 +3192,8 @@ async function nextStep() {
   if (state.isCorrect) {
     if (state.quizStep === 'PINYIN') {
       state.quizStep = 'MEANING'; state.isAnswerSelected = false; state.selectedAnswer = null;
-      var result = await sb.from('vocabulary').select('meaning').eq('session_id', state.quizSessionId);
-      var dist = (result.data || []).filter(function(v){return v.meaning !== vocab.meaning;}).map(function(v){return v.meaning;});
-      state.options = shuffle(dist.slice(0, 3).concat([vocab.meaning])); renderQuizUI();
+      var dist = await getMeaningDistractors(vocab);
+      state.options = shuffle(dist.concat([vocab.meaning])); renderQuizUI();
     } else {
       if (!state.quizIsRepractice && vocab.review_status !== 2) {
         await sb.from('vocabulary').update({review_status: 2, last_reviewed_at: new Date().toISOString()}).eq('id', vocab.id);
