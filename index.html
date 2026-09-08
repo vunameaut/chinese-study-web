@@ -1871,8 +1871,6 @@ function loadAudioSettings() {
     var saved = localStorage.getItem('hanzi_audio_settings');
     if (saved) {
       var parsed = JSON.parse(saved);
-      if (parsed.sfxVolume === 80) parsed.sfxVolume = 100;
-      if (parsed.finishVolume === 90) parsed.finishVolume = 100;
       return Object.assign({}, DEFAULT_AUDIO_SETTINGS, parsed);
     }
   } catch(e) {}
@@ -2013,6 +2011,7 @@ function openAudioSettingsModal() {
 }
 
 function closeAudioSettingsModal() {
+  saveAudioSettings();
   var m = document.getElementById('audio-settings-modal');
   if (m) m.classList.remove('show');
 }
@@ -2590,9 +2589,6 @@ function buildSessionCardHtml(s, idx, ordinals, isHighlight) {
           '<span class="hsk-pill">HSK ' + s.hsk_level + '</span>' +
         '</div>' +
       '</div>' +
-      '<button class="card-del-btn" onclick="event.stopPropagation();deleteSession(' + s.id + ')" title="Xóa buổi học">' +
-        '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>' +
-      '</button>' +
     '</div>' +
     '<div class="card-split"></div>' +
     '<div class="card-actions">' +
@@ -2609,10 +2605,8 @@ function buildSessionCardHtml(s, idx, ordinals, isHighlight) {
 }
 
 async function deleteSession(id) {
-  if (!confirm('Bạn có chắc chắn muốn xóa buổi học này không?')) return;
-  await sb.from('vocabulary').delete().eq('session_id', id);
-  await sb.from('sessions').delete().eq('id', id);
-  loadSessions();
+  // Quyền xóa buổi học đã bị vô hiệu hóa
+  console.warn('Quyền xóa buổi học đã bị tắt.');
 }
 
 // ===== PINYIN MATCHING ENGINE =====
@@ -3352,6 +3346,7 @@ document.addEventListener('keydown', function(e) {
 });
 
 renderDate();
+renderAudioSettingsUI();
 updateAudioUI();
 populateVoiceList();
 if (sb) loadSessions();
