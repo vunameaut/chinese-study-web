@@ -367,23 +367,36 @@
   }
   .card-actions{
     display:flex;
-    gap:10px;
+    gap:8px;
     margin-top:auto;
+    flex-wrap:wrap;
   }
   .action-btn{
     flex:1;
-    min-height:40px;
+    min-width:85px;
+    min-height:38px;
     border-radius:10px;
-    font-size:13.5px;
+    font-size:12.5px;
     font-weight:600;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:6px;
+    gap:5px;
     cursor:pointer;
     transition:all .15s;
     text-decoration:none;
+    white-space:nowrap;
   }
+  .btn-gm{
+    background:var(--jade-tint);
+    border:1.2px solid rgba(46,105,88,0.35);
+    color:var(--jade);
+  }
+  .btn-gm:hover{
+    background:#d8ece4;
+    border-color:var(--jade);
+  }
+  .btn-gm:active{transform:scale(.98)}
   .btn-wp{
     background:var(--amber-tint);
     border:1.2px solid rgba(142,98,6,0.35);
@@ -403,7 +416,7 @@
   .btn-qz:hover{background:var(--seal-deep)}
   .btn-qz:active{transform:scale(.98)}
 
-  /* Practice Studio (Write Pinyin & Quiz) */
+  /* Practice Studio (Write Pinyin & Quiz & Grammar) */
   .studio-container{
     max-width:960px;
     margin:0 auto;
@@ -414,6 +427,7 @@
     align-items:center;
     gap:10px;
     margin-bottom:16px;
+    flex-wrap:wrap;
   }
   .back-btn{
     display:inline-flex;
@@ -437,8 +451,421 @@
     padding:4px 10px;
     border-radius:20px;
   }
+  .badge-gm{background:var(--jade-tint);color:var(--jade);border:1px solid rgba(46,105,88,0.3)}
   .badge-wp{background:var(--amber-tint);color:var(--amber);border:1px solid rgba(142,98,6,0.3)}
   .badge-qz{background:var(--seal-tint);color:var(--seal-son);border:1px solid rgba(198,61,45,0.3)}
+
+  /* Grammar Studio Specialized Styles */
+  .grammar-subbar {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+  }
+  .grammar-tabs-wrap {
+    display:inline-flex;
+    background:var(--paper-deep);
+    padding:3px;
+    border-radius:30px;
+    border:1px solid var(--hairline);
+    gap:2px;
+  }
+  .grammar-tab-btn {
+    padding:6px 16px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    cursor:pointer;
+    transition:all .18s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .grammar-tab-btn:hover:not(.active) {
+    color:var(--ink);
+    background:rgba(255,255,255,0.45);
+  }
+  .grammar-tab-btn.active {
+    background:var(--jade);
+    color:#fff;
+    box-shadow:0 2px 8px rgba(46,105,88,0.35);
+  }
+  .grammar-quick-actions {
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .grammar-tool-btn {
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:6px 12px;
+    border-radius:8px;
+    border:1px solid var(--hairline);
+    background:var(--paper);
+    color:var(--ink-soft);
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .grammar-tool-btn:hover {
+    background:var(--paper-card);
+    color:var(--ink);
+    border-color:var(--ink-faint);
+  }
+  .grammar-tool-btn svg {
+    width:14px;
+    height:14px;
+    fill:currentColor;
+  }
+  .grammar-point-card {
+    background:var(--paper-card);
+    border:1.5px solid var(--hairline);
+    border-radius:14px;
+    padding:20px 22px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow-sm);
+    transition:all .2s ease;
+  }
+  .grammar-point-card:hover {
+    border-color:var(--ink-faint);
+    box-shadow:var(--shadow-md);
+  }
+  .gp-header {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  .gp-title-wrap {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .gp-badge {
+    width:28px;
+    height:28px;
+    background:var(--jade);
+    color:#fff;
+    border-radius:7px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:800;
+    font-family:'Noto Serif SC',serif;
+    box-shadow:0 2px 6px rgba(46,105,88,0.25);
+    flex-shrink:0;
+  }
+  .gp-title {
+    font-size:17px;
+    font-weight:700;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  .gp-pattern-box {
+    background:linear-gradient(135deg, rgba(46,105,88,0.08) 0%, rgba(248,243,231,0.95) 100%);
+    border:1.5px dashed rgba(46,105,88,0.4);
+    border-radius:10px;
+    padding:10px 16px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .gp-pattern-tag {
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:var(--jade);
+    letter-spacing:0.04em;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    flex-shrink:0;
+  }
+  .gp-pattern-formula {
+    font-family:'Noto Serif SC',Outfit,sans-serif;
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .gp-formula-chip {
+    background:#fff;
+    padding:2px 8px;
+    border-radius:6px;
+    border:1px solid rgba(46,105,88,0.25);
+    color:var(--ink);
+    font-size:13.5px;
+  }
+  .gp-formula-chip.keyword {
+    background:var(--seal-tint);
+    border-color:rgba(198,61,45,0.3);
+    color:var(--seal-son);
+    font-weight:800;
+  }
+  .gp-explanation {
+    font-size:14px;
+    line-height:1.65;
+    color:var(--ink);
+    margin-bottom:16px;
+  }
+  .gp-explanation p {
+    margin-bottom:6px;
+  }
+  .gp-explanation ul {
+    padding-left:18px;
+    margin-bottom:6px;
+  }
+  .gp-explanation li {
+    margin-bottom:3px;
+  }
+  .gp-examples-section {
+    border-top:1px dashed var(--hairline);
+    padding-top:14px;
+  }
+  .gp-examples-heading {
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+  .gp-examples-list {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .gp-example-item {
+    background:var(--paper);
+    border:1px solid var(--hairline);
+    border-radius:9px;
+    padding:11px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    transition:all .15s ease;
+  }
+  .gp-example-item:hover {
+    border-color:rgba(46,105,88,0.4);
+    background:#fff;
+  }
+  .gp-example-content {
+    flex:1;
+  }
+  .gp-example-hanzi {
+    font-family:'Noto Serif SC',serif;
+    font-size:17.5px;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.4;
+    margin-bottom:2px;
+  }
+  .gp-example-pinyin {
+    font-size:13px;
+    font-weight:600;
+    color:var(--amber-deep);
+    margin-bottom:2px;
+  }
+  .gp-example-meaning {
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .gp-speaker-btn {
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid var(--hairline);
+    background:var(--paper-deep);
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:all .18s ease;
+  }
+  .gp-speaker-btn:hover {
+    background:var(--jade-tint);
+    border-color:var(--jade);
+    color:var(--jade);
+    transform:scale(1.08);
+  }
+  .gp-speaker-btn:active {
+    transform:scale(0.95);
+  }
+  .gp-speaker-btn svg {
+    width:16px;
+    height:16px;
+    fill:currentColor;
+  }
+  .gp-speaker-btn.speaking {
+    background:var(--jade);
+    color:#fff;
+    border-color:var(--jade);
+    box-shadow:0 0 0 4px rgba(46,105,88,0.25);
+  }
+
+  /* Interactive Grammar Practice */
+  .grammar-practice-card {
+    background:var(--paper-card);
+    border:1.5px solid var(--hairline);
+    border-radius:16px;
+    padding:24px 22px;
+    box-shadow:var(--shadow-md);
+  }
+  .unscramble-label {
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .unscramble-target-zone {
+    min-height:56px;
+    background:var(--paper);
+    border:2px dashed rgba(46,105,88,0.4);
+    border-radius:12px;
+    padding:10px 14px;
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:18px;
+    transition:all .15s ease;
+  }
+  .unscramble-word-chip {
+    padding:7px 14px;
+    background:var(--jade);
+    color:#fff;
+    border:1px solid var(--jade);
+    border-radius:8px;
+    font-family:'Noto Serif SC',serif;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    user-select:none;
+    transition:all .15s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    box-shadow:0 2px 5px rgba(46,105,88,0.25);
+  }
+  .unscramble-word-chip:hover {
+    transform:translateY(-2px);
+    background:var(--seal-son);
+    border-color:var(--seal-son);
+  }
+  .unscramble-pool-zone {
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:20px;
+    min-height:46px;
+    align-items:center;
+    padding:10px 12px;
+    background:rgba(255,255,255,0.5);
+    border-radius:10px;
+    border:1px solid var(--hairline);
+  }
+  .unscramble-pool-chip {
+    padding:7px 14px;
+    background:var(--paper);
+    border:1.5px solid var(--hairline);
+    border-radius:8px;
+    font-family:'Noto Serif SC',serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+    cursor:pointer;
+    transition:all .15s ease;
+    user-select:none;
+  }
+  .unscramble-pool-chip:hover {
+    border-color:var(--jade);
+    background:var(--jade-tint);
+    color:var(--jade);
+    transform:translateY(-2px);
+  }
+  .unscramble-pool-chip.used {
+    opacity:0.25;
+    pointer-events:none;
+    transform:scale(0.95);
+    border-style:dashed;
+  }
+
+  /* Modals: Grammar Edit & SQL Script */
+  .grammar-modal {
+    background:var(--paper);
+    border:1.5px solid var(--hairline);
+    border-radius:18px;
+    padding:24px 26px;
+    max-width:580px;
+    width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    box-shadow:var(--shadow-lg);
+  }
+  .grammar-field-group {
+    margin-bottom:14px;
+  }
+  .grammar-field-label {
+    display:block;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:5px;
+  }
+  .grammar-field-input, .grammar-field-textarea {
+    width:100%;
+    padding:9px 12px;
+    border:1.5px solid var(--hairline);
+    border-radius:8px;
+    font-family:inherit;
+    font-size:13.5px;
+    background:var(--paper-card);
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s;
+  }
+  .grammar-field-input:focus, .grammar-field-textarea:focus {
+    border-color:var(--jade);
+    background:#fff;
+  }
+  .grammar-sql-pre {
+    background:#1E1E1E;
+    color:#D4D4D4;
+    padding:14px;
+    border-radius:10px;
+    font-family:monospace;
+    font-size:12px;
+    line-height:1.5;
+    overflow-x:auto;
+    max-height:340px;
+    border:1px solid #333;
+    white-space:pre-wrap;
+    word-break:break-all;
+  }
 
   .progress-wrap{
     flex:1;
@@ -1619,6 +2046,191 @@
   </div>
 </div>
 
+<!-- GRAMMAR SCREEN -->
+<div id="grammar-screen" class="screen">
+  <div class="main-wrapper">
+    <div class="grammar-container">
+      <div class="studio-bar">
+        <button class="back-btn" onclick="goBack()" title="Quay lại">
+          <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <span>Trang chủ</span>
+          <kbd class="desktop-only">Esc</kbd>
+        </button>
+        <span class="studio-title-badge badge-gm" id="grammar-screen-title">📖 Ngữ pháp bài học</span>
+
+        <div class="progress-wrap" id="grammar-progress-wrap" style="display:none">
+          <div class="progress-bar"><div class="fill" id="grammar-progress-fill" style="background:var(--jade)"></div></div>
+          <span class="progress-text" id="grammar-counter">0/0</span>
+        </div>
+      </div>
+
+      <!-- HSK Textbook Lesson Selector Bar -->
+      <div class="hsk-textbook-selector-bar" style="background:var(--paper-card);border:1.5px solid var(--hairline);border-radius:12px;padding:9px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">📚</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--ink-soft)">Giáo trình Chuẩn HSK (NXB ĐH Ngôn ngữ Bắc Kinh):</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex:1;max-width:400px;justify-content:flex-end">
+          <select id="select-hsk-textbook-lesson" class="voice-select-dropdown" style="margin-top:0;padding:6px 10px;font-size:12.5px;background:var(--paper);border-color:var(--hairline)" onchange="onSelectTextbookLesson(this.value)">
+          </select>
+        </div>
+      </div>
+
+      <!-- Grammar Sub-bar: Tab switcher & quick tools -->
+      <div class="grammar-subbar">
+        <div class="grammar-tabs-wrap">
+          <button class="grammar-tab-btn active" id="tab-btn-theory" onclick="switchGrammarTab('theory')">
+            <svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+            <span>Lý thuyết & Ví dụ</span>
+          </button>
+          <button class="grammar-tab-btn" id="tab-btn-practice" onclick="switchGrammarTab('practice')">
+            <svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            <span>Luyện tập ngữ pháp</span>
+          </button>
+        </div>
+
+        <div class="grammar-quick-actions">
+          <button class="grammar-tool-btn" onclick="openAddGrammarModal()" title="Thêm ghi chú ngữ pháp cho bài học này">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <span>Thêm ngữ pháp</span>
+          </button>
+          <button class="grammar-tool-btn" onclick="openGrammarSqlModal()" title="Xem câu lệnh SQL tạo bảng và nạp vào Supabase">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <span class="desktop-only">Lệnh SQL Supabase</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW 1: THEORY & EXAMPLES -->
+      <div id="grammar-theory-view">
+        <div id="grammar-loading" class="spinner" style="display:none"></div>
+        <div id="grammar-points-container"></div>
+        <div id="grammar-empty-state" class="empty-state" style="display:none;text-align:center;padding:48px 20px;background:var(--paper-card);border-radius:14px;border:1.5px dashed var(--hairline)">
+          <div style="font-size:40px;margin-bottom:8px">📖</div>
+          <h3 style="font-size:17px;font-weight:700">Chưa có ngữ pháp cho bài học này</h3>
+          <p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px;margin-bottom:16px">Bạn có thể bấm nút bên dưới để thêm điểm ngữ pháp đầu tiên</p>
+          <button class="primary-action-btn" style="display:inline-flex;width:auto;padding:10px 20px;background:var(--jade)" onclick="openAddGrammarModal()">+ Thêm điểm ngữ pháp ngay</button>
+        </div>
+      </div>
+
+      <!-- VIEW 2: INTERACTIVE PRACTICE (UNSCRAMBLE & CHOICE) -->
+      <div id="grammar-practice-view" style="display:none">
+        <div class="grammar-practice-card" id="gp-card">
+          <!-- Exercise Content will be rendered dynamically -->
+          <div id="gp-practice-body"></div>
+
+          <!-- Finish Screen for Practice -->
+          <div id="gp-practice-finish" class="finish-view" style="display:none">
+            <svg class="finish-icon" viewBox="0 0 24 24" style="color:var(--jade);fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <div class="finish-title">Hoàn thành luyện tập ngữ pháp!</div>
+            <div class="finish-sub" id="gp-finish-sub">Bạn đã xuất sắc hoàn tất toàn bộ câu hỏi ôn luyện ngữ pháp của buổi học này.</div>
+            <div class="finish-stats-row">
+              <div class="stat-block"><div class="num" id="gp-finish-correct" style="color:var(--jade)">0</div><div class="lbl">Chính xác</div></div>
+              <div class="stat-block"><div class="num" id="gp-finish-wrong" style="color:var(--seal-son)">0</div><div class="lbl">Làm lại</div></div>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:360px">
+              <button class="primary-action-btn" style="background:var(--jade)" onclick="startGrammarPractice()">Luyện tập lại</button>
+              <button class="back-btn" style="padding:12px 20px;font-size:14px;justify-content:center;width:100%" onclick="switchGrammarTab('theory')">Xem lại lý thuyết</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD / EDIT GRAMMAR POINT -->
+<div class="modal-overlay" id="grammar-edit-modal" onclick="if(event.target===this)closeAddGrammarModal()">
+  <div class="grammar-modal">
+    <div class="modal-title">
+      <span id="grammar-modal-heading">➕ Thêm điểm ngữ pháp mới</span>
+      <button onclick="closeAddGrammarModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:var(--ink-soft)" title="Đóng">✕</button>
+    </div>
+
+    <input type="hidden" id="gm-input-id">
+
+    <div class="grammar-field-group">
+      <label class="grammar-field-label">1. Tên điểm ngữ pháp / Tiêu đề: *</label>
+      <input type="text" id="gm-input-title" class="grammar-field-input" placeholder="VD: Câu chữ 是 (shì) - Phán đoán / Khẳng định" autocomplete="off">
+    </div>
+
+    <div class="grammar-field-group">
+      <label class="grammar-field-label">2. Công thức / Cấu trúc trọng tâm: *</label>
+      <input type="text" id="gm-input-structure" class="grammar-field-input" placeholder="VD: Chủ ngữ + 是 + Tân ngữ | Phủ định: Chủ ngữ + 不是 + Tân ngữ" autocomplete="off">
+    </div>
+
+    <div class="grammar-field-group">
+      <label class="grammar-field-label">3. Giải thích cách dùng & Lưu ý:</label>
+      <textarea id="gm-input-explanation" class="grammar-field-textarea" rows="3" placeholder="Giải thích ngắn gọn quy tắc ngữ pháp, cách dùng, lưu ý khi nói/viết..."></textarea>
+    </div>
+
+    <div class="grammar-field-group">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <label class="grammar-field-label" style="margin-bottom:0">4. Các câu ví dụ (Định dạng: Hán tự | Pinyin | Nghĩa TV):</label>
+        <span style="font-size:11px;color:var(--jade);cursor:pointer;font-weight:600" onclick="insertSampleExampleLine()">+ Thêm mẫu</span>
+      </div>
+      <textarea id="gm-input-examples" class="grammar-field-textarea" rows="4" placeholder="Mỗi câu trên 1 dòng:&#10;我是学生。 | Wǒ shì xuésheng. | Tôi là học sinh.&#10;他不是老师。 | Tā bú shì lǎoshī. | Anh ấy không phải là giáo viên."></textarea>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button type="button" class="back-btn" style="flex:1;justify-content:center;padding:10px 14px;font-size:13.5px" onclick="closeAddGrammarModal()">Hủy bỏ</button>
+      <button type="button" class="primary-action-btn" style="flex:1.5;min-height:42px;font-size:14px;background:var(--jade)" onclick="saveGrammarPoint()">Lưu điểm ngữ pháp</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SUPABASE SQL SCRIPT -->
+<div class="modal-overlay" id="grammar-sql-modal" onclick="if(event.target===this)closeGrammarSqlModal()">
+  <div class="grammar-modal" style="max-width:640px">
+    <div class="modal-title">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">🗄️</span>
+        <span>Lệnh SQL Supabase cho Ngữ pháp</span>
+      </div>
+      <button onclick="closeGrammarSqlModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:var(--ink-soft)" title="Đóng">✕</button>
+    </div>
+
+    <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;line-height:1.5">
+      Để nạp toàn bộ <b>50 bài học HSK 1, 2, 3 (58 điểm ngữ pháp)</b> vào Supabase, bạn chỉ cần mở file <code style="color:var(--jade);font-weight:700">supabase_grammar_import.sql</code> có sẵn trong thư mục dự án, dán vào <b>SQL Editor</b> trên Supabase Dashboard và bấm <b>Run</b>!
+    </p>
+
+    <pre class="grammar-sql-pre" id="grammar-sql-code">-- 1. Tạo bảng grammar (nếu chưa có) hoặc cập nhật cấu trúc
+CREATE TABLE IF NOT EXISTS grammar (
+  id BIGSERIAL PRIMARY KEY,
+  session_id BIGINT REFERENCES sessions(id) ON DELETE CASCADE,
+  hsk_level INT NOT NULL DEFAULT 1,
+  lesson_num INT NOT NULL DEFAULT 1,
+  lesson_title TEXT,
+  title TEXT NOT NULL,
+  structure TEXT,
+  explanation TEXT,
+  examples JSONB DEFAULT '[]'::jsonb,
+  exercises JSONB DEFAULT '[]'::jsonb,
+  order_index INT DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Cấu hình RLS và đánh index
+ALTER TABLE grammar ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS idx_grammar_session_id ON grammar(session_id);
+CREATE INDEX IF NOT EXISTS idx_grammar_hsk_lesson ON grammar(hsk_level, lesson_num);
+
+CREATE POLICY "Allow public read on grammar" ON grammar FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "Allow public insert on grammar" ON grammar FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "Allow public update on grammar" ON grammar FOR UPDATE TO anon, authenticated USING (true);
+CREATE POLICY "Allow public delete on grammar" ON grammar FOR DELETE TO anon, authenticated USING (true);
+
+-- Xem file supabase_grammar_import.sql để lấy toàn bộ dữ liệu 50 bài học HSK 1, 2, 3!</pre>
+
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button type="button" class="back-btn" style="flex:1;justify-content:center;padding:10px 14px;font-size:13.5px" onclick="closeGrammarSqlModal()">Đóng</button>
+      <button type="button" class="primary-action-btn" id="btn-copy-sql" style="flex:1.5;min-height:42px;font-size:14px;background:var(--jade)" onclick="copyGrammarSql()">
+        <span>📋 Sao chép câu lệnh SQL</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- KEYBOARD SHORTCUTS MODAL (DESKTOP ONLY) -->
 <div class="modal-overlay" id="shortcuts-modal" onclick="if(event.target===this)closeShortcutsModal()">
   <div class="shortcuts-modal">
@@ -1630,6 +2242,7 @@
       <div class="sc-item"><span>Kiểm tra đáp án / Xác nhận</span><kbd>Enter ↵</kbd></div>
       <div class="sc-item"><span>Chuyển sang từ kế tiếp</span><div><kbd>Space ␣</kbd> hoặc <kbd>Enter ↵</kbd></div></div>
       <div class="sc-item"><span>Chọn đáp án trắc nghiệm</span><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></div></div>
+      <div class="sc-item"><span>Luyện tập ngữ pháp (chọn đáp án / kiểm tra)</span><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> / <kbd>Enter ↵</kbd></div></div>
       <div class="sc-item"><span>Quay lại trang chủ</span><kbd>Esc</kbd></div>
       <div class="sc-item"><span>Nghe lại phát âm Pinyin</span><div><kbd>R</kbd> hoặc bấm biểu tượng <b style="color:var(--seal-son)">🔊</b></div></div>
       <div class="sc-item"><span>Gõ Pinyin không dấu (vẫn tính đúng)</span><span style="color:var(--jade);font-weight:600">xue = xué</span></div>
@@ -1909,7 +2522,18 @@ var state = {
   wpIsChecked: false, wpIsCorrect: false,
   wpCorrectCount: 0, wpWrongCount: 0, wpRemainingVocabs: 0,
   wpLastActionTime: 0,
-  wpIsRepractice: false
+  wpIsRepractice: false,
+
+  // Grammar Studio state
+  grammarSessionId: null,
+  grammarPoints: [],
+  grammarActiveTab: 'theory', // 'theory' | 'practice'
+  grammarExercises: [],
+  grammarCurrentExIdx: 0,
+  grammarScore: { correct: 0, wrong: 0 },
+  unscrambleTargetWords: [],
+  unscramblePoolWords: [],
+  unscrambleIsChecked: false
 };
 
 // Getter for backward compatibility
@@ -2481,6 +3105,11 @@ function showScreen(name, params) {
     state.lastSessionId = params.sessionId;
     localStorage.setItem('lastSessionId', params.sessionId);
     startWritePinyin(params.sessionId);
+  } else if (name === 'grammar' && params && params.sessionId) {
+    state.grammarSessionId = params.sessionId;
+    state.lastSessionId = params.sessionId;
+    localStorage.setItem('lastSessionId', params.sessionId);
+    startGrammar(params.sessionId);
   }
   window.scrollTo(0, 0);
 }
@@ -2592,13 +3221,17 @@ function buildSessionCardHtml(s, idx, ordinals, isHighlight) {
     '</div>' +
     '<div class="card-split"></div>' +
     '<div class="card-actions">' +
+      '<button class="action-btn btn-gm" onclick="showScreen(\'grammar\',{sessionId:' + s.id + '})" title="Học ngữ pháp buổi này">' +
+        '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>' +
+        '<span>Ngữ pháp</span>' +
+      '</button>' +
       '<button class="action-btn btn-wp" onclick="showScreen(\'write-pinyin\',{sessionId:' + s.id + '})">' +
-        '<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>' +
+        '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>' +
         '<span>Viết Pinyin</span>' +
       '</button>' +
       '<button class="action-btn btn-qz" onclick="showScreen(\'quiz\',{sessionId:' + s.id + '})">' +
-        '<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' +
-        '<span>Ôn tập ngay</span>' +
+        '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>' +
+        '<span>Ôn tập</span>' +
       '</button>' +
     '</div>' +
   '</div>';
@@ -3216,6 +3849,906 @@ function showQuizFinish(correct, wrong) {
   playFinish(); startConfetti();
 }
 
+// ===== GRAMMAR STUDIO ENGINE (THUẦN DỮ LIỆU CLOUD SUPABASE) =====
+
+// Cache danh sách bài học giáo trình tải từ bảng grammar trên Supabase
+state.cachedTextbookLessons = null;
+
+async function loadTextbookLessonsList() {
+  if (state.cachedTextbookLessons && state.cachedTextbookLessons.length > 0) {
+    return state.cachedTextbookLessons;
+  }
+  if (sb) {
+    try {
+      var res = await sb.from('grammar')
+        .select('hsk_level, lesson_num, lesson_title')
+        .order('hsk_level', { ascending: true })
+        .order('lesson_num', { ascending: true });
+      if (!res.error && res.data && res.data.length > 0) {
+        var map = {};
+        res.data.forEach(function(r) {
+          var key = r.hsk_level + '_' + r.lesson_num;
+          if (!map[key]) {
+            map[key] = {
+              hsk_level: r.hsk_level,
+              lesson: r.lesson_num,
+              title: r.lesson_title || ('Bài ' + r.lesson_num)
+            };
+          }
+        });
+        state.cachedTextbookLessons = Object.values(map);
+        return state.cachedTextbookLessons;
+      }
+    } catch(e) {
+      console.log('Lỗi tải danh sách bài từ Supabase:', e);
+    }
+  }
+  return [];
+}
+
+function detectHskLesson(session) {
+  var hskLevel = (session && session.hsk_level) ? session.hsk_level : (state.selectedHsk || 1);
+  var allLessons = state.cachedTextbookLessons || [];
+  var lessons = allLessons.filter(function(l){ return l.hsk_level === hskLevel; });
+
+  if (!session || lessons.length === 0) {
+    return { lesson: 1, title: 'Bài 1', hsk_level: hskLevel };
+  }
+
+  var title = (session.title || '').toLowerCase();
+
+  // 1. Phân tích số bài trong tiêu đề: "bài 3", "bai 3", "lesson 3", "buổi 3"
+  var numMatch = title.match(/(?:bài|bai|buổi|buoi|lesson|unit)\s*([0-9]+)/i);
+  if (numMatch && numMatch[1]) {
+    var num = parseInt(numMatch[1], 10);
+    var foundByNum = lessons.find(function(l){ return l.lesson === num; });
+    if (foundByNum) return foundByNum;
+  }
+
+  // 2. Tìm theo từ khóa Hán tự
+  for (var i = 0; i < lessons.length; i++) {
+    var l = lessons[i];
+    var raw = (l.title || '').toLowerCase();
+    var colonIdx = raw.indexOf(':');
+    var kw = colonIdx !== -1 ? raw.substring(colonIdx + 1).trim() : raw;
+    if (kw && title.indexOf(kw.slice(0, 3)) !== -1) {
+      return l;
+    }
+  }
+
+  // 3. Theo thứ tự sắp xếp của sessions
+  var sameHskSessions = (state.sessions || [])
+    .filter(function(s){ return s.hsk_level === hskLevel; })
+    .slice()
+    .sort(function(a, b){ return new Date(a.created_at || 0) - new Date(b.created_at || 0); });
+  var idx = sameHskSessions.findIndex(function(s){ return s.id === session.id; });
+  if (idx >= 0 && idx < lessons.length) {
+    return lessons[idx];
+  }
+
+  return lessons[0] || { lesson: 1, title: 'Bài 1', hsk_level: hskLevel };
+}
+
+async function populateTextbookLessonSelector(selectedLessonNum, currentHsk) {
+  var select = document.getElementById('select-hsk-textbook-lesson');
+  if (!select) return;
+  var activeHsk = currentHsk || state.selectedHsk || 1;
+
+  var allLessons = await loadTextbookLessonsList();
+  select.innerHTML = '';
+  [1, 2, 3].forEach(function(lv) {
+    var lessons = allLessons.filter(function(l){ return l.hsk_level === lv; });
+    if (lessons.length === 0) return;
+    var group = document.createElement('optgroup');
+    group.label = 'Giáo trình Chuẩn HSK ' + lv + ' (' + lessons.length + ' bài)';
+    lessons.forEach(function(l) {
+      var opt = document.createElement('option');
+      opt.value = lv + '_' + l.lesson;
+      opt.textContent = 'HSK ' + lv + ' - ' + l.title;
+      if (lv === activeHsk && l.lesson === selectedLessonNum) {
+        opt.selected = true;
+      }
+      group.appendChild(opt);
+    });
+    select.appendChild(group);
+  });
+}
+
+async function onSelectTextbookLesson(val) {
+  var parts = String(val).split('_');
+  var hskLevel = parseInt(parts[0], 10) || state.selectedHsk || 1;
+  var lessonNum = parseInt(parts[1] || parts[0], 10);
+
+  var loading = document.getElementById('grammar-loading');
+  if (loading) loading.style.display = 'block';
+
+  var points = [];
+  if (sb) {
+    try {
+      var res = await sb.from('grammar')
+        .select('*')
+        .eq('hsk_level', hskLevel)
+        .eq('lesson_num', lessonNum)
+        .order('order_index', { ascending: true });
+      if (!res.error && res.data && res.data.length > 0) {
+        points = res.data.map(function(item) {
+          return {
+            id: item.id,
+            title: item.title,
+            structure: item.structure || '',
+            explanation: item.explanation || '',
+            examples: (typeof item.examples === 'string' ? JSON.parse(item.examples) : item.examples) || [],
+            exercises: (typeof item.exercises === 'string' ? JSON.parse(item.exercises) : item.exercises) || [],
+            isCustom: false
+          };
+        });
+      }
+    } catch(e) {
+      console.log('Lỗi tải ngữ pháp từ Supabase:', e);
+    }
+  }
+
+  if (loading) loading.style.display = 'none';
+
+  state.grammarPoints = points;
+
+  // Cập nhật tiêu đề
+  var titleBadge = document.getElementById('grammar-screen-title');
+  var allLessons = state.cachedTextbookLessons || [];
+  var match = allLessons.find(function(l){ return l.hsk_level === hskLevel && l.lesson === lessonNum; });
+  var titleText = match ? match.title : ('Bài ' + lessonNum);
+  if (titleBadge) {
+    titleBadge.textContent = '📖 ' + titleText + ' (Chuẩn HSK ' + hskLevel + ')';
+  }
+
+  renderGrammarPoints(state.grammarPoints);
+  showSnackbar('Đã tải từ Supabase: ' + titleText);
+}
+
+async function startGrammar(sessionId) {
+  state.grammarSessionId = sessionId;
+  state.grammarActiveTab = 'theory';
+
+  var theoryView = document.getElementById('grammar-theory-view');
+  var practiceView = document.getElementById('grammar-practice-view');
+  var progWrap = document.getElementById('grammar-progress-wrap');
+  if (theoryView) theoryView.style.display = 'block';
+  if (practiceView) practiceView.style.display = 'none';
+  if (progWrap) progWrap.style.display = 'none';
+
+  var tabTheory = document.getElementById('tab-btn-theory');
+  var tabPractice = document.getElementById('tab-btn-practice');
+  if (tabTheory) tabTheory.classList.add('active');
+  if (tabPractice) tabPractice.classList.remove('active');
+
+  var loading = document.getElementById('grammar-loading');
+  if (loading) loading.style.display = 'block';
+
+  // Tải danh mục bài học từ Supabase
+  await loadTextbookLessonsList();
+
+  // Lấy thông tin session
+  var session = state.sessions.find(function(s){ return s.id === sessionId; });
+  var hskLv = (session && session.hsk_level) ? session.hsk_level : (state.selectedHsk || 1);
+
+  // Nhận diện bài học tương ứng
+  var matchedLesson = detectHskLesson(session);
+  state.currentSelectedLesson = matchedLesson;
+
+  // Tải điểm ngữ pháp trực tiếp từ Supabase
+  var points = await loadGrammarPoints(sessionId, session, matchedLesson);
+  state.grammarPoints = points;
+
+  // Cập nhật dropdown chọn bài
+  await populateTextbookLessonSelector(matchedLesson.lesson, hskLv);
+
+  var titleBadge = document.getElementById('grammar-screen-title');
+  if (titleBadge) {
+    var titleText = matchedLesson ? matchedLesson.title : (session ? session.title : 'Buổi học');
+    titleBadge.textContent = '📖 ' + titleText + ' (Chuẩn HSK ' + hskLv + ')';
+  }
+
+  if (loading) loading.style.display = 'none';
+  renderGrammarPoints(points);
+}
+
+async function loadGrammarPoints(sessionId, session, matchedLesson) {
+  var points = [];
+  var hskLevel = (session && session.hsk_level) ? session.hsk_level : (state.selectedHsk || 1);
+  var lessonNum = matchedLesson ? matchedLesson.lesson : 1;
+
+  if (sb) {
+    try {
+      // Ưu tiên 1: Lấy ngữ pháp riêng gắn trực tiếp với session_id (nếu có)
+      var res = await sb.from('grammar').select('*').eq('session_id', sessionId).order('order_index', { ascending: true });
+
+      // Ưu tiên 2: Nếu chưa có điểm ngữ pháp riêng cho session, lấy theo bài học giáo trình đã nạp trên Supabase
+      if ((!res.data || res.data.length === 0) && hskLevel && lessonNum) {
+        res = await sb.from('grammar').select('*').eq('hsk_level', hskLevel).eq('lesson_num', lessonNum).order('order_index', { ascending: true });
+      }
+
+      if (!res.error && res.data && res.data.length > 0) {
+        points = res.data.map(function(item) {
+          return {
+            id: item.id,
+            title: item.title,
+            structure: item.structure || '',
+            explanation: item.explanation || '',
+            examples: (typeof item.examples === 'string' ? JSON.parse(item.examples) : item.examples) || [],
+            exercises: (typeof item.exercises === 'string' ? JSON.parse(item.exercises) : item.exercises) || [],
+            isCustom: !!item.session_id
+          };
+        });
+        return points;
+      }
+    } catch(e) {
+      console.log('Lỗi truy vấn bảng grammar trên Supabase:', e);
+    }
+  }
+
+  return points;
+}
+
+function renderGrammarPoints(points) {
+  var container = document.getElementById('grammar-points-container');
+  var emptyState = document.getElementById('grammar-empty-state');
+  if (!container) return;
+
+  if (!points || points.length === 0) {
+    container.innerHTML = '';
+    if (emptyState) emptyState.style.display = 'block';
+    return;
+  }
+
+  if (emptyState) emptyState.style.display = 'none';
+
+  var html = '';
+  points.forEach(function(p, idx) {
+    var orderNumber = (idx + 1 < 10 ? '0' : '') + (idx + 1);
+
+    // Xử lý hiển thị cấu trúc trọng tâm
+    var patternHtml = '';
+    if (p.structure && p.structure.trim()) {
+      var rawStruct = p.structure.trim();
+      var chips = rawStruct.split(/\s*(\+|\/|\|)\s*/).filter(Boolean);
+      var chipsHtml = '';
+      chips.forEach(function(tok) {
+        if (tok === '+' || tok === '/' || tok === '|') {
+          chipsHtml += '<span style="color:var(--jade);font-weight:700">' + escHtml(tok) + '</span>';
+        } else {
+          var isKw = tok.includes('是') || tok.includes('不') || tok.includes('吗') || tok.includes('什么') || tok.includes('呢') || tok.includes('了') || tok.includes('有') || tok.includes('在');
+          chipsHtml += '<span class="gp-formula-chip' + (isKw ? ' keyword' : '') + '">' + escHtml(tok) + '</span>';
+        }
+      });
+
+      patternHtml = '<div class="gp-pattern-box">' +
+        '<span class="gp-pattern-tag">' +
+          '<svg style="width:13px;height:13px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"/></svg>' +
+          'Cấu trúc trọng tâm:' +
+        '</span>' +
+        '<div class="gp-pattern-formula">' + chipsHtml + '</div>' +
+      '</div>';
+    }
+
+    // Xử lý danh sách câu ví dụ
+    var examplesHtml = '';
+    if (p.examples && Array.isArray(p.examples) && p.examples.length > 0) {
+      var itemsHtml = '';
+      p.examples.forEach(function(ex) {
+        itemsHtml += '<div class="gp-example-item">' +
+          '<div class="gp-example-content">' +
+            '<div class="gp-example-hanzi">' + escHtml(ex.hanzi) + '</div>' +
+            '<div class="gp-example-pinyin">' + escHtml(ex.pinyin) + '</div>' +
+            '<div class="gp-example-meaning">' + escHtml(ex.meaning) + '</div>' +
+          '</div>' +
+          '<button type="button" class="gp-speaker-btn" title="Phát âm câu này" onclick="speakGrammarExample(\'' + escAttr(ex.hanzi) + '\', \'' + escAttr(ex.pinyin) + '\', this)">' +
+            '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>' +
+          '</button>' +
+        '</div>';
+      });
+
+      examplesHtml = '<div class="gp-examples-section">' +
+        '<div class="gp-examples-heading">' +
+          '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' +
+          'Câu ví dụ thực tế có phát âm chuẩn:' +
+        '</div>' +
+        '<div class="gp-examples-list">' + itemsHtml + '</div>' +
+      '</div>';
+    }
+
+    // Nút chỉnh sửa / xóa nếu là bài tùy chỉnh
+    var editBtnHtml = '';
+    if (p.isCustom) {
+      editBtnHtml = '<button class="tool-btn" style="padding:4px 8px;font-size:11.5px;height:auto" onclick="deleteGrammarPoint(\'' + p.id + '\')" title="Xóa điểm ngữ pháp này">🗑️</button>';
+    }
+
+    html += '<div class="grammar-point-card">' +
+      '<div class="gp-header">' +
+        '<div class="gp-title-wrap">' +
+          '<div class="gp-badge">' + orderNumber + '</div>' +
+          '<div class="gp-title">' + escHtml(p.title) + '</div>' +
+        '</div>' +
+        editBtnHtml +
+      '</div>' +
+      patternHtml +
+      '<div class="gp-explanation">' + p.explanation + '</div>' +
+      examplesHtml +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function switchGrammarTab(tab) {
+  state.grammarActiveTab = tab;
+  var theoryView = document.getElementById('grammar-theory-view');
+  var practiceView = document.getElementById('grammar-practice-view');
+  var progWrap = document.getElementById('grammar-progress-wrap');
+  var tabTheory = document.getElementById('tab-btn-theory');
+  var tabPractice = document.getElementById('tab-btn-practice');
+
+  if (tab === 'theory') {
+    if (theoryView) theoryView.style.display = 'block';
+    if (practiceView) practiceView.style.display = 'none';
+    if (progWrap) progWrap.style.display = 'none';
+    if (tabTheory) tabTheory.classList.add('active');
+    if (tabPractice) tabPractice.classList.remove('active');
+    stopVocabAudio();
+  } else if (tab === 'practice') {
+    if (theoryView) theoryView.style.display = 'none';
+    if (practiceView) practiceView.style.display = 'block';
+    if (progWrap) progWrap.style.display = 'flex';
+    if (tabPractice) tabPractice.classList.add('active');
+    if (tabTheory) tabTheory.classList.remove('active');
+    startGrammarPractice();
+  }
+}
+
+function speakGrammarExample(text, pinyin, btnEl) {
+  if (btnEl) {
+    document.querySelectorAll('.gp-speaker-btn').forEach(function(b){ b.classList.remove('speaking'); });
+    btnEl.classList.add('speaking');
+  }
+  speakVocabText(text, pinyin, true);
+  setTimeout(function() {
+    if (btnEl) btnEl.classList.remove('speaking');
+  }, 3500);
+}
+
+// ===== GRAMMAR PRACTICE INTERACTIVE ENGINE =====
+
+function startGrammarPractice() {
+  stopVocabAudio();
+  stopConfetti();
+
+  var finishView = document.getElementById('gp-practice-finish');
+  if (finishView) finishView.style.display = 'none';
+
+  // Tổng hợp tất cả bài tập từ các điểm ngữ pháp hiện tại
+  var exercises = [];
+  (state.grammarPoints || []).forEach(function(p) {
+    if (p.exercises && Array.isArray(p.exercises)) {
+      p.exercises.forEach(function(ex) {
+        exercises.push(Object.assign({}, ex, { grammarTitle: p.title }));
+      });
+    }
+  });
+
+  // Nếu không có bài tập sẵn, tự động sinh từ các câu ví dụ
+  if (exercises.length === 0) {
+    (state.grammarPoints || []).forEach(function(p) {
+      if (p.examples && Array.isArray(p.examples)) {
+        p.examples.forEach(function(ex) {
+          if (ex.hanzi && ex.hanzi.length >= 3) {
+            // Tách các từ đơn giản để làm bài tập ghép câu
+            var clean = ex.hanzi.replace(/[。！？\s]/g, '');
+            var words = [];
+            for (var i = 0; i < clean.length; i += 2) {
+              words.push(clean.substring(i, Math.min(clean.length, i + 2)));
+            }
+            if (words.length >= 2) {
+              exercises.push({
+                type: 'order',
+                words: words,
+                answer: clean,
+                pinyin: ex.pinyin,
+                meaning: ex.meaning,
+                explanation: 'Cấu trúc câu chuẩn: ' + (p.structure || p.title)
+              });
+            }
+          }
+        });
+      }
+    });
+  }
+
+  if (exercises.length === 0) {
+    var body = document.getElementById('gp-practice-body');
+    if (body) {
+      body.innerHTML = '<div style="text-align:center;padding:36px 20px">' +
+        '<div style="font-size:36px;margin-bottom:8px">💡</div>' +
+        '<h3 style="font-size:16px;font-weight:700">Chưa có bài tập tương tác cho bài này</h3>' +
+        '<p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px">Bạn có thể bấm sang tab "Lý thuyết & Ví dụ" để học câu mẫu có âm thanh</p>' +
+      '</div>';
+    }
+    return;
+  }
+
+  state.grammarExercises = shuffle(exercises);
+  state.grammarCurrentExIdx = 0;
+  state.grammarScore = { correct: 0, wrong: 0 };
+
+  setupNextGrammarPractice();
+}
+
+function setupNextGrammarPractice() {
+  stopVocabAudio();
+  var total = state.grammarExercises.length;
+  var current = state.grammarCurrentExIdx;
+
+  if (current >= total) {
+    showGrammarFinish();
+    return;
+  }
+
+  var progFill = document.getElementById('grammar-progress-fill');
+  var progCounter = document.getElementById('grammar-counter');
+  if (progFill) progFill.style.width = ((current / total) * 100) + '%';
+  if (progCounter) progCounter.textContent = current + '/' + total;
+
+  var ex = state.grammarExercises[current];
+  state.grammarCurrentPractice = ex;
+
+  var body = document.getElementById('gp-practice-body');
+  if (!body) return;
+
+  if (ex.type === 'choice') {
+    renderGrammarChoiceExercise(ex, body);
+  } else {
+    renderGrammarUnscrambleExercise(ex, body);
+  }
+}
+
+function renderGrammarChoiceExercise(ex, container) {
+  var ords = ['A', 'B', 'C', 'D'];
+  var opts = ex.options || [];
+
+  var optsHtml = '';
+  opts.forEach(function(opt, i) {
+    optsHtml += '<div class="opt-card" id="gp-opt-' + i + '" onclick="checkGrammarChoice(\'' + escAttr(opt) + '\', ' + i + ')">' +
+      '<span class="key-badge">' + (ords[i] || (i + 1)) + '</span>' +
+      '<span class="text" style="font-family:\'Noto Serif SC\',serif;font-size:16px;font-weight:600">' + escHtml(opt) + '</span>' +
+    '</div>';
+  });
+
+  container.innerHTML = '<div style="margin-bottom:16px">' +
+    '<div class="col-label">' +
+      '<span>TRẮC NGHIỆM ĐIỀN TỪ VÀO CHỖ TRỐNG:</span>' +
+      '<span class="kbd-hint desktop-only">Phím số <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></span>' +
+    '</div>' +
+    '<div style="background:var(--paper);border:1.5px solid var(--hairline);border-radius:12px;padding:18px 20px;margin-top:8px;text-align:center">' +
+      '<div style="font-family:\'Noto Serif SC\',serif;font-size:24px;font-weight:700;color:var(--ink);letter-spacing:0.02em;line-height:1.4">' +
+        escHtml(ex.question) +
+      '</div>' +
+      (ex.pinyin ? '<div style="font-size:14px;color:var(--amber-deep);font-weight:600;margin-top:6px">' + escHtml(ex.pinyin) + '</div>' : '') +
+      (ex.meaning ? '<div style="font-size:13.5px;color:var(--ink-soft);margin-top:4px">Nghĩa: ' + escHtml(ex.meaning) + '</div>' : '') +
+    '</div>' +
+  '</div>' +
+  '<div class="quiz-options-grid" style="margin-top:14px">' + optsHtml + '</div>' +
+  '<div id="gp-choice-feedback" style="display:none;margin-top:14px"></div>';
+}
+
+function checkGrammarChoice(selected, optIdx) {
+  var ex = state.grammarCurrentPractice;
+  if (!ex || state.grammarChoiceChecked) return;
+  state.grammarChoiceChecked = true;
+
+  var isCorrect = (selected.trim() === ex.answer.trim());
+  if (isCorrect) {
+    state.grammarScore.correct++;
+    playCorrect();
+    // Đọc hoàn chỉnh câu
+    var fullSentence = ex.question.replace(/___+/g, ex.answer);
+    speakVocabText(fullSentence, ex.pinyin, true);
+  } else {
+    state.grammarScore.wrong++;
+    playWrong();
+  }
+
+  // Cập nhật giao diện các thẻ option
+  var opts = ex.options || [];
+  opts.forEach(function(opt, i) {
+    var el = document.getElementById('gp-opt-' + i);
+    if (el) {
+      el.classList.add('disabled');
+      if (opt.trim() === ex.answer.trim()) {
+        el.classList.add('correct');
+      } else if (i === optIdx) {
+        el.classList.add('wrong');
+      }
+    }
+  });
+
+  // Hiển thị khung phản hồi
+  var fb = document.getElementById('gp-choice-feedback');
+  if (fb) {
+    fb.style.display = 'block';
+    fb.innerHTML = '<div class="feedback-box">' +
+      '<div class="feedback-status ' + (isCorrect ? 'correct' : 'wrong') + '">' +
+        (isCorrect ? '✓ Chính xác tuyệt vời!' : '✗ Chưa chính xác') +
+      '</div>' +
+      '<div class="feedback-details">' +
+        '<div style="font-size:14px;color:var(--ink);margin-bottom:4px">' +
+          '<b>Đáp án đúng:</b> <span style="font-family:\'Noto Serif SC\',serif;font-size:16px;font-weight:700;color:var(--jade)">' + escHtml(ex.answer) + '</span>' +
+        '</div>' +
+        (ex.explanation ? '<div style="font-size:13px;color:var(--ink-soft);line-height:1.5">' + escHtml(ex.explanation) + '</div>' : '') +
+      '</div>' +
+      '<button class="next-btn" style="margin-top:10px" id="gp-choice-next-btn" onclick="nextGrammarPractice()">' +
+        '<span>Câu tiếp theo</span>' +
+        '<kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff">Space ␣</kbd>' +
+      '</button>' +
+    '</div>';
+
+    setTimeout(function() {
+      var nextBtn = document.getElementById('gp-choice-next-btn');
+      if (nextBtn) nextBtn.focus();
+    }, 120);
+  }
+}
+
+function renderGrammarUnscrambleExercise(ex, container) {
+  state.unscrambleIsChecked = false;
+  state.unscrambleTargetWords = [];
+  state.unscramblePoolWords = shuffle((ex.words || []).slice());
+
+  var poolChipsHtml = '';
+  state.unscramblePoolWords.forEach(function(w, i) {
+    poolChipsHtml += '<div class="unscramble-pool-chip" id="gp-pool-chip-' + i + '" onclick="clickUnscramblePoolWord(' + i + ')">' +
+      escHtml(w) +
+    '</div>';
+  });
+
+  container.innerHTML = '<div style="margin-bottom:14px">' +
+    '<div class="col-label">' +
+      '<span>SẮP XẾP TỪ THÀNH CÂU HOÀN CHỈNH:</span>' +
+      '<span class="kbd-hint desktop-only">Bấm các khối từ để xếp câu</span>' +
+    '</div>' +
+    '<div style="background:var(--paper);border:1px solid var(--hairline);border-radius:10px;padding:12px 16px;margin-top:6px">' +
+      '<div style="font-size:14.5px;font-weight:600;color:var(--ink)">Ý nghĩa câu: ' + escHtml(ex.meaning || '') + '</div>' +
+      (ex.pinyin ? '<div style="font-size:12.5px;color:var(--ink-faint);margin-top:2px">Gợi ý Pinyin: ' + escHtml(ex.pinyin) + '</div>' : '') +
+    '</div>' +
+  '</div>' +
+
+  '<div class="unscramble-label">' +
+    '<span>Câu của bạn (Chạm từ đã xếp để gỡ lại):</span>' +
+    '<button type="button" class="back-btn" style="padding:3px 8px;font-size:11.5px" onclick="resetUnscramble()">↺ Xếp lại</button>' +
+  '</div>' +
+  '<div class="unscramble-target-zone" id="gp-target-zone">' +
+    '<span style="color:var(--ink-faint);font-size:13px" id="gp-target-placeholder">Chạm các từ bên dưới để ghép vào đây...</span>' +
+  '</div>' +
+
+  '<div class="unscramble-label">Kho từ vựng có sẵn:</div>' +
+  '<div class="unscramble-pool-zone" id="gp-pool-zone">' + poolChipsHtml + '</div>' +
+
+  '<button class="primary-action-btn" id="gp-check-btn" style="background:var(--jade);min-height:44px" onclick="checkUnscrambleAnswer()">' +
+    'Kiểm tra câu vừa ghép' +
+  '</button>' +
+
+  '<div id="gp-unscramble-feedback" style="display:none;margin-top:14px"></div>';
+}
+
+function clickUnscramblePoolWord(idx) {
+  if (state.unscrambleIsChecked) return;
+  var word = state.unscramblePoolWords[idx];
+  if (!word) return;
+
+  var chip = document.getElementById('gp-pool-chip-' + idx);
+  if (chip && chip.classList.contains('used')) return;
+
+  if (chip) chip.classList.add('used');
+  state.unscrambleTargetWords.push({ text: word, poolIdx: idx });
+  renderUnscrambleTarget();
+}
+
+function clickUnscrambleTargetWord(targetIdx) {
+  if (state.unscrambleIsChecked) return;
+  var item = state.unscrambleTargetWords[targetIdx];
+  if (!item) return;
+
+  var poolChip = document.getElementById('gp-pool-chip-' + item.poolIdx);
+  if (poolChip) poolChip.classList.remove('used');
+
+  state.unscrambleTargetWords.splice(targetIdx, 1);
+  renderUnscrambleTarget();
+}
+
+function renderUnscrambleTarget() {
+  var tz = document.getElementById('gp-target-zone');
+  if (!tz) return;
+
+  if (state.unscrambleTargetWords.length === 0) {
+    tz.innerHTML = '<span style="color:var(--ink-faint);font-size:13px" id="gp-target-placeholder">Chạm các từ bên dưới để ghép vào đây...</span>';
+    return;
+  }
+
+  var html = '';
+  state.unscrambleTargetWords.forEach(function(item, idx) {
+    html += '<div class="unscramble-word-chip" onclick="clickUnscrambleTargetWord(' + idx + ')" title="Chạm để đưa lại kho từ">' +
+      escHtml(item.text) +
+      '<span style="font-size:11px;opacity:0.8;margin-left:2px">✕</span>' +
+    '</div>';
+  });
+  tz.innerHTML = html;
+}
+
+function resetUnscramble() {
+  if (state.unscrambleIsChecked) return;
+  state.unscrambleTargetWords = [];
+  renderUnscrambleTarget();
+  var poolChips = document.querySelectorAll('.unscramble-pool-chip');
+  poolChips.forEach(function(c){ c.classList.remove('used'); });
+}
+
+function checkUnscrambleAnswer() {
+  if (state.unscrambleIsChecked || !state.grammarCurrentPractice) return;
+  var userSentence = state.unscrambleTargetWords.map(function(w){ return w.text; }).join('').replace(/[\s,，.。!！?？]/g, '');
+  if (!userSentence) {
+    showSnackbar('Vui lòng chọn các từ để ghép thành câu trước!');
+    return;
+  }
+
+  var ex = state.grammarCurrentPractice;
+  var targetSentence = (ex.answer || '').replace(/[\s,，.。!！?？]/g, '');
+  var isMatch = (userSentence === targetSentence);
+
+  state.unscrambleIsChecked = true;
+  var checkBtn = document.getElementById('gp-check-btn');
+  if (checkBtn) checkBtn.style.display = 'none';
+
+  if (isMatch) {
+    state.grammarScore.correct++;
+    playCorrect();
+    speakVocabText(ex.answer, ex.pinyin, true);
+  } else {
+    state.grammarScore.wrong++;
+    playWrong();
+  }
+
+  var fb = document.getElementById('gp-unscramble-feedback');
+  if (fb) {
+    fb.style.display = 'block';
+    fb.innerHTML = '<div class="feedback-box">' +
+      '<div class="feedback-status ' + (isMatch ? 'correct' : 'wrong') + '">' +
+        (isMatch ? '✓ Chính xác! Bạn xếp câu rất chuẩn.' : '✗ Chưa đúng thứ tự ngữ pháp') +
+      '</div>' +
+      '<div class="feedback-details">' +
+        '<div style="font-size:14px;color:var(--ink);margin-bottom:4px">' +
+          '<b>Câu chuẩn:</b> <span style="font-family:\'Noto Serif SC\',serif;font-size:17px;font-weight:700;color:var(--jade)">' + escHtml(ex.answer) + '</span>' +
+        '</div>' +
+        (ex.pinyin ? '<div style="font-size:13px;color:var(--amber-deep);font-weight:600">' + escHtml(ex.pinyin) + '</div>' : '') +
+        (ex.explanation ? '<div style="font-size:13px;color:var(--ink-soft);margin-top:4px">' + escHtml(ex.explanation) + '</div>' : '') +
+      '</div>' +
+      '<div style="display:flex;gap:8px;margin-top:10px">' +
+        (!isMatch ? '<button type="button" class="back-btn" style="flex:1;justify-content:center" onclick="retryUnscramble()">Thử xếp lại</button>' : '') +
+        '<button class="next-btn" style="flex:1" id="gp-unscramble-next-btn" onclick="nextGrammarPractice()">' +
+          '<span>Câu kế tiếp</span>' +
+          '<kbd class="desktop-only" style="background:rgba(255,255,255,0.2);color:#fff">Space ␣</kbd>' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+
+    setTimeout(function() {
+      var nextBtn = document.getElementById('gp-unscramble-next-btn');
+      if (nextBtn) nextBtn.focus();
+    }, 120);
+  }
+}
+
+function retryUnscramble() {
+  state.unscrambleIsChecked = false;
+  var checkBtn = document.getElementById('gp-check-btn');
+  if (checkBtn) checkBtn.style.display = 'flex';
+  var fb = document.getElementById('gp-unscramble-feedback');
+  if (fb) fb.style.display = 'none';
+  resetUnscramble();
+}
+
+function nextGrammarPractice() {
+  state.grammarChoiceChecked = false;
+  state.unscrambleIsChecked = false;
+  state.grammarCurrentExIdx++;
+  setupNextGrammarPractice();
+}
+
+function showGrammarFinish() {
+  stopVocabAudio();
+  var body = document.getElementById('gp-practice-body');
+  if (body) body.innerHTML = '';
+
+  var finishView = document.getElementById('gp-practice-finish');
+  if (finishView) finishView.style.display = 'flex';
+
+  var correctEl = document.getElementById('gp-finish-correct');
+  var wrongEl = document.getElementById('gp-finish-wrong');
+  if (correctEl) correctEl.textContent = state.grammarScore.correct;
+  if (wrongEl) wrongEl.textContent = state.grammarScore.wrong;
+
+  playFinish();
+  startConfetti();
+}
+
+// ===== MODAL ACTIONS: ADD/EDIT GRAMMAR & SQL SCRIPT =====
+
+function openAddGrammarModal(id) {
+  var modal = document.getElementById('grammar-edit-modal');
+  var titleInp = document.getElementById('gm-input-title');
+  var structInp = document.getElementById('gm-input-structure');
+  var expInp = document.getElementById('gm-input-explanation');
+  var exInp = document.getElementById('gm-input-examples');
+  var idInp = document.getElementById('gm-input-id');
+
+  if (titleInp) titleInp.value = '';
+  if (structInp) structInp.value = '';
+  if (expInp) expInp.value = '';
+  if (exInp) exInp.value = '';
+  if (idInp) idInp.value = '';
+
+  var heading = document.getElementById('grammar-modal-heading');
+  if (heading) heading.textContent = '➕ Thêm điểm ngữ pháp mới';
+
+  if (modal) modal.classList.add('show');
+}
+
+function closeAddGrammarModal() {
+  var modal = document.getElementById('grammar-edit-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+function insertSampleExampleLine() {
+  var exInp = document.getElementById('gm-input-examples');
+  if (!exInp) return;
+  var sample = '我是学生。 | Wǒ shì xuésheng. | Tôi là học sinh.\n';
+  exInp.value += sample;
+  exInp.focus();
+}
+
+async function saveGrammarPoint() {
+  var titleInp = document.getElementById('gm-input-title');
+  var structInp = document.getElementById('gm-input-structure');
+  var expInp = document.getElementById('gm-input-explanation');
+  var exInp = document.getElementById('gm-input-examples');
+
+  var title = (titleInp ? titleInp.value.trim() : '');
+  var structure = (structInp ? structInp.value.trim() : '');
+  var explanation = (expInp ? expInp.value.trim() : '');
+  var rawExamples = (exInp ? exInp.value.trim() : '');
+
+  if (!title) {
+    showSnackbar('Vui lòng nhập tên điểm ngữ pháp!');
+    if (titleInp) titleInp.focus();
+    return;
+  }
+
+  // Phân tích câu ví dụ từ dạng: Hán tự | Pinyin | Nghĩa TV
+  var examples = [];
+  if (rawExamples) {
+    var lines = rawExamples.split('\n');
+    lines.forEach(function(line) {
+      var parts = line.split('|').map(function(s){ return s.trim(); });
+      if (parts.length >= 2) {
+        examples.push({
+          hanzi: parts[0] || '',
+          pinyin: parts[1] || '',
+          meaning: parts[2] || ''
+        });
+      } else if (parts[0]) {
+        examples.push({
+          hanzi: parts[0],
+          pinyin: '',
+          meaning: ''
+        });
+      }
+    });
+  }
+
+  var newPoint = {
+    session_id: state.grammarSessionId,
+    title: title,
+    structure: structure,
+    explanation: explanation,
+    examples: examples,
+    exercises: [],
+    order_index: (state.grammarPoints ? state.grammarPoints.length + 1 : 1),
+    created_at: new Date().toISOString(),
+    isCustom: true
+  };
+
+  var savedToSupabase = false;
+  if (sb) {
+    try {
+      var res = await sb.from('grammar').insert([newPoint]).select();
+      if (!res.error && res.data && res.data[0]) {
+        newPoint.id = res.data[0].id;
+        savedToSupabase = true;
+      }
+    } catch(err) {
+      console.log('Cannot insert to Supabase grammar:', err);
+    }
+  }
+
+  // Lưu bản sao vào localStorage để luôn đảm bảo có dữ liệu
+  try {
+    var localKey = 'grammar_custom_' + state.grammarSessionId;
+    var currentList = [];
+    try { currentList = JSON.parse(localStorage.getItem(localKey) || '[]'); } catch(e) {}
+    if (!newPoint.id) newPoint.id = 'local_' + Date.now();
+    currentList.push(newPoint);
+    localStorage.setItem(localKey, JSON.stringify(currentList));
+  } catch(e) {}
+
+  if (!state.grammarPoints) state.grammarPoints = [];
+  state.grammarPoints.push(newPoint);
+
+  closeAddGrammarModal();
+  renderGrammarPoints(state.grammarPoints);
+
+  if (savedToSupabase) {
+    showSnackbar('✓ Đã lưu điểm ngữ pháp lên Supabase thành công!');
+  } else {
+    showSnackbar('✓ Đã lưu vào bộ nhớ cục bộ! (Chạy lệnh SQL trên Supabase để đồng bộ)');
+  }
+}
+
+async function deleteGrammarPoint(id) {
+  if (!confirm('Bạn có chắc chắn muốn xóa điểm ngữ pháp này không?')) return;
+
+  if (sb && typeof id === 'number') {
+    try {
+      await sb.from('grammar').delete().eq('id', id);
+    } catch(e) {}
+  }
+
+  try {
+    var localKey = 'grammar_custom_' + state.grammarSessionId;
+    var currentList = JSON.parse(localStorage.getItem(localKey) || '[]');
+    currentList = currentList.filter(function(p){ return p.id !== id; });
+    localStorage.setItem(localKey, JSON.stringify(currentList));
+  } catch(e) {}
+
+  state.grammarPoints = state.grammarPoints.filter(function(p){ return p.id !== id; });
+  renderGrammarPoints(state.grammarPoints);
+  showSnackbar('Đã xóa điểm ngữ pháp');
+}
+
+function openGrammarSqlModal() {
+  var modal = document.getElementById('grammar-sql-modal');
+  if (modal) modal.classList.add('show');
+}
+
+function closeGrammarSqlModal() {
+  var modal = document.getElementById('grammar-sql-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+function copyGrammarSql() {
+  var codeEl = document.getElementById('grammar-sql-code');
+  if (!codeEl) return;
+  var text = codeEl.textContent;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.getElementById('btn-copy-sql');
+      if (btn) btn.innerHTML = '<span>✓ Đã sao chép vào Clipboard!</span>';
+      showSnackbar('✓ Đã sao chép câu lệnh SQL');
+      setTimeout(function() {
+        if (btn) btn.innerHTML = '<span>📋 Sao chép câu lệnh SQL</span>';
+      }, 2400);
+    });
+  } else {
+    showSnackbar('Trình duyệt không hỗ trợ tự copy, hãy chọn văn bản để copy');
+  }
+}
+
 // ===== CONFETTI ANIMATION =====
 var confettiAnim = null; var confettiParticles = [];
 function startConfetti() {
@@ -3299,10 +4832,14 @@ function showSnackbar(msg) {
 // ===== GLOBAL KEYBOARD LISTENER =====
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
-    if (document.getElementById('shortcuts-modal').classList.contains('show')) {
+    if (document.getElementById('shortcuts-modal') && document.getElementById('shortcuts-modal').classList.contains('show')) {
       closeShortcutsModal();
     } else if (document.getElementById('audio-settings-modal') && document.getElementById('audio-settings-modal').classList.contains('show')) {
       closeAudioSettingsModal();
+    } else if (document.getElementById('grammar-edit-modal') && document.getElementById('grammar-edit-modal').classList.contains('show')) {
+      closeAddGrammarModal();
+    } else if (document.getElementById('grammar-sql-modal') && document.getElementById('grammar-sql-modal').classList.contains('show')) {
+      closeGrammarSqlModal();
     } else if (state.screen !== 'home') {
       goBack();
     }
@@ -3341,6 +4878,27 @@ document.addEventListener('keydown', function(e) {
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       nextStep();
+    }
+  } else if (state.screen === 'grammar' && state.grammarActiveTab === 'practice') {
+    var ex = state.grammarCurrentPractice;
+    if (ex && ex.type === 'choice') {
+      if (!state.grammarChoiceChecked) {
+        var optIdx = ['1','2','3','4'].indexOf(e.key);
+        if (optIdx >= 0 && ex.options && optIdx < ex.options.length) {
+          checkGrammarChoice(ex.options[optIdx], optIdx);
+        }
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        nextGrammarPractice();
+      }
+    } else if (ex && ex.type === 'order') {
+      if (!state.unscrambleIsChecked && e.key === 'Enter') {
+        e.preventDefault();
+        checkUnscrambleAnswer();
+      } else if (state.unscrambleIsChecked && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        nextGrammarPractice();
+      }
     }
   }
 });
