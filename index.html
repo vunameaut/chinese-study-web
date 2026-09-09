@@ -2089,16 +2089,6 @@
           </button>
         </div>
 
-        <div class="grammar-quick-actions">
-          <button class="grammar-tool-btn" onclick="openAddGrammarModal()" title="Thêm ghi chú ngữ pháp cho bài học này">
-            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            <span>Thêm ngữ pháp</span>
-          </button>
-          <button class="grammar-tool-btn" onclick="openGrammarSqlModal()" title="Xem câu lệnh SQL tạo bảng và nạp vào Supabase">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-            <span class="desktop-only">Lệnh SQL Supabase</span>
-          </button>
-        </div>
       </div>
 
       <!-- VIEW 1: THEORY & EXAMPLES -->
@@ -2108,8 +2098,7 @@
         <div id="grammar-empty-state" class="empty-state" style="display:none;text-align:center;padding:48px 20px;background:var(--paper-card);border-radius:14px;border:1.5px dashed var(--hairline)">
           <div style="font-size:40px;margin-bottom:8px">📖</div>
           <h3 style="font-size:17px;font-weight:700">Chưa có ngữ pháp cho bài học này</h3>
-          <p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px;margin-bottom:16px">Bạn có thể bấm nút bên dưới để thêm điểm ngữ pháp đầu tiên</p>
-          <button class="primary-action-btn" style="display:inline-flex;width:auto;padding:10px 20px;background:var(--jade)" onclick="openAddGrammarModal()">+ Thêm điểm ngữ pháp ngay</button>
+          <p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px">Nội dung ngữ pháp đang được biên soạn và cập nhật.</p>
         </div>
       </div>
 
@@ -2139,97 +2128,6 @@
   </div>
 </div>
 
-<!-- MODAL: ADD / EDIT GRAMMAR POINT -->
-<div class="modal-overlay" id="grammar-edit-modal" onclick="if(event.target===this)closeAddGrammarModal()">
-  <div class="grammar-modal">
-    <div class="modal-title">
-      <span id="grammar-modal-heading">➕ Thêm điểm ngữ pháp mới</span>
-      <button onclick="closeAddGrammarModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:var(--ink-soft)" title="Đóng">✕</button>
-    </div>
-
-    <input type="hidden" id="gm-input-id">
-
-    <div class="grammar-field-group">
-      <label class="grammar-field-label">1. Tên điểm ngữ pháp / Tiêu đề: *</label>
-      <input type="text" id="gm-input-title" class="grammar-field-input" placeholder="VD: Câu chữ 是 (shì) - Phán đoán / Khẳng định" autocomplete="off">
-    </div>
-
-    <div class="grammar-field-group">
-      <label class="grammar-field-label">2. Công thức / Cấu trúc trọng tâm: *</label>
-      <input type="text" id="gm-input-structure" class="grammar-field-input" placeholder="VD: Chủ ngữ + 是 + Tân ngữ | Phủ định: Chủ ngữ + 不是 + Tân ngữ" autocomplete="off">
-    </div>
-
-    <div class="grammar-field-group">
-      <label class="grammar-field-label">3. Giải thích cách dùng & Lưu ý:</label>
-      <textarea id="gm-input-explanation" class="grammar-field-textarea" rows="3" placeholder="Giải thích ngắn gọn quy tắc ngữ pháp, cách dùng, lưu ý khi nói/viết..."></textarea>
-    </div>
-
-    <div class="grammar-field-group">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <label class="grammar-field-label" style="margin-bottom:0">4. Các câu ví dụ (Định dạng: Hán tự | Pinyin | Nghĩa TV):</label>
-        <span style="font-size:11px;color:var(--jade);cursor:pointer;font-weight:600" onclick="insertSampleExampleLine()">+ Thêm mẫu</span>
-      </div>
-      <textarea id="gm-input-examples" class="grammar-field-textarea" rows="4" placeholder="Mỗi câu trên 1 dòng:&#10;我是学生。 | Wǒ shì xuésheng. | Tôi là học sinh.&#10;他不是老师。 | Tā bú shì lǎoshī. | Anh ấy không phải là giáo viên."></textarea>
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:18px">
-      <button type="button" class="back-btn" style="flex:1;justify-content:center;padding:10px 14px;font-size:13.5px" onclick="closeAddGrammarModal()">Hủy bỏ</button>
-      <button type="button" class="primary-action-btn" style="flex:1.5;min-height:42px;font-size:14px;background:var(--jade)" onclick="saveGrammarPoint()">Lưu điểm ngữ pháp</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: SUPABASE SQL SCRIPT -->
-<div class="modal-overlay" id="grammar-sql-modal" onclick="if(event.target===this)closeGrammarSqlModal()">
-  <div class="grammar-modal" style="max-width:640px">
-    <div class="modal-title">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:20px">🗄️</span>
-        <span>Lệnh SQL Supabase cho Ngữ pháp</span>
-      </div>
-      <button onclick="closeGrammarSqlModal()" style="border:none;background:none;font-size:20px;cursor:pointer;color:var(--ink-soft)" title="Đóng">✕</button>
-    </div>
-
-    <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;line-height:1.5">
-      Để nạp toàn bộ <b>50 bài học HSK 1, 2, 3 (58 điểm ngữ pháp)</b> vào Supabase, bạn chỉ cần mở file <code style="color:var(--jade);font-weight:700">supabase_grammar_import.sql</code> có sẵn trong thư mục dự án, dán vào <b>SQL Editor</b> trên Supabase Dashboard và bấm <b>Run</b>!
-    </p>
-
-    <pre class="grammar-sql-pre" id="grammar-sql-code">-- 1. Tạo bảng grammar (nếu chưa có) hoặc cập nhật cấu trúc
-CREATE TABLE IF NOT EXISTS grammar (
-  id BIGSERIAL PRIMARY KEY,
-  session_id BIGINT REFERENCES sessions(id) ON DELETE CASCADE,
-  hsk_level INT NOT NULL DEFAULT 1,
-  lesson_num INT NOT NULL DEFAULT 1,
-  lesson_title TEXT,
-  title TEXT NOT NULL,
-  structure TEXT,
-  explanation TEXT,
-  examples JSONB DEFAULT '[]'::jsonb,
-  exercises JSONB DEFAULT '[]'::jsonb,
-  order_index INT DEFAULT 1,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 2. Cấu hình RLS và đánh index
-ALTER TABLE grammar ENABLE ROW LEVEL SECURITY;
-CREATE INDEX IF NOT EXISTS idx_grammar_session_id ON grammar(session_id);
-CREATE INDEX IF NOT EXISTS idx_grammar_hsk_lesson ON grammar(hsk_level, lesson_num);
-
-CREATE POLICY "Allow public read on grammar" ON grammar FOR SELECT TO anon, authenticated USING (true);
-CREATE POLICY "Allow public insert on grammar" ON grammar FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "Allow public update on grammar" ON grammar FOR UPDATE TO anon, authenticated USING (true);
-CREATE POLICY "Allow public delete on grammar" ON grammar FOR DELETE TO anon, authenticated USING (true);
-
--- Xem file supabase_grammar_import.sql để lấy toàn bộ dữ liệu 50 bài học HSK 1, 2, 3!</pre>
-
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button type="button" class="back-btn" style="flex:1;justify-content:center;padding:10px 14px;font-size:13.5px" onclick="closeGrammarSqlModal()">Đóng</button>
-      <button type="button" class="primary-action-btn" id="btn-copy-sql" style="flex:1.5;min-height:42px;font-size:14px;background:var(--jade)" onclick="copyGrammarSql()">
-        <span>📋 Sao chép câu lệnh SQL</span>
-      </button>
-    </div>
-  </div>
-</div>
 
 <!-- KEYBOARD SHORTCUTS MODAL (DESKTOP ONLY) -->
 <div class="modal-overlay" id="shortcuts-modal" onclick="if(event.target===this)closeShortcutsModal()">
@@ -4836,10 +4734,6 @@ document.addEventListener('keydown', function(e) {
       closeShortcutsModal();
     } else if (document.getElementById('audio-settings-modal') && document.getElementById('audio-settings-modal').classList.contains('show')) {
       closeAudioSettingsModal();
-    } else if (document.getElementById('grammar-edit-modal') && document.getElementById('grammar-edit-modal').classList.contains('show')) {
-      closeAddGrammarModal();
-    } else if (document.getElementById('grammar-sql-modal') && document.getElementById('grammar-sql-modal').classList.contains('show')) {
-      closeGrammarSqlModal();
     } else if (state.screen !== 'home') {
       goBack();
     }
