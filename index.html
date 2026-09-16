@@ -415,6 +415,166 @@
   }
   .btn-qz:hover{background:var(--seal-deep)}
   .btn-qz:active{transform:scale(.98)}
+  .btn-cl{
+    background:#eef2ff;
+    border:1.2px solid rgba(79,70,229,0.35);
+    color:#4338ca;
+  }
+  .btn-cl:hover{
+    background:#e0e7ff;
+    border-color:#4338ca;
+  }
+  .btn-cl:active{transform:scale(.98)}
+  .badge-cl{
+    background:#eef2ff;
+    color:#4338ca;
+    border:1px solid rgba(79,70,229,0.3);
+  }
+
+  /* Classifier Cards & Collocations styling */
+  .classifier-card {
+    background:var(--paper-card);
+    border:1.5px solid var(--hairline);
+    border-radius:14px;
+    padding:20px 22px;
+    margin-bottom:20px;
+    box-shadow:var(--shadow-sm);
+    transition:all .2s ease;
+  }
+  .classifier-card:hover {
+    border-color:var(--ink-faint);
+    box-shadow:var(--shadow-md);
+  }
+  .cl-hero {
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding-bottom:16px;
+    border-bottom:1px solid var(--hairline);
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .cl-hanzi-box {
+    width:76px;
+    height:76px;
+    background:var(--paper);
+    border:2px solid var(--hairline);
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    box-shadow:inset 0 0 10px rgba(0,0,0,0.03);
+    flex-shrink:0;
+  }
+  .cl-hanzi-box .grid {
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  .cl-hanzi-box .grid::before,
+  .cl-hanzi-box .grid::after {
+    content:'';
+    position:absolute;
+    border-color:rgba(198,61,45,0.15);
+    border-style:dashed;
+  }
+  .cl-hanzi-box .grid::before {
+    top:50%; left:0; right:0; border-top-width:1px;
+  }
+  .cl-hanzi-box .grid::after {
+    left:50%; top:0; bottom:0; border-left-width:1px;
+  }
+  .cl-hanzi-text {
+    font-family:'Noto Serif SC',serif;
+    font-size:42px;
+    font-weight:700;
+    color:var(--seal-son);
+    position:relative;
+    z-index:2;
+    line-height:1;
+  }
+  .cl-hero-info {
+    flex:1;
+    min-width:200px;
+  }
+  .cl-pinyin-row {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:4px;
+  }
+  .cl-pinyin {
+    font-family:Outfit,sans-serif;
+    font-size:20px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .cl-meaning {
+    font-size:15px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .cl-usage-box {
+    background:linear-gradient(135deg, rgba(79,70,229,0.06) 0%, rgba(248,243,231,0.95) 100%);
+    border:1.5px dashed rgba(79,70,229,0.35);
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:16px;
+    font-size:13.5px;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .cl-section-title {
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .cl-colloc-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(210px, 1fr));
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .cl-colloc-card {
+    background:var(--paper);
+    border:1.2px solid var(--hairline);
+    border-radius:10px;
+    padding:10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    cursor:pointer;
+    transition:all .15s ease;
+    user-select:none;
+  }
+  .cl-colloc-card:hover {
+    border-color:#4338ca;
+    background:#f5f3ff;
+    transform:translateY(-2px);
+    box-shadow:0 4px 10px rgba(79,70,229,0.1);
+  }
+  .cl-colloc-card:active {
+    transform:scale(0.97);
+  }
+  .cl-colloc-phrase {
+    font-family:'Noto Serif SC',serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .cl-colloc-meaning {
+    font-size:12px;
+    color:var(--ink-faint);
+    margin-top:2px;
+  }
 
   /* Practice Studio (Write Pinyin & Quiz & Grammar) */
   .studio-container{
@@ -2128,6 +2288,86 @@
   </div>
 </div>
 
+<!-- CLASSIFIER SCREEN (LƯỢNG TỪ) -->
+<div id="classifier-screen" class="screen">
+  <div class="main-wrapper">
+    <div class="classifier-container" style="max-width:980px;margin:0 auto;width:100%">
+      <div class="studio-bar">
+        <button class="back-btn" onclick="goBack()" title="Quay lại">
+          <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <span>Trang chủ</span>
+          <kbd class="desktop-only">Esc</kbd>
+        </button>
+        <span class="studio-title-badge badge-cl" id="classifier-screen-title">🏷️ Lượng từ bài học</span>
+
+        <div class="progress-wrap" id="classifier-progress-wrap" style="display:none">
+          <div class="progress-bar"><div class="fill" id="classifier-progress-fill" style="background:#4338ca"></div></div>
+          <span class="progress-text" id="classifier-counter">0/0</span>
+        </div>
+      </div>
+
+      <!-- HSK Textbook Lesson Selector Bar for Classifiers -->
+      <div class="hsk-textbook-selector-bar" style="background:var(--paper-card);border:1.5px solid var(--hairline);border-radius:12px;padding:9px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">🏷️</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--ink-soft)">Giáo trình Chuẩn HSK (Lượng từ):</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex:1;max-width:400px;justify-content:flex-end">
+          <select id="select-classifier-lesson" class="voice-select-dropdown" style="margin-top:0;padding:6px 10px;font-size:12.5px;background:var(--paper);border-color:var(--hairline)" onchange="onSelectClassifierLesson(this.value)">
+          </select>
+        </div>
+      </div>
+
+      <!-- Sub-bar: Tab switcher -->
+      <div class="grammar-subbar">
+        <div class="grammar-tabs-wrap">
+          <button class="grammar-tab-btn active" id="cl-tab-btn-cards" onclick="switchClassifierTab('cards')">
+            <svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+            <span>Thẻ lượng từ & Danh từ</span>
+          </button>
+          <button class="grammar-tab-btn" id="cl-tab-btn-practice" onclick="switchClassifierTab('practice')">
+            <svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            <span>Luyện tập trắc nghiệm</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW 1: CARDS & COLLOCATIONS -->
+      <div id="classifier-cards-view">
+        <div id="classifier-loading" class="spinner" style="display:none"></div>
+        <div id="classifier-cards-container"></div>
+        <div id="classifier-empty-state" class="empty-state" style="display:none;text-align:center;padding:48px 20px;background:var(--paper-card);border-radius:14px;border:1.5px dashed var(--hairline)">
+          <div style="font-size:40px;margin-bottom:8px">🏷️</div>
+          <h3 style="font-size:17px;font-weight:700">Chưa có lượng từ cho bài học này</h3>
+          <p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px">Chọn bài học khác ở thanh trên để tiếp tục học lượng từ.</p>
+        </div>
+      </div>
+
+      <!-- VIEW 2: INTERACTIVE PRACTICE -->
+      <div id="classifier-practice-view" style="display:none">
+        <div class="grammar-practice-card" id="cl-practice-card">
+          <div id="cl-practice-body"></div>
+
+          <div id="cl-practice-finish" class="finish-view" style="display:none">
+            <svg class="finish-icon" viewBox="0 0 24 24" style="color:#4338ca;fill:currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <div class="finish-title">Hoàn thành luyện tập lượng từ!</div>
+            <div class="finish-sub" id="cl-finish-sub">Bạn đã hoàn tất toàn bộ câu hỏi ôn luyện lượng từ của bài học này.</div>
+            <div class="finish-stats-row">
+              <div class="stat-block"><div class="num" id="cl-finish-correct" style="color:#16a34a">0</div><div class="lbl">Chính xác</div></div>
+              <div class="stat-block"><div class="num" id="cl-finish-wrong" style="color:var(--seal-son)">0</div><div class="lbl">Làm lại</div></div>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:360px">
+              <button class="primary-action-btn" style="background:#4338ca" onclick="startClassifierPractice()">Luyện tập lại</button>
+              <button class="back-btn" style="padding:12px 20px;font-size:14px;justify-content:center;width:100%" onclick="switchClassifierTab('cards')">Xem lại thẻ lượng từ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 <!-- KEYBOARD SHORTCUTS MODAL (DESKTOP ONLY) -->
 <div class="modal-overlay" id="shortcuts-modal" onclick="if(event.target===this)closeShortcutsModal()">
@@ -2140,7 +2380,7 @@
       <div class="sc-item"><span>Kiểm tra đáp án / Xác nhận</span><kbd>Enter ↵</kbd></div>
       <div class="sc-item"><span>Chuyển sang từ kế tiếp</span><div><kbd>Space ␣</kbd> hoặc <kbd>Enter ↵</kbd></div></div>
       <div class="sc-item"><span>Chọn đáp án trắc nghiệm</span><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></div></div>
-      <div class="sc-item"><span>Luyện tập ngữ pháp (chọn đáp án / kiểm tra)</span><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> / <kbd>Enter ↵</kbd></div></div>
+      <div class="sc-item"><span>Luyện tập ngữ pháp & lượng từ</span><div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> / <kbd>Enter ↵</kbd></div></div>
       <div class="sc-item"><span>Quay lại trang chủ</span><kbd>Esc</kbd></div>
       <div class="sc-item"><span>Nghe lại phát âm Pinyin</span><div><kbd>R</kbd> hoặc bấm biểu tượng <b style="color:var(--seal-son)">🔊</b></div></div>
       <div class="sc-item"><span>Gõ Pinyin không dấu (vẫn tính đúng)</span><span style="color:var(--jade);font-weight:600">xue = xué</span></div>
@@ -3008,6 +3248,11 @@ function showScreen(name, params) {
     state.lastSessionId = params.sessionId;
     localStorage.setItem('lastSessionId', params.sessionId);
     startGrammar(params.sessionId);
+  } else if (name === 'classifier' && params && params.sessionId) {
+    state.classifierSessionId = params.sessionId;
+    state.lastSessionId = params.sessionId;
+    localStorage.setItem('lastSessionId', params.sessionId);
+    startClassifier(params.sessionId);
   }
   window.scrollTo(0, 0);
 }
@@ -3122,6 +3367,10 @@ function buildSessionCardHtml(s, idx, ordinals, isHighlight) {
       '<button class="action-btn btn-gm" onclick="showScreen(\'grammar\',{sessionId:' + s.id + '})" title="Học ngữ pháp buổi này">' +
         '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>' +
         '<span>Ngữ pháp</span>' +
+      '</button>' +
+      '<button class="action-btn btn-cl" onclick="showScreen(\'classifier\',{sessionId:' + s.id + '})" title="Học lượng từ buổi này">' +
+        '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z"/></svg>' +
+        '<span>Lượng từ</span>' +
       '</button>' +
       '<button class="action-btn btn-wp" onclick="showScreen(\'write-pinyin\',{sessionId:' + s.id + '})">' +
         '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>' +
@@ -4628,6 +4877,512 @@ function closeGrammarSqlModal() {
   if (modal) modal.classList.remove('show');
 }
 
+
+// ===== CLASSIFIERS (LƯỢNG TỪ) LEARNING SYSTEM =====
+state.classifierSessionId = null;
+state.classifierActiveTab = 'cards';
+state.classifierPoints = [];
+state.classifierExercises = [];
+state.classifierScore = { correct: 0, wrong: 0 };
+state.classifierCurrentExIdx = 0;
+state.classifierChoiceChecked = false;
+state.cachedClassifierLessons = null;
+
+async function loadClassifierLessonsList() {
+  if (state.cachedClassifierLessons && state.cachedClassifierLessons.length > 0) {
+    return state.cachedClassifierLessons;
+  }
+  if (sb) {
+    try {
+      var res = await sb.from('classifiers')
+        .select('hsk_level, lesson_num, lesson_title')
+        .order('hsk_level', { ascending: true })
+        .order('lesson_num', { ascending: true });
+      if (!res.error && res.data && res.data.length > 0) {
+        var map = {};
+        res.data.forEach(function(r) {
+          var key = r.hsk_level + '_' + r.lesson_num;
+          if (!map[key]) {
+            map[key] = {
+              hsk_level: r.hsk_level,
+              lesson: r.lesson_num,
+              title: r.lesson_title || ('Bài ' + r.lesson_num)
+            };
+          }
+        });
+        state.cachedClassifierLessons = Object.values(map);
+        return state.cachedClassifierLessons;
+      }
+    } catch(e) {
+      console.log('Lỗi tải danh sách bài lượng từ từ Supabase:', e);
+    }
+  }
+  return [];
+}
+
+async function populateClassifierLessonSelector(selectedLessonNum, currentHsk) {
+  var select = document.getElementById('select-classifier-lesson');
+  if (!select) return;
+  var activeHsk = currentHsk || state.selectedHsk || 1;
+
+  var allLessons = await loadClassifierLessonsList();
+  if (allLessons.length === 0) {
+    // Fallback to textbook lessons list
+    allLessons = await loadTextbookLessonsList();
+  }
+
+  select.innerHTML = '';
+  [1, 2, 3, 4, 5, 6].forEach(function(lv) {
+    var lessons = allLessons.filter(function(l){ return l.hsk_level === lv; });
+    if (lessons.length === 0) return;
+    var group = document.createElement('optgroup');
+    group.label = 'Giáo trình Chuẩn HSK ' + lv + ' (' + lessons.length + ' bài)';
+    lessons.forEach(function(l) {
+      var opt = document.createElement('option');
+      opt.value = lv + '_' + l.lesson;
+      opt.textContent = 'HSK ' + lv + ' - ' + l.title;
+      if (lv === activeHsk && l.lesson === selectedLessonNum) {
+        opt.selected = true;
+      }
+      group.appendChild(opt);
+    });
+    select.appendChild(group);
+  });
+}
+
+async function onSelectClassifierLesson(val) {
+  if (!val) return;
+  var parts = val.split('_');
+  if (parts.length !== 2) return;
+  var hskLevel = parseInt(parts[0], 10);
+  var lessonNum = parseInt(parts[1], 10);
+
+  state.selectedHsk = hskLevel;
+  renderHskTabs();
+
+  var loading = document.getElementById('classifier-loading');
+  if (loading) loading.style.display = 'block';
+
+  var points = [];
+  if (sb) {
+    try {
+      var res = await sb.from('classifiers')
+        .select('*')
+        .eq('hsk_level', hskLevel)
+        .eq('lesson_num', lessonNum)
+        .order('order_index', { ascending: true });
+      if (!res.error && res.data && res.data.length > 0) {
+        points = res.data.map(function(item) {
+          return {
+            id: item.id,
+            hanzi: item.hanzi,
+            pinyin: item.pinyin || '',
+            meaning: item.meaning || '',
+            usage_note: item.usage_note || '',
+            collocations: (typeof item.collocations === 'string' ? JSON.parse(item.collocations) : item.collocations) || [],
+            examples: (typeof item.examples === 'string' ? JSON.parse(item.examples) : item.examples) || [],
+            exercises: (typeof item.exercises === 'string' ? JSON.parse(item.exercises) : item.exercises) || []
+          };
+        });
+      }
+    } catch(e) {
+      console.log('Lỗi tải lượng từ từ Supabase:', e);
+    }
+  }
+
+  if (loading) loading.style.display = 'none';
+  state.classifierPoints = points;
+
+  var titleBadge = document.getElementById('classifier-screen-title');
+  var allLessons = state.cachedClassifierLessons || [];
+  var match = allLessons.find(function(l){ return l.hsk_level === hskLevel && l.lesson === lessonNum; });
+  var titleText = match ? match.title : ('Bài ' + lessonNum);
+  if (titleBadge) {
+    titleBadge.textContent = '🏷️ ' + titleText + ' (HSK ' + hskLevel + ')';
+  }
+
+  renderClassifierPoints(state.classifierPoints);
+  showSnackbar('Đã tải lượng từ: ' + titleText);
+}
+
+async function startClassifier(sessionId) {
+  state.classifierSessionId = sessionId;
+  state.classifierActiveTab = 'cards';
+
+  var cardsView = document.getElementById('classifier-cards-view');
+  var practiceView = document.getElementById('classifier-practice-view');
+  var progWrap = document.getElementById('classifier-progress-wrap');
+  if (cardsView) cardsView.style.display = 'block';
+  if (practiceView) practiceView.style.display = 'none';
+  if (progWrap) progWrap.style.display = 'none';
+
+  var tabCards = document.getElementById('cl-tab-btn-cards');
+  var tabPractice = document.getElementById('cl-tab-btn-practice');
+  if (tabCards) tabCards.classList.add('active');
+  if (tabPractice) tabPractice.classList.remove('active');
+
+  var loading = document.getElementById('classifier-loading');
+  if (loading) loading.style.display = 'block';
+
+  await loadClassifierLessonsList();
+
+  var session = state.sessions.find(function(s){ return s.id === sessionId; });
+  var hskLv = (session && session.hsk_level) ? session.hsk_level : (state.selectedHsk || 1);
+
+  var matchedLesson = detectHskLesson(session);
+
+  var points = await loadClassifierPoints(sessionId, session, matchedLesson);
+  state.classifierPoints = points;
+
+  await populateClassifierLessonSelector(matchedLesson.lesson, hskLv);
+
+  var titleBadge = document.getElementById('classifier-screen-title');
+  if (titleBadge) {
+    var titleText = matchedLesson ? matchedLesson.title : (session ? session.title : 'Buổi học');
+    titleBadge.textContent = '🏷️ Lượng từ: ' + titleText + ' (HSK ' + hskLv + ')';
+  }
+
+  if (loading) loading.style.display = 'none';
+  renderClassifierPoints(points);
+}
+
+async function loadClassifierPoints(sessionId, session, matchedLesson) {
+  var points = [];
+  var hskLevel = (session && session.hsk_level) ? session.hsk_level : (state.selectedHsk || 1);
+  var lessonNum = matchedLesson ? matchedLesson.lesson : 1;
+
+  if (sb) {
+    try {
+      // 1. Theo session_id nếu có
+      var res = await sb.from('classifiers').select('*').eq('session_id', sessionId).order('order_index', { ascending: true });
+
+      // 2. Theo hsk_level & lesson_num
+      if ((!res.data || res.data.length === 0) && hskLevel && lessonNum) {
+        res = await sb.from('classifiers').select('*').eq('hsk_level', hskLevel).eq('lesson_num', lessonNum).order('order_index', { ascending: true });
+      }
+
+      if (!res.error && res.data && res.data.length > 0) {
+        points = res.data.map(function(item) {
+          return {
+            id: item.id,
+            hanzi: item.hanzi,
+            pinyin: item.pinyin || '',
+            meaning: item.meaning || '',
+            usage_note: item.usage_note || '',
+            collocations: (typeof item.collocations === 'string' ? JSON.parse(item.collocations) : item.collocations) || [],
+            examples: (typeof item.examples === 'string' ? JSON.parse(item.examples) : item.examples) || [],
+            exercises: (typeof item.exercises === 'string' ? JSON.parse(item.exercises) : item.exercises) || []
+          };
+        });
+        return points;
+      }
+    } catch(e) {
+      console.log('Lỗi truy vấn bảng classifiers trên Supabase:', e);
+    }
+  }
+  return points;
+}
+
+function renderClassifierPoints(points) {
+  var container = document.getElementById('classifier-cards-container');
+  var emptyState = document.getElementById('classifier-empty-state');
+  if (!container) return;
+
+  if (!points || points.length === 0) {
+    container.innerHTML = '';
+    if (emptyState) emptyState.style.display = 'block';
+    return;
+  }
+
+  if (emptyState) emptyState.style.display = 'none';
+
+  var ordinals = ['壹','贰','叁','肆','伍','陆','柒','捌','玖','拾'];
+  var html = '';
+
+  points.forEach(function(c, idx) {
+    var ordChar = ordinals[idx % ordinals.length];
+
+    // Collocations HTML
+    var colHtml = '';
+    if (c.collocations && c.collocations.length > 0) {
+      colHtml += '<div class="cl-section-title"><span>📦 Danh từ thường đi kèm (Bấm để nghe phát âm cả cụm):</span></div>';
+      colHtml += '<div class="cl-colloc-grid">';
+      c.collocations.forEach(function(col) {
+        var phrase = col.phrase || ('一' + c.hanzi + col.noun);
+        colHtml += '<div class="cl-colloc-card" onclick="speakVocabText(\'' + escAttr(phrase) + '\', \'' + escAttr(col.pinyin || '') + '\', true)" title="Nghe phát âm">' +
+          '<div>' +
+            '<div class="cl-colloc-phrase">' + escHtml(phrase) + '</div>' +
+            (col.pinyin ? '<div style="font-size:11.5px;color:var(--amber-deep);font-style:italic">' + escHtml(col.pinyin) + '</div>' : '') +
+            (col.meaning ? '<div class="cl-colloc-meaning">' + escHtml(col.meaning) + '</div>' : '') +
+          '</div>' +
+          '<div style="font-size:16px;color:var(--ink-faint);opacity:0.7">🔊</div>' +
+        '</div>';
+      });
+      colHtml += '</div>';
+    }
+
+    // Usage note HTML
+    var usageHtml = '';
+    if (c.usage_note) {
+      usageHtml = '<div class="cl-usage-box">' +
+        '<strong style="color:#4338ca">💡 Quy tắc & Mẹo ghi nhớ: </strong>' +
+        escHtml(c.usage_note) +
+      '</div>';
+    }
+
+    // Examples HTML
+    var exHtml = '';
+    if (c.examples && c.examples.length > 0) {
+      exHtml += '<div class="cl-section-title" style="margin-top:14px"><span>💬 Câu ví dụ trong bài:</span></div>';
+      exHtml += '<div class="gp-examples-list">';
+      c.examples.forEach(function(ex) {
+        exHtml += '<div class="gp-example-item" onclick="speakVocabText(\'' + escAttr(ex.hanzi) + '\', \'' + escAttr(ex.pinyin || '') + '\', true)" title="Bấm để nghe đọc">' +
+          '<div class="gp-ex-speaker-btn">🔊</div>' +
+          '<div class="gp-ex-content">' +
+            '<div class="gp-ex-hanzi">' + escHtml(ex.hanzi) + '</div>' +
+            (ex.pinyin ? '<div class="gp-ex-pinyin">' + escHtml(ex.pinyin) + '</div>' : '') +
+            (ex.meaning ? '<div class="gp-ex-meaning">' + escHtml(ex.meaning) + '</div>' : '') +
+          '</div>' +
+        '</div>';
+      });
+      exHtml += '</div>';
+    }
+
+    html += '<div class="classifier-card">' +
+      '<div class="cl-hero">' +
+        '<div class="cl-hanzi-box">' +
+          '<div class="grid"></div>' +
+          '<span class="cl-hanzi-text">' + escHtml(c.hanzi) + '</span>' +
+        '</div>' +
+        '<div class="cl-hero-info">' +
+          '<div class="cl-pinyin-row">' +
+            '<span class="cl-pinyin">' + escHtml(c.pinyin) + '</span>' +
+            '<button class="tool-icon-btn" onclick="speakVocabText(\'' + escAttr(c.hanzi) + '\', \'' + escAttr(c.pinyin) + '\', true)" title="Nghe phát âm lượng từ" style="width:30px;height:30px;font-size:14px">🔊</button>' +
+            '<span class="badge" style="background:#eef2ff;color:#4338ca;font-weight:700">Lượng từ ' + ordChar + '</span>' +
+          '</div>' +
+          '<div class="cl-meaning">' + escHtml(c.meaning) + '</div>' +
+        '</div>' +
+      '</div>' +
+      usageHtml +
+      colHtml +
+      exHtml +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function switchClassifierTab(tab) {
+  state.classifierActiveTab = tab;
+  var tabCards = document.getElementById('cl-tab-btn-cards');
+  var tabPractice = document.getElementById('cl-tab-btn-practice');
+  var cardsView = document.getElementById('classifier-cards-view');
+  var practiceView = document.getElementById('classifier-practice-view');
+  var progWrap = document.getElementById('classifier-progress-wrap');
+
+  if (tab === 'cards') {
+    if (tabCards) tabCards.classList.add('active');
+    if (tabPractice) tabPractice.classList.remove('active');
+    if (cardsView) cardsView.style.display = 'block';
+    if (practiceView) practiceView.style.display = 'none';
+    if (progWrap) progWrap.style.display = 'none';
+  } else {
+    if (tabCards) tabCards.classList.remove('active');
+    if (tabPractice) tabPractice.classList.add('active');
+    if (cardsView) cardsView.style.display = 'none';
+    if (practiceView) practiceView.style.display = 'block';
+    if (progWrap) progWrap.style.display = 'flex';
+    startClassifierPractice();
+  }
+}
+
+function startClassifierPractice() {
+  stopVocabAudio();
+  stopConfetti();
+
+  var finishView = document.getElementById('cl-practice-finish');
+  if (finishView) finishView.style.display = 'none';
+
+  var exercises = [];
+  (state.classifierPoints || []).forEach(function(c) {
+    if (c.exercises && Array.isArray(c.exercises)) {
+      c.exercises.forEach(function(ex) {
+        exercises.push(Object.assign({}, ex, { classifierHanzi: c.hanzi }));
+      });
+    }
+  });
+
+  // Tự động sinh câu hỏi nếu chưa có bài tập thủ công
+  if (exercises.length === 0) {
+    var allHanziList = (state.classifierPoints || []).map(function(c){ return c.hanzi; });
+    var fallbackDistractors = ['个', '张', '本', '件', '条', '只', '把', '瓶', '位', '双'].filter(function(h){ return !allHanziList.includes(h); });
+
+    (state.classifierPoints || []).forEach(function(c) {
+      if (c.collocations && Array.isArray(c.collocations)) {
+        c.collocations.forEach(function(col) {
+          if (col.noun) {
+            var opts = [c.hanzi];
+            var pool = allHanziList.filter(function(h){ return h !== c.hanzi; }).concat(fallbackDistractors);
+            shuffle(pool).slice(0, 3).forEach(function(d){ opts.push(d); });
+            opts = shuffle(opts);
+
+            exercises.push({
+              type: 'choice',
+              question: '一 ___ ' + col.noun,
+              options: opts,
+              answer: c.hanzi,
+              pinyin: col.pinyin,
+              meaning: col.meaning || ('một ' + c.meaning + ' ' + col.noun),
+              explain: 'Danh từ "' + col.noun + '" kết hợp với lượng từ "' + c.hanzi + '". ' + (c.usage_note || '')
+            });
+          }
+        });
+      }
+    });
+  }
+
+  if (exercises.length === 0) {
+    var body = document.getElementById('cl-practice-body');
+    if (body) {
+      body.innerHTML = '<div style="text-align:center;padding:36px 20px">' +
+        '<div style="font-size:36px;margin-bottom:8px">🏷️</div>' +
+        '<h3 style="font-size:16px;font-weight:700">Chưa có câu hỏi luyện tập cho bài này</h3>' +
+        '<p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px">Bấm sang tab "Thẻ lượng từ & Danh từ" để học từ và danh từ đi kèm</p>' +
+      '</div>';
+    }
+    return;
+  }
+
+  state.classifierExercises = shuffle(exercises);
+  state.classifierCurrentExIdx = 0;
+  state.classifierScore = { correct: 0, wrong: 0 };
+
+  setupNextClassifierPractice();
+}
+
+function setupNextClassifierPractice() {
+  stopVocabAudio();
+  var total = state.classifierExercises.length;
+  var current = state.classifierCurrentExIdx;
+
+  if (current >= total) {
+    showClassifierFinish();
+    return;
+  }
+
+  var progFill = document.getElementById('classifier-progress-fill');
+  var progCounter = document.getElementById('classifier-counter');
+  if (progFill) progFill.style.width = ((current / total) * 100) + '%';
+  if (progCounter) progCounter.textContent = (current + 1) + '/' + total;
+
+  var ex = state.classifierExercises[current];
+  state.classifierCurrentPractice = ex;
+  state.classifierChoiceChecked = false;
+
+  var body = document.getElementById('cl-practice-body');
+  if (!body) return;
+
+  renderClassifierChoiceExercise(ex, body);
+}
+
+function renderClassifierChoiceExercise(ex, container) {
+  var ords = ['A', 'B', 'C', 'D'];
+  var opts = ex.options || [];
+
+  var optsHtml = '';
+  opts.forEach(function(opt, i) {
+    optsHtml += '<div class="opt-card" id="cl-opt-' + i + '" onclick="checkClassifierChoice(\'' + escAttr(opt) + '\', ' + i + ')">' +
+      '<span class="key-badge">' + (ords[i] || (i + 1)) + '</span>' +
+      '<span class="text" style="font-family:\'Noto Serif SC\',serif;font-size:22px;font-weight:700">' + escHtml(opt) + '</span>' +
+    '</div>';
+  });
+
+  container.innerHTML = '<div style="margin-bottom:16px">' +
+    '<div class="col-label">' +
+      '<span>CHỌN LƯỢNG TỪ THÍCH HỢP ĐIỀN VÀO CHỖ TRỐNG:</span>' +
+      '<span class="kbd-hint desktop-only">Phím số <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></span>' +
+    '</div>' +
+    '<div style="background:var(--paper);border:1.5px solid var(--hairline);border-radius:12px;padding:18px 20px;margin-top:8px;text-align:center">' +
+      '<div style="font-family:\'Noto Serif SC\',serif;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:0.02em;line-height:1.4">' +
+        escHtml(ex.question) +
+      '</div>' +
+      (ex.pinyin ? '<div style="font-size:14px;color:var(--amber-deep);font-weight:600;margin-top:6px">' + escHtml(ex.pinyin) + '</div>' : '') +
+      (ex.meaning ? '<div style="font-size:13.5px;color:var(--ink-soft);margin-top:4px">Nghĩa: ' + escHtml(ex.meaning) + '</div>' : '') +
+    '</div>' +
+  '</div>' +
+  '<div class="quiz-options-grid" style="margin-top:14px">' + optsHtml + '</div>' +
+  '<div id="cl-choice-feedback" style="display:none;margin-top:14px"></div>';
+}
+
+function checkClassifierChoice(selected, optIdx) {
+  var ex = state.classifierCurrentPractice;
+  if (!ex || state.classifierChoiceChecked) return;
+  state.classifierChoiceChecked = true;
+
+  var isCorrect = (selected.trim() === ex.answer.trim());
+  if (isCorrect) {
+    state.classifierScore.correct++;
+    playCorrect();
+    var fullSentence = ex.question.replace(/___+/g, ex.answer);
+    speakVocabText(fullSentence, ex.pinyin, true);
+  } else {
+    state.classifierScore.wrong++;
+    playWrong();
+  }
+
+  // Highlight options
+  (ex.options || []).forEach(function(opt, i) {
+    var card = document.getElementById('cl-opt-' + i);
+    if (!card) return;
+    if (opt.trim() === ex.answer.trim()) {
+      card.classList.add('correct');
+    } else if (i === optIdx && !isCorrect) {
+      card.classList.add('wrong');
+    }
+  });
+
+  var fb = document.getElementById('cl-choice-feedback');
+  if (fb) {
+    fb.style.display = 'block';
+    fb.className = 'feedback-box ' + (isCorrect ? 'fb-correct' : 'fb-wrong');
+    fb.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<span style="font-size:20px">' + (isCorrect ? '✓' : '✕') + '</span>' +
+        '<strong>' + (isCorrect ? 'Chính xác!' : 'Chưa đúng! Đáp án là: ' + ex.answer) + '</strong>' +
+      '</div>' +
+      '<button class="primary-action-btn" style="width:auto;min-height:36px;padding:6px 16px;font-size:13px;background:' + (isCorrect ? 'var(--jade)' : 'var(--seal-son)') + '" onclick="nextClassifierPractice()">' +
+        '<span>Câu tiếp theo ↵</span>' +
+      '</button>' +
+    '</div>' +
+    (ex.explain ? '<div style="margin-top:8px;font-size:13px;color:var(--ink-soft);border-top:1px dashed var(--hairline);padding-top:8px">' + escHtml(ex.explain) + '</div>' : '');
+  }
+}
+
+function nextClassifierPractice() {
+  state.classifierCurrentExIdx++;
+  setupNextClassifierPractice();
+}
+
+function showClassifierFinish() {
+  var finishView = document.getElementById('cl-practice-finish');
+  var body = document.getElementById('cl-practice-body');
+  if (body) body.innerHTML = '';
+  if (finishView) finishView.style.display = 'block';
+
+  document.getElementById('cl-finish-correct').textContent = state.classifierScore.correct;
+  document.getElementById('cl-finish-wrong').textContent = state.classifierScore.wrong;
+
+  var sub = document.getElementById('cl-finish-sub');
+  if (sub) {
+    if (state.classifierScore.wrong === 0) {
+      sub.textContent = 'Xuất sắc! Bạn đã trả lời đúng tất cả các câu hỏi lượng từ.';
+      startConfetti();
+    } else {
+      sub.textContent = 'Bạn đã hoàn tất bài luyện tập! Hãy ôn lại các câu chưa đúng nhé.';
+    }
+  }
+}
+
 function copyGrammarSql() {
   var codeEl = document.getElementById('grammar-sql-code');
   if (!codeEl) return;
@@ -4772,6 +5527,19 @@ document.addEventListener('keydown', function(e) {
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       nextStep();
+    }
+  } else if (state.screen === 'classifier' && state.classifierActiveTab === 'practice') {
+    var ex = state.classifierCurrentPractice;
+    if (ex) {
+      if (!state.classifierChoiceChecked) {
+        var optIdx = ['1','2','3','4'].indexOf(e.key);
+        if (optIdx >= 0 && ex.options && optIdx < ex.options.length) {
+          checkClassifierChoice(ex.options[optIdx], optIdx);
+        }
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        nextClassifierPractice();
+      }
     }
   } else if (state.screen === 'grammar' && state.grammarActiveTab === 'practice') {
     var ex = state.grammarCurrentPractice;
