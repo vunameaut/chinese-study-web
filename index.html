@@ -431,6 +431,172 @@
     border:1px solid rgba(79,70,229,0.3);
   }
 
+  /* Study Mode Switcher (Buổi học vs Lượng từ) */
+  .study-mode-tabs {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    border-bottom: 1.5px solid var(--hairline);
+    padding-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .study-mode-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--paper-card);
+    border: 1.5px solid var(--hairline);
+    border-radius: 12px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s ease;
+    text-decoration: none;
+  }
+  .study-mode-btn:hover {
+    border-color: var(--ink-faint);
+    background: #e8deca;
+    color: var(--ink);
+  }
+  .study-mode-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+    box-shadow: 0 4px 12px rgba(26, 26, 26, 0.15);
+  }
+  .study-mode-btn.active .mode-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--paper);
+  }
+  .mode-count {
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--paper-deep);
+    color: var(--ink-soft);
+    font-weight: 800;
+  }
+
+  /* Classifier Lesson Card in Home */
+  .classifier-lesson-card {
+    background: var(--paper-card);
+    border: 1.5px solid var(--hairline);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow-sm);
+    transition: all .2s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .classifier-lesson-card:hover {
+    border-color: #4338ca;
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.12);
+    transform: translateY(-2px);
+  }
+  .cl-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .cl-card-ordinal {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #eef2ff;
+    border: 1.2px solid rgba(79, 70, 229, 0.3);
+    color: #4338ca;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .cl-card-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .cl-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  .cl-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+  .cl-card-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .cl-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    background: #eef2ff;
+    border: 1px solid rgba(79, 70, 229, 0.25);
+    border-radius: 7px;
+    color: #4338ca;
+  }
+  .cl-tag-chip b {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .cl-tag-chip span {
+    font-size: 11px;
+    color: #4f46e5;
+  }
+  .cl-card-colloc-preview {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+    line-height: 1.5;
+    background: var(--paper);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--hairline);
+    flex: 1;
+  }
+  .cl-card-btn {
+    width: 100%;
+    min-height: 38px;
+    border-radius: 9px;
+    background: #4338ca;
+    color: #fff;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all .15s ease;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+    margin-top: auto;
+  }
+  .cl-card-btn:hover {
+    background: #3730a3;
+  }
+  .cl-card-btn:active {
+    transform: scale(0.98);
+  }
+
   /* Classifier Cards & Collocations styling */
   .classifier-card {
     background:var(--paper-card);
@@ -2000,20 +2166,49 @@
       </div>
     </div>
 
-    <!-- Continue Learning Section -->
-    <div id="continue-section" style="display:none;margin-bottom:24px">
-      <div class="section-heading">Tiếp tục phiên học gần nhất</div>
-      <div id="continue-card-container"></div>
+    <!-- Study Mode Switcher (Tách riêng Buổi học & Lượng từ) -->
+    <div class="study-mode-tabs">
+      <button class="study-mode-btn active" id="mode-btn-sessions" onclick="switchHomeMode('sessions')">
+        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+        <span>Buổi học & Từ vựng</span>
+        <span class="mode-count" id="mode-count-sessions">0</span>
+      </button>
+      <button class="study-mode-btn" id="mode-btn-classifiers" onclick="switchHomeMode('classifiers')">
+        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z"/></svg>
+        <span>Lượng từ theo HSK & Bài</span>
+        <span class="mode-count" id="mode-count-classifiers" style="background:#eef2ff;color:#4338ca">0</span>
+      </button>
     </div>
 
-    <!-- All Sessions Grid Section -->
-    <div class="section-heading">Danh sách buổi học theo cấp độ</div>
-    <div id="home-loading" class="spinner" style="display:none"></div>
-    <div class="session-grid" id="session-grid"></div>
-    <div id="empty-state" class="empty-state" style="display:none;text-align:center;padding:48px 20px">
-      <div style="font-size:40px;margin-bottom:8px">📖</div>
-      <h3 style="font-size:17px;font-weight:700">Chưa có bài học nào trong cấp độ này</h3>
-      <p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px">Chọn cấp độ HSK khác ở thanh trên để bắt đầu luyện tập</p>
+    <!-- MODE 1: SESSIONS VIEW -->
+    <div id="sessions-view-wrap">
+      <!-- Continue Learning Section -->
+      <div id="continue-section" style="display:none;margin-bottom:24px">
+        <div class="section-heading">Tiếp tục phiên học gần nhất</div>
+        <div id="continue-card-container"></div>
+      </div>
+
+      <!-- All Sessions Grid Section -->
+      <div class="section-heading">Danh sách buổi học theo cấp độ</div>
+      <div id="home-loading" class="spinner" style="display:none"></div>
+      <div class="session-grid" id="session-grid"></div>
+      <div id="empty-state" class="empty-state" style="display:none;text-align:center;padding:48px 20px">
+        <div style="font-size:40px;margin-bottom:8px">📖</div>
+        <h3 style="font-size:17px;font-weight:700">Chưa có bài học nào trong cấp độ này</h3>
+        <p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px">Chọn cấp độ HSK khác ở thanh trên để bắt đầu luyện tập</p>
+      </div>
+    </div>
+
+    <!-- MODE 2: DEDICATED CLASSIFIERS VIEW -->
+    <div id="classifiers-view-wrap" style="display:none">
+      <div class="section-heading" id="cl-home-heading">Danh sách bài học lượng từ theo cấp độ</div>
+      <div id="cl-home-loading" class="spinner" style="display:none"></div>
+      <div class="session-grid" id="cl-home-grid"></div>
+      <div id="cl-home-empty-state" class="empty-state" style="display:none;text-align:center;padding:48px 20px">
+        <div style="font-size:40px;margin-bottom:8px">🏷️</div>
+        <h3 style="font-size:17px;font-weight:700">Chưa có dữ liệu lượng từ trong cấp độ này</h3>
+        <p style="color:var(--ink-faint);font-size:13.5px;margin-top:4px">Chọn cấp độ HSK khác ở thanh trên để xem bài học lượng từ</p>
+      </div>
     </div>
   </div>
 </div>
@@ -3248,11 +3443,13 @@ function showScreen(name, params) {
     state.lastSessionId = params.sessionId;
     localStorage.setItem('lastSessionId', params.sessionId);
     startGrammar(params.sessionId);
-  } else if (name === 'classifier' && params && params.sessionId) {
-    state.classifierSessionId = params.sessionId;
-    state.lastSessionId = params.sessionId;
-    localStorage.setItem('lastSessionId', params.sessionId);
-    startClassifier(params.sessionId);
+  } else if (name === 'classifier' && params) {
+    if (params.sessionId) {
+      state.classifierSessionId = params.sessionId;
+      state.lastSessionId = params.sessionId;
+      localStorage.setItem('lastSessionId', params.sessionId);
+    }
+    startClassifier(params);
   }
   window.scrollTo(0, 0);
 }
@@ -3308,22 +3505,65 @@ async function loadSessions() {
   renderHomeContent();
 }
 
-function renderHomeContent() {
+state.homeMode = state.homeMode || 'sessions';
+
+function switchHomeMode(mode) {
+  state.homeMode = mode;
+  var btnSessions = document.getElementById('mode-btn-sessions');
+  var btnClassifiers = document.getElementById('mode-btn-classifiers');
+  var wrapSessions = document.getElementById('sessions-view-wrap');
+  var wrapClassifiers = document.getElementById('classifiers-view-wrap');
+
+  if (mode === 'sessions') {
+    if (btnSessions) btnSessions.classList.add('active');
+    if (btnClassifiers) btnClassifiers.classList.remove('active');
+    if (wrapSessions) wrapSessions.style.display = 'block';
+    if (wrapClassifiers) wrapClassifiers.style.display = 'none';
+  } else {
+    if (btnSessions) btnSessions.classList.remove('active');
+    if (btnClassifiers) btnClassifiers.classList.add('active');
+    if (wrapSessions) wrapSessions.style.display = 'none';
+    if (wrapClassifiers) wrapClassifiers.style.display = 'block';
+  }
+  renderHomeContent();
+}
+
+async function renderHomeContent() {
+  var statsPill = document.getElementById('home-stats-pill');
+  var countSessionsEl = document.getElementById('mode-count-sessions');
+  var countClassifiersEl = document.getElementById('mode-count-classifiers');
+
+  // Count sessions
+  var filteredSessions = (state.sessions || []).filter(function(s){ return s.hsk_level === state.selectedHsk; });
+  if (countSessionsEl) countSessionsEl.textContent = filteredSessions.length;
+
+  // Ensure classifier lessons list is loaded to count
+  var allLessons = await loadClassifierLessonsList();
+  var hskLessons = allLessons.filter(function(l){ return l.hsk_level === state.selectedHsk; });
+  if (countClassifiersEl) countClassifiersEl.textContent = hskLessons.length;
+
+  if (state.homeMode === 'classifiers') {
+    if (statsPill) {
+      statsPill.innerHTML = 'HSK ' + state.selectedHsk + ': <b>' + hskLessons.length + '</b> bài lượng từ';
+    }
+    await renderClassifierHomeList();
+  } else {
+    if (statsPill) {
+      statsPill.innerHTML = 'HSK ' + state.selectedHsk + ': <b>' + filteredSessions.length + '</b> buổi học';
+    }
+    renderSessionsHomeList(filteredSessions);
+  }
+}
+
+function renderSessionsHomeList(filtered) {
   var grid = document.getElementById('session-grid');
   var contContainer = document.getElementById('continue-card-container');
   var contSection = document.getElementById('continue-section');
   var emptyState = document.getElementById('empty-state');
-  var statsPill = document.getElementById('home-stats-pill');
-
-  var filtered = state.sessions.filter(function(s){return s.hsk_level === state.selectedHsk;});
   var ordinals = ['壹','贰','叁','肆','伍','陆','柒','捌','玖','拾'];
 
-  if (statsPill) {
-    statsPill.innerHTML = 'HSK ' + state.selectedHsk + ': <b>' + filtered.length + '</b> buổi học';
-  }
-
   // Continue section
-  var last = state.sessions.find(function(s){return s.id === state.lastSessionId;});
+  var last = state.sessions.find(function(s){ return s.id === state.lastSessionId; });
   if (last && last.hsk_level === state.selectedHsk) {
     contSection.style.display = 'block';
     contContainer.innerHTML = buildSessionCardHtml(last, 1, ordinals, true);
@@ -3343,6 +3583,114 @@ function renderHomeContent() {
     });
     grid.innerHTML = html;
   }
+}
+
+async function renderClassifierHomeList() {
+  var grid = document.getElementById('cl-home-grid');
+  var loading = document.getElementById('cl-home-loading');
+  var emptyState = document.getElementById('cl-home-empty-state');
+  var heading = document.getElementById('cl-home-heading');
+  if (!grid) return;
+
+  if (heading) {
+    heading.textContent = 'DANH SÁCH LƯỢNG TỪ THEO TỪNG BÀI - HSK ' + state.selectedHsk;
+  }
+
+  if (loading) loading.style.display = 'block';
+  grid.innerHTML = '';
+  if (emptyState) emptyState.style.display = 'none';
+
+  var classifiers = [];
+  if (sb) {
+    try {
+      var res = await sb.from('classifiers')
+        .select('*')
+        .eq('hsk_level', state.selectedHsk)
+        .order('lesson_num', { ascending: true })
+        .order('order_index', { ascending: true });
+      if (!res.error && res.data) {
+        classifiers = res.data;
+      }
+    } catch(e) {
+      console.log('Lỗi tải lượng từ:', e);
+    }
+  }
+
+  if (loading) loading.style.display = 'none';
+
+  if (!classifiers || classifiers.length === 0) {
+    if (emptyState) emptyState.style.display = 'block';
+    return;
+  }
+
+  // Group by lesson_num
+  var lessonsMap = {};
+  classifiers.forEach(function(c) {
+    var lNum = c.lesson_num || 1;
+    if (!lessonsMap[lNum]) {
+      lessonsMap[lNum] = {
+        lesson_num: lNum,
+        lesson_title: c.lesson_title || ('Bài ' + lNum),
+        session_id: c.session_id,
+        items: []
+      };
+    }
+    lessonsMap[lNum].items.push(c);
+  });
+
+  var lessons = Object.values(lessonsMap).sort(function(a, b){ return a.lesson_num - b.lesson_num; });
+  var ordinals = ['壹','贰','叁','肆','伍','陆','柒','捌','玖','拾'];
+
+  var html = '';
+  lessons.forEach(function(l, idx) {
+    var ordChar = ordinals[(l.lesson_num - 1) % 10] || '拾';
+
+    // Tags
+    var tagsHtml = '';
+    var collocSummary = [];
+    l.items.forEach(function(c) {
+      tagsHtml += '<span class="cl-tag-chip">' +
+        '<b>' + escHtml(c.hanzi) + '</b>' +
+        '<span>' + escHtml(c.pinyin || '') + ' (' + escHtml(c.meaning || '') + ')</span>' +
+      '</span>';
+
+      var cols = (typeof c.collocations === 'string' ? JSON.parse(c.collocations) : c.collocations) || [];
+      cols.slice(0, 3).forEach(function(col) {
+        collocSummary.push(col.phrase || ('一' + c.hanzi + col.noun));
+      });
+    });
+
+    var collocPreviewText = collocSummary.slice(0, 4).join(' • ');
+
+    html += '<div class="classifier-lesson-card">' +
+      '<div class="cl-card-header">' +
+        '<div class="cl-card-ordinal">' + ordChar + '</div>' +
+        '<div class="cl-card-info">' +
+          '<div class="cl-card-title">' + escHtml(l.lesson_title) + '</div>' +
+          '<div class="cl-card-meta">' +
+            '<span class="badge" style="background:#eef2ff;color:#4338ca;font-weight:700">Bài ' + l.lesson_num + '</span>' +
+            '<span>' + l.items.length + ' lượng từ</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cl-card-tags-row">' + tagsHtml + '</div>' +
+      (collocPreviewText ? '<div class="cl-card-colloc-preview"><b>Ví dụ: </b>' + escHtml(collocPreviewText) + '</div>' : '') +
+      '<button class="cl-card-btn" onclick="openClassifierLesson(' + state.selectedHsk + ', ' + l.lesson_num + ', ' + (l.session_id || 'null') + ')">' +
+        '<span>Bắt đầu học lượng từ bài này</span>' +
+        '<span>➔</span>' +
+      '</button>' +
+    '</div>';
+  });
+
+  grid.innerHTML = html;
+}
+
+function openClassifierLesson(hskLevel, lessonNum, sessionId) {
+  showScreen('classifier', {
+    hskLevel: hskLevel,
+    lessonNum: lessonNum,
+    sessionId: sessionId
+  });
 }
 
 function buildSessionCardHtml(s, idx, ordinals, isHighlight) {
@@ -3368,10 +3716,7 @@ function buildSessionCardHtml(s, idx, ordinals, isHighlight) {
         '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>' +
         '<span>Ngữ pháp</span>' +
       '</button>' +
-      '<button class="action-btn btn-cl" onclick="showScreen(\'classifier\',{sessionId:' + s.id + '})" title="Học lượng từ buổi này">' +
-        '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z"/></svg>' +
-        '<span>Lượng từ</span>' +
-      '</button>' +
+
       '<button class="action-btn btn-wp" onclick="showScreen(\'write-pinyin\',{sessionId:' + s.id + '})">' +
         '<svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>' +
         '<span>Viết Pinyin</span>' +
@@ -5005,7 +5350,11 @@ async function onSelectClassifierLesson(val) {
   showSnackbar('Đã tải lượng từ: ' + titleText);
 }
 
-async function startClassifier(sessionId) {
+async function startClassifier(params) {
+  var sessionId = (typeof params === 'object') ? params.sessionId : params;
+  var targetHsk = (typeof params === 'object') ? params.hskLevel : null;
+  var targetLesson = (typeof params === 'object') ? params.lessonNum : null;
+
   state.classifierSessionId = sessionId;
   state.classifierActiveTab = 'cards';
 
@@ -5027,11 +5376,33 @@ async function startClassifier(sessionId) {
   await loadClassifierLessonsList();
 
   var session = state.sessions.find(function(s){ return s.id === sessionId; });
-  var hskLv = (session && session.hsk_level) ? session.hsk_level : (state.selectedHsk || 1);
+  var hskLv = targetHsk || (session && session.hsk_level) ? session.hsk_level : (state.selectedHsk || 1);
 
-  var matchedLesson = detectHskLesson(session);
+  var matchedLesson = (targetLesson && hskLv)
+    ? { lesson: targetLesson, title: 'Bài ' + targetLesson, hsk_level: hskLv }
+    : detectHskLesson(session);
 
-  var points = await loadClassifierPoints(sessionId, session, matchedLesson);
+  var points = [];
+  if (targetLesson && hskLv) {
+    var res = await sb.from('classifiers').select('*').eq('hsk_level', hskLv).eq('lesson_num', targetLesson).order('order_index', { ascending: true });
+    if (!res.error && res.data && res.data.length > 0) {
+      points = res.data.map(function(item) {
+        return {
+          id: item.id,
+          hanzi: item.hanzi,
+          pinyin: item.pinyin || '',
+          meaning: item.meaning || '',
+          usage_note: item.usage_note || '',
+          collocations: (typeof item.collocations === 'string' ? JSON.parse(item.collocations) : item.collocations) || [],
+          examples: (typeof item.examples === 'string' ? JSON.parse(item.examples) : item.examples) || [],
+          exercises: (typeof item.exercises === 'string' ? JSON.parse(item.exercises) : item.exercises) || []
+        };
+      });
+    }
+  }
+  if (!points || points.length === 0) {
+    points = await loadClassifierPoints(sessionId, session, matchedLesson);
+  }
   state.classifierPoints = points;
 
   await populateClassifierLessonSelector(matchedLesson.lesson, hskLv);
