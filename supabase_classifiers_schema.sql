@@ -1,15 +1,8 @@
 -- ====================================================================
--- SCRIPT IMPORT DỮ LIỆU LƯỢNG TỪ GIÁO TRÌNH CHUẨN HSK 1, 2, 3 VÀO SUPABASE
--- (HSK Standard Course - NXB Đại học Ngôn ngữ Bắc Kinh / BLCUP)
--- ====================================================================
--- HƯỚNG DẪN IMPORT:
--- 1. Truy cập Supabase Dashboard -> chọn Project của bạn.
--- 2. Vào mục "SQL Editor" ở thanh menu bên trái.
--- 3. Bấm "New query", dán toàn bộ nội dung script này vào và bấm "Run" (hoặc Ctrl + Enter).
--- Toàn bộ lượng từ chuẩn theo từng bài HSK 1, 2, 3 sẽ được nạp vào bảng 'classifiers'.
+-- SCRIPT DỮ LIỆU LƯỢNG TỪ (量词) LIÊN KẾT THEO TỪNG BUỔI HỌC (SESSIONS) VÀ HSK 1, 2, 3
+-- Dựa trên phân tích từ vựng thực tế trong cơ sở dữ liệu Supabase
 -- ====================================================================
 
--- 1. Tạo bảng classifiers (nếu chưa có)
 CREATE TABLE IF NOT EXISTS classifiers (
   id BIGSERIAL PRIMARY KEY,
   session_id BIGINT REFERENCES sessions(id) ON DELETE CASCADE,
@@ -27,21 +20,9 @@ CREATE TABLE IF NOT EXISTS classifiers (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Cập nhật bổ sung cột nếu bảng đã tồn tại
-ALTER TABLE classifiers ADD COLUMN IF NOT EXISTS hsk_level INT DEFAULT 1;
-ALTER TABLE classifiers ADD COLUMN IF NOT EXISTS lesson_num INT DEFAULT 1;
-ALTER TABLE classifiers ADD COLUMN IF NOT EXISTS lesson_title TEXT;
-ALTER TABLE classifiers ADD COLUMN IF NOT EXISTS usage_note TEXT;
-ALTER TABLE classifiers ADD COLUMN IF NOT EXISTS collocations JSONB DEFAULT '[]'::jsonb;
-ALTER TABLE classifiers ADD COLUMN IF NOT EXISTS examples JSONB DEFAULT '[]'::jsonb;
-ALTER TABLE classifiers ADD COLUMN IF NOT EXISTS exercises JSONB DEFAULT '[]'::jsonb;
-ALTER TABLE classifiers ALTER COLUMN session_id DROP NOT NULL;
-
--- 2. Đánh index tối ưu tốc độ truy vấn theo cấp độ HSK và bài học
 CREATE INDEX IF NOT EXISTS idx_classifiers_session_id ON classifiers(session_id);
 CREATE INDEX IF NOT EXISTS idx_classifiers_hsk_lesson ON classifiers(hsk_level, lesson_num);
 
--- 3. Cấu hình Row Level Security (RLS)
 ALTER TABLE classifiers ENABLE ROW LEVEL SECURITY;
 
 DO $$ 
@@ -60,610 +41,181 @@ BEGIN
   END IF;
 END $$;
 
--- 4. Xóa dữ liệu mẫu cũ (nếu session_id IS NULL) để tránh trùng lặp khi chạy lại script
-DELETE FROM classifiers WHERE session_id IS NULL;
+-- Xóa dữ liệu cũ trước khi nạp
+TRUNCATE TABLE classifiers RESTART IDENTITY;
 
--- 5. NẠP DỮ LIỆU LƯỢNG TỪ HSK 1, 2, 3 THEO TỪNG BÀI
+-- Nạp toàn bộ dữ liệu lượng từ gắn liền với các Sessions
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (1, 1, 1, 'HSK 1 Bài 1 - 你好 / Chào anh', '位', 'wèi', 'vị, ngài (chỉ người lịch sự)', 'Dùng cho người khi cần thể hiện sự tôn trọng, lịch sự và trang nhã (thầy cô, khách quý, đồng nghiệp).', '[{"noun": "老师", "pinyin": "lǎoshī", "phrase": "一位老师", "meaning": "một vị thầy cô giáo"}, {"noun": "同学", "pinyin": "tóngxué", "phrase": "一位新同学", "meaning": "một vị bạn học mới"}]'::jsonb, '[{"hanzi": "您好，王老师是一位非常好的老师。", "pinyin": "Nín hǎo, Wáng lǎoshī shì yí wèi fēicháng hǎo de lǎoshī.", "meaning": "Chào thầy, thầy Vương là một người thầy rất tốt."}]'::jsonb, '[{"type": "choice", "question": "校门口站着一___老师。", "options": ["位", "张", "条", "本"], "answer": "位", "explain": "Chỉ thầy cô (老师) trang trọng lịch sự dùng lượng từ ''位''."}]'::jsonb, 1);
 
--- ==========================================
--- HSK 1
--- ==========================================
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (2, 1, 2, 'HSK 1 Bài 2 - 谢谢你 / Cảm ơn anh', '句', 'jù', 'câu (lời nói)', 'Dùng cho lời nói, câu văn, lời cảm ơn hoặc xin lỗi.', '[{"noun": "谢谢", "pinyin": "xièxie", "phrase": "一句谢谢", "meaning": "một câu cảm ơn"}, {"noun": "话", "pinyin": "huà", "phrase": "一句话", "meaning": "một câu nói"}, {"noun": "对不起", "pinyin": "duìbuqǐ", "phrase": "一句对不起", "meaning": "một câu xin lỗi"}]'::jsonb, '[{"hanzi": "我想对你说一句谢谢。", "pinyin": "Wǒ xiǎng duì nǐ shuō yí jù xièxie.", "meaning": "Tôi muốn nói với bạn một câu cảm ơn."}]'::jsonb, '[{"type": "choice", "question": "请对老师说一___“谢谢”。", "options": ["句", "本", "个", "条"], "answer": "句", "explain": "Lời nói/lời cảm ơn dùng lượng từ ''句''."}]'::jsonb, 1);
 
--- HSK 1 - Bài 3: Cô ấy là người nước nào? (Lượng từ: 个)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  1, 3, 'Bài 3: Cô ấy là người nước nào? (她是哪国人)',
-  '个', 'gè', 'cái, con, người (lượng từ chung thông dụng nhất)',
-  'Lượng từ phổ biến nhất trong tiếng Trung. Dùng cho người, các vật thể hình khối thông thường, hoặc khi danh từ không có lượng từ chuyên biệt.',
-  '[
-    {"noun": "人", "pinyin": "rén", "phrase": "一个人", "meaning": "một người"},
-    {"noun": "学生", "pinyin": "xuéshēng", "phrase": "一个学生", "meaning": "một học sinh"},
-    {"noun": "朋友", "pinyin": "péngyou", "phrase": "三个朋友", "meaning": "ba người bạn"},
-    {"noun": "苹果", "pinyin": "píngguǒ", "phrase": "两个苹果", "meaning": "hai quả táo"},
-    {"noun": "杯子", "pinyin": "bēizi", "phrase": "一个杯子", "meaning": "một cái cốc"},
-    {"noun": "月", "pinyin": "yuè", "phrase": "一个月", "meaning": "một tháng"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我有一个中国朋友。", "pinyin": "Wǒ yǒu yí gè Zhōngguó péngyou.", "meaning": "Tôi có một người bạn Trung Quốc."},
-    {"hanzi": "桌子上有一个杯子。", "pinyin": "Zhuōzi shàng yǒu yí gè bēizi.", "meaning": "Trên bàn có một cái cốc."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "我认识一___中国朋友。",
-      "options": ["个", "本", "条", "张"],
-      "answer": "个",
-      "explain": "Từ ''朋友'' (bạn bè/người) dùng lượng từ thông dụng là ''个''."
-    },
-    {
-      "type": "choice",
-      "question": "桌子上有一___杯子。",
-      "options": ["张", "个", "本", "只"],
-      "answer": "个",
-      "explain": "Cái cốc (杯子) dùng lượng từ ''个''."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (3, 1, 3, 'HSK 1 Bài 3 - 你叫什么名字？/ Bạn tên là gì?', '个', 'gè', 'cái, người (lượng từ chung)', 'Lượng từ phổ biến và thông dụng nhất trong tiếng Trung. Dùng cho con người, tên gọi hoặc đồ vật chung.', '[{"noun": "人", "pinyin": "rén", "phrase": "一个人", "meaning": "một người"}, {"noun": "学生", "pinyin": "xuéshēng", "phrase": "一个学生", "meaning": "một học sinh"}, {"noun": "名字", "pinyin": "míngzi", "phrase": "一个好名字", "meaning": "một cái tên hay"}]'::jsonb, '[{"hanzi": "他是一个中国留学生。", "pinyin": "Tā shì yí gè Zhōngguó liúxuéshēng.", "meaning": "Anh ấy là một du học sinh Trung Quốc."}]'::jsonb, '[{"type": "choice", "question": "我们班有二十___学生。", "options": ["个", "本", "张", "条"], "answer": "个", "explain": "Học sinh (学生) dùng lượng từ thông dụng là ''个''."}]'::jsonb, 1);
 
--- HSK 1 - Bài 5: Con gái bạn năm nay mấy tuổi? (Lượng từ: 岁)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  1, 5, 'Bài 5: Con gái bạn năm nay mấy tuổi? (她女儿今年二十岁)',
-  '岁', 'suì', 'tuổi',
-  'Lượng từ chỉ độ tuổi. Cấu trúc: [Số từ] + 岁 (không cần thêm ''个'').',
-  '[
-    {"noun": "岁", "pinyin": "suì", "phrase": "二十岁", "meaning": "20 tuổi"},
-    {"noun": "岁", "pinyin": "suì", "phrase": "五岁", "meaning": "5 tuổi"},
-    {"noun": "岁", "pinyin": "suì", "phrase": "几岁", "meaning": "mấy tuổi"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "李老师今年五十岁。", "pinyin": "Lǐ lǎoshī jīnnián wǔshí suì.", "meaning": "Thầy Lý năm nay 50 tuổi."},
-    {"hanzi": "你女儿几岁了？", "pinyin": "Nǐ nǚ''ér jǐ suì le?", "meaning": "Con gái bạn mấy tuổi rồi?"}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "他儿子今年四___了。",
-      "options": ["岁", "个", "本", "号"],
-      "answer": "岁",
-      "explain": "Độ tuổi của người dùng lượng từ ''岁''."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (4, 1, 4, 'HSK 1 Bài 4 - 她是老师 / Cô ấy là cô giáo dạy tôi tiếng Trung Quốc', '个', 'gè', 'người (thành viên, bạn bè)', 'Dùng để đếm các thành viên trong gia đình hoặc bạn bè bè bạn thân thiết.', '[{"noun": "朋友", "pinyin": "péngyou", "phrase": "一个好朋友", "meaning": "một người bạn tốt"}, {"noun": "哥哥", "pinyin": "gēge", "phrase": "一个哥哥", "meaning": "một người anh trai"}, {"noun": "姐姐", "pinyin": "jiějie", "phrase": "一个姐姐", "meaning": "một người chị gái"}]'::jsonb, '[{"hanzi": "我有一个中国好朋友。", "pinyin": "Wǒ yǒu yí gè Zhōngguó hǎo péngyou.", "meaning": "Tôi có một người bạn Trung Quốc rất tốt."}]'::jsonb, '[{"type": "choice", "question": "他有两___姐姐和一个弟弟。", "options": ["个", "本", "只", "件"], "answer": "个", "explain": "Anh chị em người thân dùng lượng từ ''个''."}]'::jsonb, 1);
 
--- HSK 1 - Bài 7: Hôm nay là ngày mấy? (Lượng từ: 号)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  1, 7, 'Bài 7: Hôm nay là ngày mấy? (今天几号)',
-  '号', 'hào', 'ngày, số',
-  'Dùng trong khẩu ngữ chỉ ngày trong tháng hoặc số phòng, số hiệu.',
-  '[
-    {"noun": "号", "pinyin": "hào", "phrase": "一号", "meaning": "ngày mùng 1"},
-    {"noun": "号", "pinyin": "hào", "phrase": "二十五号", "meaning": "ngày 25"},
-    {"noun": "房间", "pinyin": "fángjiān", "phrase": "102号房间", "meaning": "phòng số 102"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "今天是九月一号。", "pinyin": "Jīntiān shì jiǔ yuè yī hào.", "meaning": "Hôm nay là ngày 1 tháng 9."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "明天是十月五___。",
-      "options": ["号", "岁", "个", "块"],
-      "answer": "号",
-      "explain": "Ngày trong tháng dùng lượng từ ''号''."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (5, 1, 5, 'HSK 1 Bài 5 - 她女儿今年二十岁。/ Con gái cô ấy năm nay 20 tuổi.', '口', 'kǒu', 'người (nhân khẩu gia đình)', 'Chuyên dùng để đếm số lượng người/nhân khẩu trong một gia đình (gia đình có mấy miệng ăn).', '[{"noun": "人", "pinyin": "rén", "phrase": "三口人", "meaning": "3 người (trong nhà)"}, {"noun": "人", "pinyin": "rén", "phrase": "一家五口", "meaning": "nhà 5 người"}, {"noun": "人", "pinyin": "rén", "phrase": "几口人", "meaning": "mấy người (nhà bạn có mấy người)"}]'::jsonb, '[{"hanzi": "你家有几口人？——我家有四口人。", "pinyin": "Nǐ jiā yǒu jǐ kǒu rén? —— Wǒ jiā yǒu sì kǒu rén.", "meaning": "Nhà bạn có mấy người? —— Nhà tôi có 4 người."}]'::jsonb, '[{"type": "choice", "question": "李老师家有五___人。", "options": ["口", "条", "本", "张"], "answer": "口", "explain": "Đếm số người trong gia đình dùng lượng từ ''口''."}]'::jsonb, 1);
 
--- HSK 1 - Bài 8: Tôi muốn uống trà (Lượng từ: 块, 杯)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  1, 8, 'Bài 8: Tôi muốn uống trà (我想喝茶)',
-  '块', 'kuài', 'đồng, miếng, cục',
-  'Dùng trong khẩu ngữ chỉ đơn vị tiền tệ (đồng/tệ) hoặc các vật thể hình khối/miếng như bánh ngọt, đồng hồ.',
-  '[
-    {"noun": "钱", "pinyin": "qián", "phrase": "一块钱", "meaning": "một đồng tiền (1 tệ)"},
-    {"noun": "蛋糕", "pinyin": "dàngāo", "phrase": "两块蛋糕", "meaning": "hai miếng bánh ngọt"},
-    {"noun": "西瓜", "pinyin": "xīguā", "phrase": "一块西瓜", "meaning": "một miếng dưa hấu"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "这个杯子多少钱？——五块钱。", "pinyin": "Zhè ge bēizi duōshǎo qián? —— Wǔ kuài qián.", "meaning": "Cái cốc này bao nhiêu tiền? —— 5 tệ."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "这个苹果三___钱。",
-      "options": ["块", "本", "张", "只"],
-      "answer": "块",
-      "explain": "Tiền tệ trong khẩu ngữ dùng lượng từ ''块''."
-    }
-  ]'::jsonb,
-  1
-),
-(
-  1, 8, 'Bài 8: Tôi muốn uống trà (我想喝茶)',
-  '杯', 'bēi', 'cốc, ly, tách',
-  'Lượng từ chỉ dung tích đồ uống đựng trong cốc, ly, tách (trà, cà phê, nước).',
-  '[
-    {"noun": "茶", "pinyin": "chá", "phrase": "一杯茶", "meaning": "một tách trà"},
-    {"noun": "水", "pinyin": "shuǐ", "phrase": "一杯水", "meaning": "một cốc nước"},
-    {"noun": "咖啡", "pinyin": "kāfēi", "phrase": "一杯咖啡", "meaning": "một ly cà phê"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我想喝一杯热茶。", "pinyin": "Wǒ xiǎng hē yì bēi rè chá.", "meaning": "Tôi muốn uống một tách trà nóng."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "我想喝一___热茶。",
-      "options": ["杯", "本", "块", "只"],
-      "answer": "杯",
-      "explain": "Đồ uống như trà (茶) dùng lượng từ ''杯'' (cốc/tách)."
-    }
-  ]'::jsonb,
-  2
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (5, 1, 5, 'HSK 1 Bài 5 - 她女儿今年二十岁。/ Con gái cô ấy năm nay 20 tuổi.', '岁', 'suì', 'tuổi', 'Lượng từ chỉ độ tuổi của người. Cấu trúc: [Số từ] + 岁 (không cần thêm ''个'').', '[{"noun": "岁", "pinyin": "suì", "phrase": "二十岁", "meaning": "20 tuổi"}, {"noun": "岁", "pinyin": "suì", "phrase": "五岁", "meaning": "5 tuổi"}]'::jsonb, '[{"hanzi": "她女儿今年二十岁了。", "pinyin": "Tā nǚ''ér jīnnián èrshí suì le.", "meaning": "Con gái cô ấy năm nay 20 tuổi rồi."}]'::jsonb, '[{"type": "choice", "question": "小明今年八___了。", "options": ["岁", "个", "口", "本"], "answer": "岁", "explain": "Độ tuổi dùng lượng từ ''岁''."}]'::jsonb, 1);
 
--- HSK 1 - Bài 9: Con trai bạn làm việc ở đâu? (Lượng từ: 本)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  1, 9, 'Bài 9: Con trai bạn làm việc ở đâu? (你儿子在哪儿工作)',
-  '本', 'běn', 'quyển, cuốn',
-  'Dùng cho sách vở, từ điển, tạp chí, các ấn phẩm đóng thành quyển có gáy.',
-  '[
-    {"noun": "书", "pinyin": "shū", "phrase": "一本书", "meaning": "một quyển sách"},
-    {"noun": "本子", "pinyin": "běnzi", "phrase": "一本本子", "meaning": "một cuốn vở"},
-    {"noun": "词典", "pinyin": "cídiǎn", "phrase": "一本词典", "meaning": "một cuốn từ điển"},
-    {"noun": "汉语书", "pinyin": "Hànyǔ shū", "phrase": "两本汉语书", "meaning": "hai cuốn sách tiếng Hán"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "桌子上有一本书。", "pinyin": "Zhuōzi shàng yǒu yì běn shū.", "meaning": "Trên bàn có một cuốn sách."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "我买了两___汉语书。",
-      "options": ["本", "件", "个", "条"],
-      "answer": "本",
-      "explain": "Sách (书) dùng lượng từ ''本'' (quyển/cuốn)."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (6, 1, 6, 'HSK 1 Bài 6 - 我会说汉语 / Tôi biết nói Tiếng Trung', '点儿', 'diǎnr', 'chút, ít', 'Lượng từ bất định chỉ số lượng ít, nhỏ hoặc mức độ nhẹ. Thường đi sau động từ hoặc tính từ.', '[{"noun": "汉语", "pinyin": "Hànyǔ", "phrase": "一点儿汉语", "meaning": "một chút tiếng Hán"}, {"noun": "水", "pinyin": "shuǐ", "phrase": "一点儿水", "meaning": "một chút nước"}]'::jsonb, '[{"hanzi": "我会说一点儿汉语。", "pinyin": "Wǒ huì shuō yìdiǎnr Hànyǔ.", "meaning": "Tôi biết nói một chút tiếng Hán."}]'::jsonb, '[{"type": "choice", "question": "我只会说一___汉语。", "options": ["点儿", "张", "本", "件"], "answer": "点儿", "explain": "''一点儿'' mang nghĩa một chút, một ít."}]'::jsonb, 1);
 
--- HSK 1 - Bài 12: Ngày mai thời tiết thế nào? (Lượng từ: 些)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  1, 12, 'Bài 12: Ngày mai thời tiết thế nào? (明天天气怎么样)',
-  '些', 'xiē', 'những, một số, vài (lượng từ bất định)',
-  'Chỉ số lượng nhiều không xác định. Thường dùng với 一些 (một vài), 这些 (những cái này), 那些 (những cái kia).',
-  '[
-    {"noun": "东西", "pinyin": "dōngxi", "phrase": "一些东西", "meaning": "một số đồ đạc"},
-    {"noun": "苹果", "pinyin": "píngguǒ", "phrase": "这些苹果", "meaning": "những quả táo này"},
-    {"noun": "人", "pinyin": "rén", "phrase": "那些人", "meaning": "những người kia"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "多吃些水果，对身体好。", "pinyin": "Duō chī xiē shuǐguǒ, duì shēntǐ hǎo.", "meaning": "Ăn nhiều chút hoa quả, tốt cho sức khỏe."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "我想买一___苹果。",
-      "options": ["些", "本", "张", "只"],
-      "answer": "些",
-      "explain": "''一些'' mang nghĩa một vài/một ít (số lượng bất định)."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (7, 1, 7, 'HSK 1 Bài 7 - 今天几号？/ Hôm nay là ngày mấy?', '号', 'hào', 'ngày, số', 'Dùng trong khẩu ngữ chỉ ngày trong tháng hoặc số hiệu/số phòng.', '[{"noun": "号", "pinyin": "hào", "phrase": "一号", "meaning": "ngày 1"}, {"noun": "号", "pinyin": "hào", "phrase": "二十五号", "meaning": "ngày 25"}]'::jsonb, '[{"hanzi": "今天九月一号，明天星期三。", "pinyin": "Jīntiān jiǔ yuè yī hào, míngtiān xīngqīsān.", "meaning": "Hôm nay là ngày 1 tháng 9, ngày mai là thứ Tư."}]'::jsonb, '[{"type": "choice", "question": "明天是八月十___。", "options": ["号", "岁", "块", "本"], "answer": "号", "explain": "Ngày trong tháng dùng lượng từ ''号''."}]'::jsonb, 1);
 
--- ==========================================
--- HSK 2
--- ==========================================
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (8, 1, 8, 'HSK 1 Bài 8 - 我想喝茶。/ Tôi muốn uống trà.', '杯', 'bēi', 'cốc, ly, tách', 'Lượng từ chỉ dung tích đồ uống đựng trong ly, cốc, tách (nước, trà, cà phê).', '[{"noun": "茶", "pinyin": "chá", "phrase": "一杯茶", "meaning": "một tách trà"}, {"noun": "咖啡", "pinyin": "kāfēi", "phrase": "一杯咖啡", "meaning": "một ly cà phê"}, {"noun": "水", "pinyin": "shuǐ", "phrase": "一杯水", "meaning": "một cốc nước"}]'::jsonb, '[{"hanzi": "我想喝一杯热茶。", "pinyin": "Wǒ xiǎng hē yì bēi rè chá.", "meaning": "Tôi muốn uống một tách trà nóng."}]'::jsonb, '[{"type": "choice", "question": "服务员，请给我一___水。", "options": ["杯", "张", "本", "个"], "answer": "杯", "explain": "Nước uống dùng lượng từ ''杯'' (cốc/ly)."}]'::jsonb, 1);
 
--- HSK 2 - Bài 4: Công việc này là do anh ấy giới thiệu (Lượng từ: 件)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  2, 4, 'Bài 4: Công việc này là do anh ấy giới thiệu (这个工作是他帮我介绍的)',
-  '件', 'jiàn', 'chiếc, cái, vụ, kiện',
-  'Dùng cho trang phục thân trên hoặc toàn thân (áo sơ mi, áo khoác, sườn xám), hoặc dùng cho sự việc, món quà.',
-  '[
-    {"noun": "衣服", "pinyin": "yīfu", "phrase": "一件衣服", "meaning": "một bộ/chiếc quần áo"},
-    {"noun": "衬衫", "pinyin": "chènshān", "phrase": "一件衬衫", "meaning": "một chiếc áo sơ mi"},
-    {"noun": "事", "pinyin": "shì", "phrase": "一件事", "meaning": "một sự việc"},
-    {"noun": "礼物", "pinyin": "lǐwù", "phrase": "一件礼物", "meaning": "một món quà"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "这件衣服很漂亮，但是有点贵。", "pinyin": "Zhè jiàn yīfu hěn piàoliang, dànshì yǒudiǎnr guì.", "meaning": "Bộ quần áo này rất đẹp, nhưng hơi đắt."},
-    {"hanzi": "我想请你帮我做一件事。", "pinyin": "Wǒ xiǎng qǐng nǐ bāng wǒ zuò yí jiàn shì.", "meaning": "Tôi muốn nhờ bạn giúp tôi một việc."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "我想买一___漂亮的衣服。",
-      "options": ["件", "张", "条", "本"],
-      "answer": "件",
-      "explain": "Quần áo (衣服) dùng lượng từ ''件''."
-    },
-    {
-      "type": "choice",
-      "question": "我有一___重要的事要告诉你。",
-      "options": ["件", "只", "双", "本"],
-      "answer": "件",
-      "explain": "Sự việc (事) dùng lượng từ ''件'' (一件事)."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (8, 1, 8, 'HSK 1 Bài 8 - 我想喝茶。/ Tôi muốn uống trà.', '块', 'kuài', 'đồng (tiền tệ), miếng', 'Dùng trong khẩu ngữ chỉ đơn vị tiền tệ (tệ/đồng) hoặc vật thể dạng khối/miếng (bánh ngọt, dưa hấu).', '[{"noun": "钱", "pinyin": "qián", "phrase": "一块钱", "meaning": "một đồng tiền"}, {"noun": "蛋糕", "pinyin": "dàngāo", "phrase": "一块蛋糕", "meaning": "một miếng bánh ngọt"}]'::jsonb, '[{"hanzi": "这个杯子五块钱。", "pinyin": "Zhè ge bēizi wǔ kuài qián.", "meaning": "Cái cốc này 5 tệ."}]'::jsonb, '[{"type": "choice", "question": "这杯咖啡二十___钱。", "options": ["块", "条", "本", "只"], "answer": "块", "explain": "Tiền tệ trong khẩu ngữ dùng ''块''."}]'::jsonb, 1);
 
--- HSK 2 - Bài 7: Bạn đến trường bằng cách nào? (Lượng từ: 条, 张)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  2, 7, 'Bài 7: Bạn đến trường bằng cách nào? (你怎么去学校)',
-  '条', 'tiáo', 'con, chiếc, dải, sợi',
-  'Dùng cho các sự vật có hình dáng thon dài, mềm mại hoặc uốn lượn (cá, quần, váy, con đường, dòng sông, cà vạt).',
-  '[
-    {"noun": "鱼", "pinyin": "yú", "phrase": "一条鱼", "meaning": "một con cá"},
-    {"noun": "裤子", "pinyin": "kùzi", "phrase": "一条裤子", "meaning": "một chiếc quần"},
-    {"noun": "裙子", "pinyin": "qúnzi", "phrase": "一条裙子", "meaning": "một chiếc váy"},
-    {"noun": "路", "pinyin": "lù", "phrase": "一条路", "meaning": "một con đường"},
-    {"noun": "河", "pinyin": "hé", "phrase": "一条河", "meaning": "một dòng sông"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "前面有一条很长的路。", "pinyin": "Qiánmiàn yǒu yì tiáo hěn cháng de lù.", "meaning": "Phía trước có một con đường rất dài."},
-    {"hanzi": "这条裤子多少钱？", "pinyin": "Zhè tiáo kùzi duōshǎo qián?", "meaning": "Chiếc quần này bao nhiêu tiền?"}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "这条___很合身，颜色也很好看。",
-      "options": ["裤子", "衣服", "书", "桌子"],
-      "answer": "裤子",
-      "explain": "Lượng từ ''条'' dùng cho quần (裤子) hoặc váy (裙子)."
-    },
-    {
-      "type": "choice",
-      "question": "河里有许多___在游来游去。",
-      "options": ["鱼", "猫", "狗", "鸟"],
-      "answer": "鱼",
-      "explain": "Cá (鱼) thon dài bơi dưới nước dùng lượng từ ''条'' (一条鱼)."
-    }
-  ]'::jsonb,
-  1
-),
-(
-  2, 7, 'Bài 7: Bạn đến trường bằng cách nào? (你怎么去学校)',
-  '张', 'zhāng', 'tờ, tấm, chiếc, cái',
-  'Dùng cho các vật mỏng, phẳng hoặc có bề mặt phẳng rộng (giấy, bàn, giường, vé, ảnh, thẻ ngân hàng, mặt).',
-  '[
-    {"noun": "纸", "pinyin": "zhǐ", "phrase": "一张纸", "meaning": "một tờ giấy"},
-    {"noun": "桌子", "pinyin": "zhuōzi", "phrase": "一张桌子", "meaning": "một chiếc bàn"},
-    {"noun": "床", "pinyin": "chuáng", "phrase": "一张床", "meaning": "một chiếc giường"},
-    {"noun": "票", "pinyin": "piào", "phrase": "两张票", "meaning": "hai tấm vé"},
-    {"noun": "照片", "pinyin": "zhàopiàn", "phrase": "一张照片", "meaning": "một tấm ảnh"},
-    {"noun": "脸", "pinyin": "liǎn", "phrase": "一张脸", "meaning": "một khuôn mặt"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我买了两张电影票。", "pinyin": "Wǒ mǎi le liǎng zhāng diànyǐng piào.", "meaning": "Tôi đã mua hai tấm vé xem phim."},
-    {"hanzi": "房间里有一张大桌子。", "pinyin": "Fángjiān lǐ yǒu yì zhāng dà zhuōzi.", "meaning": "Trong phòng có một chiếc bàn lớn."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "我买了两___明天去北京的火车票。",
-      "options": ["张", "条", "本", "件"],
-      "answer": "张",
-      "explain": "Vé (票) là vật phẳng mỏng, dùng lượng từ ''张''."
-    },
-    {
-      "type": "choice",
-      "question": "请给我一___白纸。",
-      "options": ["张", "条", "只", "双"],
-      "answer": "张",
-      "explain": "Giấy (纸) phẳng mỏng dùng lượng từ ''张''."
-    }
-  ]'::jsonb,
-  2
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (8, 1, 8, 'HSK 1 Bài 8 - 我想喝茶。/ Tôi muốn uống trà.', '碗', 'wǎn', 'bát, chén', 'Lượng từ đồ dùng chứa thức ăn dạng bát/chén (cơm, canh, mì).', '[{"noun": "米饭", "pinyin": "mǐfàn", "phrase": "一碗米饭", "meaning": "một bát cơm"}, {"noun": "汤", "pinyin": "tāng", "phrase": "一碗汤", "meaning": "một bát canh"}]'::jsonb, '[{"hanzi": "中午我吃了一碗米饭和一个中国菜。", "pinyin": "Zhōngwǔ wǒ chī le yì wǎn mǐfàn hé yí gè Zhōngguó cài.", "meaning": "Buổi trưa tôi ăn một bát cơm và một món ăn Trung Quốc."}]'::jsonb, '[{"type": "choice", "question": "我吃了一___热腾腾的米饭。", "options": ["碗", "张", "条", "只"], "answer": "碗", "explain": "Cơm (米饭) dùng lượng từ ''碗'' (bát/chén)."}]'::jsonb, 1);
 
--- HSK 2 - Bài 10: Đừng xem tivi nữa (Lượng từ: 只, 双)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  2, 10, 'Bài 10: Đừng xem tivi nữa, ngày mai còn phải thi (别看了，明天还要考试呢)',
-  '只', 'zhī', 'con, chiếc',
-  'Dùng cho hầu hết các loài động vật nhỏ/chim muông (mèo, gà, chim, chó nhỏ), hoặc 1 chiếc trong đồ vật có đôi (1 bàn tay, 1 con mắt, 1 chiếc giày).',
-  '[
-    {"noun": "猫", "pinyin": "māo", "phrase": "一只猫", "meaning": "một con mèo"},
-    {"noun": "狗", "pinyin": "gǒu", "phrase": "一只狗", "meaning": "một con chó"},
-    {"noun": "鸟", "pinyin": "niǎo", "phrase": "两只鸟", "meaning": "hai con chim"},
-    {"noun": "手", "pinyin": "shǒu", "phrase": "一只手", "meaning": "một bàn tay"},
-    {"noun": "眼睛", "pinyin": "yǎnjing", "phrase": "一只眼睛", "meaning": "một con mắt"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我家养了一只可爱的小猫。", "pinyin": "Wǒ jiā yǎng le yì zhī kě''ài de xiǎomāo.", "meaning": "Nhà tôi nuôi một chú mèo nhỏ đáng yêu."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "树上有三___小鸟在唱歌。",
-      "options": ["只", "条", "本", "张"],
-      "answer": "只",
-      "explain": "Chim chóc (鸟) và động vật nhỏ dùng lượng từ ''只''."
-    }
-  ]'::jsonb,
-  1
-),
-(
-  2, 10, 'Bài 10: Đừng xem tivi nữa, ngày mai còn phải thi (别看了，明天还要考试呢)',
-  '双', 'shuāng', 'đôi',
-  'Dùng cho các đồ vật tự nhiên đi liền theo cặp/đôi (đôi đũa, đôi giày, đôi tất, đôi mắt).',
-  '[
-    {"noun": "鞋", "pinyin": "xié", "phrase": "一双鞋", "meaning": "một đôi giày"},
-    {"noun": "筷子", "pinyin": "kuàizi", "phrase": "一双筷子", "meaning": "một đôi đũa"},
-    {"noun": "袜子", "pinyin": "wàzi", "phrase": "一双袜子", "meaning": "một đôi tất"},
-    {"noun": "手", "pinyin": "shǒu", "phrase": "一双手", "meaning": "một đôi bàn tay"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我想买一双舒服的运动鞋。", "pinyin": "Wǒ xiǎng mǎi yì shuāng shūfu de yùndòngxié.", "meaning": "Tôi muốn mua một đôi giày thể thao thoải mái."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "中国人吃饭一般用一___筷子。",
-      "options": ["双", "只", "件", "张"],
-      "answer": "双",
-      "explain": "Đũa (筷子) đi thành đôi dùng lượng từ ''双''."
-    }
-  ]'::jsonb,
-  2
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (9, 1, 9, 'HSK 1 Bài 9 - 你儿子在哪工作？/ Con trai anh làm việc ở đâu?', '家', 'jiā', 'nhà, viện, tiệm', 'Dùng cho các cơ sở kinh doanh, dịch vụ, y tế hoặc doanh nghiệp (bệnh viện, cửa hàng, công ty).', '[{"noun": "医院", "pinyin": "yīyuàn", "phrase": "一家医院", "meaning": "một bệnh viện"}, {"noun": "商店", "pinyin": "shāngdiàn", "phrase": "一家商店", "meaning": "một cửa hàng"}, {"noun": "学校", "pinyin": "xuéxiào", "phrase": "一家学校", "meaning": "một trường học"}]'::jsonb, '[{"hanzi": "我儿子在一家大医院工作。", "pinyin": "Wǒ érzi zài yì jiā dà yīyuàn gōngzuò.", "meaning": "Con trai tôi làm việc ở một bệnh viện lớn."}]'::jsonb, '[{"type": "choice", "question": "学校旁边有一___大商店。", "options": ["家", "本", "只", "条"], "answer": "家", "explain": "Cửa hàng/bệnh viện dùng lượng từ ''家''."}]'::jsonb, 1);
 
--- HSK 2 - Bài 12: Bạn đã từng đi Bắc Kinh chưa? (Lượng từ: 次)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  2, 12, 'Bài 12: Bạn đã từng đi Bắc Kinh chưa? (你去过北京吗)',
-  '次', 'cì', 'lần, lượt (động lượng từ)',
-  'Động lượng từ chỉ số lần phát sinh hành động. Đứng sau động từ hoặc tân ngữ.',
-  '[
-    {"noun": "次", "pinyin": "cì", "phrase": "一次", "meaning": "một lần"},
-    {"noun": "次", "pinyin": "cì", "phrase": "去过两次", "meaning": "từng đi hai lần"},
-    {"noun": "次", "pinyin": "cì", "phrase": "第一次", "meaning": "lần đầu tiên"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我去过一次中国旅游。", "pinyin": "Wǒ qù guo yí cì Zhōngguó lǚyóu.", "meaning": "Tôi từng đi du lịch Trung Quốc một lần."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "这是我第一___来中国。",
-      "options": ["次", "个", "本", "张"],
-      "answer": "次",
-      "explain": "Chỉ số lần thực hiện hành vi dùng ''次'' (第一次: lần đầu tiên)."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (10, 1, 10, 'HSK 1 Bài 10 - 我能坐这儿吗？/ Tôi có thể ngồi ở đây được không?', '把', 'bǎ', 'chiếc, cây (có tay cầm/dựa)', 'Dùng cho đồ vật có tay cầm, cán hoặc đồ vật có chỗ tựa lưng (ghế, ô dù, dao, kéo).', '[{"noun": "椅子", "pinyin": "yǐzi", "phrase": "一把椅子", "meaning": "một chiếc ghế"}, {"noun": "雨伞", "pinyin": "yǔsǎn", "phrase": "一把雨伞", "meaning": "một cây dù"}]'::jsonb, '[{"hanzi": "这儿有一把椅子，你可以坐这儿。", "pinyin": "Zhèr yǒu yì bǎ yǐzi, nǐ kěyǐ zuò zhèr.", "meaning": "Ở đây có một chiếc ghế, bạn có thể ngồi ở đây."}]'::jsonb, '[{"type": "choice", "question": "请给我搬一___椅子。", "options": ["把", "张", "条", "本"], "answer": "把", "explain": "Ghế dựa (椅子) dùng lượng từ ''把''."}]'::jsonb, 1);
 
--- ==========================================
--- HSK 3
--- ==========================================
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (10, 1, 10, 'HSK 1 Bài 10 - 我能坐这儿吗？/ Tôi có thể ngồi ở đây được không?', '张', 'zhāng', 'tấm, tờ, chiếc (mặt phẳng)', 'Dùng cho đồ vật có bề mặt phẳng rộng hoặc mỏng (bàn, giường, giấy, vé).', '[{"noun": "桌子", "pinyin": "zhuōzi", "phrase": "一张桌子", "meaning": "một chiếc bàn"}, {"noun": "纸", "pinyin": "zhǐ", "phrase": "一张纸", "meaning": "một tờ giấy"}]'::jsonb, '[{"hanzi": "房间里放着一张大桌子。", "pinyin": "Fángjiān lǐ fàng zhe yì zhāng dà zhuōzi.", "meaning": "Trong phòng đặt một chiếc bàn lớn."}]'::jsonb, '[{"type": "choice", "question": "教室里有五___桌子。", "options": ["张", "把", "条", "只"], "answer": "张", "explain": "Bàn (桌子) có mặt phẳng rộng dùng lượng từ ''张''."}]'::jsonb, 1);
 
--- HSK 3 - Bài 1: Cuối tuần bạn có kế hoạch gì? (Lượng từ: 把, 辆)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  3, 1, 'Bài 1: Cuối tuần bạn có kế hoạch gì? (周末你有什么打算)',
-  '把', 'bǎ', 'chiếc, cây, nắm',
-  'Dùng cho các đồ vật có tay cầm, cán nắm hoặc có thể cầm nắm bằng tay (ô/dù, ghế dựa, dao, kéo, chìa khóa, quạt).',
-  '[
-    {"noun": "雨伞", "pinyin": "yǔsǎn", "phrase": "一把雨伞", "meaning": "một cây dù / ô"},
-    {"noun": "椅子", "pinyin": "yǐzi", "phrase": "一把椅子", "meaning": "một chiếc ghế dựa"},
-    {"noun": "钥匙", "pinyin": "yàoshi", "phrase": "一把钥匙", "meaning": "một chiếc chìa khóa"},
-    {"noun": "刀", "pinyin": "dāo", "phrase": "一把刀", "meaning": "một con dao"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "外面下雨了，带上一把雨伞吧。", "pinyin": "Wàimiàn xiàyǔ le, dài shàng yì bǎ yǔsǎn ba.", "meaning": "Bên ngoài trời mưa rồi, mang theo một cây dù đi."},
-    {"hanzi": "房间里只有两把椅子。", "pinyin": "Fángjiān lǐ zhǐyǒu liǎng bǎ yǐzi.", "meaning": "Trong phòng chỉ có hai chiếc ghế."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "外面下大雨了，你带上一___伞吧。",
-      "options": ["把", "张", "条", "件"],
-      "answer": "把",
-      "explain": "Cây dù/ô (伞) có cán cầm nên dùng lượng từ ''把''."
-    },
-    {
-      "type": "choice",
-      "question": "请帮我搬一___椅子过来。",
-      "options": ["把", "条", "只", "本"],
-      "answer": "把",
-      "explain": "Ghế (椅子) có chỗ dựa/tay vịn dùng lượng từ ''把''."
-    }
-  ]'::jsonb,
-  1
-),
-(
-  3, 1, 'Bài 1: Cuối tuần bạn có kế hoạch gì? (周末你有什么打算)',
-  '辆', 'liàng', 'chiếc (xe)',
-  'Dùng chuyên cho các loại phương tiện giao thông đường bộ có bánh xe (ô tô, xe đạp, xe máy, xe buýt).',
-  '[
-    {"noun": "车", "pinyin": "chē", "phrase": "一辆车", "meaning": "một chiếc xe"},
-    {"noun": "自行车", "pinyin": "zìxíngchē", "phrase": "一辆自行车", "meaning": "một chiếc xe đạp"},
-    {"noun": "出租车", "pinyin": "chūzūchē", "phrase": "一辆出租车", "meaning": "một chiếc xe taxi"},
-    {"noun": "公共汽车", "pinyin": "gōnggòng qìchē", "phrase": "一辆公共汽车", "meaning": "một chiếc xe buýt"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "他买了一辆新自行车。", "pinyin": "Tā mǎi le yí liàng xīn zìxíngchē.", "meaning": "Anh ấy đã mua một chiếc xe đạp mới."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "校门口停着一___新汽车。",
-      "options": ["辆", "把", "张", "本"],
-      "answer": "辆",
-      "explain": "Xe cộ có bánh xe (汽车) dùng lượng từ ''辆''."
-    }
-  ]'::jsonb,
-  2
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (11, 1, 11, 'HSK 1 Bài 11 - 现在几点？/ Bây giờ là mấy giờ?', '点', 'diǎn', 'giờ (thời gian)', 'Lượng từ chỉ giờ đồng hồ. [Số từ] + 点.', '[{"noun": "点", "pinyin": "diǎn", "phrase": "八点", "meaning": "8 giờ"}, {"noun": "点", "pinyin": "diǎn", "phrase": "十二点半", "meaning": "12 giờ rưỡi"}]'::jsonb, '[{"hanzi": "现在几点？——现在早上八点十分。", "pinyin": "Xiànzài jǐ diǎn? —— Xiànzài zǎoshang bā diǎn shí fēn.", "meaning": "Bây giờ là mấy giờ? —— Bây giờ là 8 giờ 10 phút sáng."}]'::jsonb, '[{"type": "choice", "question": "我们下午三___去学校。", "options": ["点", "分", "岁", "号"], "answer": "点", "explain": "Chỉ giờ dùng lượng từ ''点''."}]'::jsonb, 1);
 
--- HSK 3 - Bài 4: Cô ấy luôn cười khi nói chuyện (Lượng từ: 位)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  3, 4, 'Bài 4: Cô ấy luôn cười khi nói chuyện (她总是笑着跟客人说话)',
-  '位', 'wèi', 'vị, ngài',
-  'Cách dùng lịch sự, trang trọng để chỉ người (thay thế cho ''个''). Thường dùng cho thầy cô, khách hàng, bác sĩ, giáo sư.',
-  '[
-    {"noun": "老师", "pinyin": "lǎoshī", "phrase": "一位老师", "meaning": "một vị thầy cô giáo"},
-    {"noun": "客人", "pinyin": "kèrén", "phrase": "两位客人", "meaning": "hai vị khách"},
-    {"noun": "医生", "pinyin": "yīshēng", "phrase": "一位医生", "meaning": "một vị bác sĩ"},
-    {"noun": "先生", "pinyin": "xiānsheng", "phrase": "哪一位先生", "meaning": "vị tiên sinh nào"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "请问您找哪一位？", "pinyin": "Qǐngwèn nín zhǎo nǎ yí wèi?", "meaning": "Xin hỏi ngài tìm vị nào ạ?"},
-    {"hanzi": "张老师是一位非常优秀的老师。", "pinyin": "Zhāng lǎoshī shì yí wèi fēicháng yōuxiù de lǎoshī.", "meaning": "Thầy Trương là một vị giáo viên vô cùng ưu tú."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "门口有两___客人想找经理。",
-      "options": ["位", "把", "条", "本"],
-      "answer": "位",
-      "explain": "Chỉ người trang trọng lịch sự như khách (客人) dùng lượng từ ''位''."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (12, 1, 12, 'HSK 1 Bài 12 - 明天天气怎么样？/ Thời tiết ngày mai thế nào?', '场', 'cháng', 'trận, cơn (thời tiết)', 'Dùng cho các hiện tượng thời tiết tự nhiên diễn ra trong một khoảng thời gian (mưa, tuyết, bão).', '[{"noun": "雨", "pinyin": "yǔ", "phrase": "一场雨", "meaning": "một cơn mưa"}, {"noun": "雪", "pinyin": "xuě", "phrase": "一场大雪", "meaning": "một trận tuyết lớn"}]'::jsonb, '[{"hanzi": "昨天下午下了一场大雨，天气很凉快。", "pinyin": "Zuótiān xiàwǔ xià le yì cháng dàyǔ, tiānqì hěn liángkuai.", "meaning": "Chiều hôm qua đổ một cơn mưa to, thời tiết rất mát mẻ."}]'::jsonb, '[{"type": "choice", "question": "昨天北京下了一___大雪。", "options": ["场", "本", "张", "只"], "answer": "场", "explain": "Trận mưa/tuyết dùng lượng từ ''场''."}]'::jsonb, 1);
 
--- HSK 3 - Bài 7: Tôi không mang theo tiền (Lượng từ: 瓶, 种)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  3, 7, 'Bài 7: Tôi không mang theo ví tiền (我跟我最好的朋友一起去)',
-  '瓶', 'píng', 'chai, bình, lọ',
-  'Lượng từ dung tích dùng cho chất lỏng đóng chai/bình (nước suối, bia, nước ngọt, sữa).',
-  '[
-    {"noun": "水", "pinyin": "shuǐ", "phrase": "一瓶水", "meaning": "một chai nước"},
-    {"noun": "可乐", "pinyin": "kělè", "phrase": "两瓶可乐", "meaning": "hai chai coca"},
-    {"noun": "啤酒", "pinyin": "píjiǔ", "phrase": "一瓶啤酒", "meaning": "một chai bia"},
-    {"noun": "牛奶", "pinyin": "niúnǎi", "phrase": "一瓶牛奶", "meaning": "một chai sữa"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我口渴了，想买一瓶水。", "pinyin": "Wǒ kǒukě le, xiǎng mǎi yì píng shuǐ.", "meaning": "Tôi khát nước rồi, muốn mua một chai nước."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "请给我来一___矿泉水。",
-      "options": ["瓶", "把", "张", "条"],
-      "answer": "瓶",
-      "explain": "Nước khoáng đóng chai (矿泉水) dùng lượng từ ''瓶''."
-    }
-  ]'::jsonb,
-  1
-),
-(
-  3, 7, 'Bài 7: Tôi không mang theo ví tiền (我跟我最好的朋友一起去)',
-  '种', 'zhǒng', 'loại, thứ, giống',
-  'Dùng để chỉ chủng loại, phân loại sự vật, ngôn ngữ, cảm xúc hoặc động thực vật.',
-  '[
-    {"noun": "人", "pinyin": "rén", "phrase": "这种人", "meaning": "loại người này"},
-    {"noun": "水果", "pinyin": "shuǐguǒ", "phrase": "好几种水果", "meaning": "mấy loại trái cây"},
-    {"noun": "颜色", "pinyin": "yánsè", "phrase": "两种颜色", "meaning": "hai loại màu sắc"},
-    {"noun": "动物", "pinyin": "dòngwù", "phrase": "一种动物", "meaning": "một loài động vật"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "超市里有许多种新鲜水果。", "pinyin": "Chāoshì lǐ yǒu xǔduō zhǒng xīnxiān shuǐguǒ.", "meaning": "Trong siêu thị có rất nhiều loại hoa quả tươi."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "这种苹果和那___苹果有什么不同？",
-      "options": ["种", "本", "张", "辆"],
-      "answer": "种",
-      "explain": "Chỉ chủng loại (loại táo này, loại táo kia) dùng ''种''."
-    }
-  ]'::jsonb,
-  2
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (13, 1, 13, 'HSK 1 Bài 13 - 他在学做中国菜呢 / Anh ấy đang học nấu món ăn Trung Quốc', '首', 'shǒu', 'bài (bài hát, bản nhạc, thơ)', 'Dùng cho các tác phẩm âm nhạc, bài hát hoặc bài thơ.', '[{"noun": "歌", "pinyin": "gē", "phrase": "一首歌", "meaning": "một bài hát"}, {"noun": "音乐", "pinyin": "yīnyuè", "phrase": "一首音乐", "meaning": "một bản nhạc"}]'::jsonb, '[{"hanzi": "他正在听一首非常好听的中国歌。", "pinyin": "Tā zhèngzài tīng yì shǒu fēicháng hǎotīng de Zhōngguó gē.", "meaning": "Anh ấy đang nghe một bài hát Trung Quốc rất hay."}]'::jsonb, '[{"type": "choice", "question": "我非常喜欢这___中国歌。", "options": ["首", "件", "条", "张"], "answer": "首", "explain": "Bài hát (歌) dùng lượng từ ''首''."}]'::jsonb, 1);
 
--- HSK 3 - Bài 10: Toán khó hơn lịch sử nhiều (Lượng từ: 家, 封)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  3, 10, 'Bài 10: Toán khó hơn lịch sử nhiều (数学比历史难多了)',
-  '家', 'jiā', 'nhà, tiệm, quán, công ty',
-  'Dùng cho các địa điểm cơ sở kinh doanh, doanh nghiệp, dịch vụ thương mại (quán ăn, công ty, siêu thị, bệnh viện, khách sạn).',
-  '[
-    {"noun": "饭馆", "pinyin": "fànguǎn", "phrase": "一家饭馆", "meaning": "một quán ăn"},
-    {"noun": "公司", "pinyin": "gōngsī", "phrase": "一家公司", "meaning": "một công ty"},
-    {"noun": "超市", "pinyin": "chāoshì", "phrase": "一家超市", "meaning": "một siêu thị"},
-    {"noun": "医院", "pinyin": "yīyuàn", "phrase": "一家医院", "meaning": "một bệnh viện"},
-    {"noun": "银行", "pinyin": "yínháng", "phrase": "一家银行", "meaning": "một ngân hàng"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我家附近新开了一家中国饭馆。", "pinyin": "Wǒ jiā fùjìn xīn kāi le yì jiā Zhōngguó fànguǎn.", "meaning": "Gần nhà tôi mới mở một quán ăn Trung Quốc."},
-    {"hanzi": "他在一家大公司工作。", "pinyin": "Tā zài yì jiā dà gōngsī gōngzuò.", "meaning": "Anh ấy làm việc ở một công ty lớn."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "学校附近有一___很大的超市。",
-      "options": ["家", "只", "张", "条"],
-      "answer": "家",
-      "explain": "Cửa hàng/siêu thị (超市) dùng lượng từ ''家''."
-    }
-  ]'::jsonb,
-  1
-),
-(
-  3, 10, 'Bài 10: Toán khó hơn lịch sử nhiều (数学比历史难多了)',
-  '封', 'fēng', 'bức, lá (thư)',
-  'Dùng cho thư từ, bưu thiếp, email được niêm phong hoặc đóng phong bì.',
-  '[
-    {"noun": "信", "pinyin": "xìn", "phrase": "一封信", "meaning": "một bức thư"},
-    {"noun": "电子邮件", "pinyin": "diànzǐ yóujiàn", "phrase": "一封电子邮件", "meaning": "một bức thư điện tử (email)"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "我昨天收到了朋友的一封信。", "pinyin": "Wǒ zuótiān shōudào le péngyou de yì fēng xìn.", "meaning": "Hôm qua tôi đã nhận được một bức thư của bạn bè."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "我给老师写了一___电子邮件。",
-      "options": ["封", "本", "张", "把"],
-      "answer": "封",
-      "explain": "Thư tín/email (信 / 电子邮件) dùng lượng từ ''封''."
-    }
-  ]'::jsonb,
-  2
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (14, 1, 14, 'HSK 1 Bài 14 - 她买了不少衣服。/ Cô ấy đã mua rất nhiều quần áo', '件', 'jiàn', 'chiếc, cái, bộ (quần áo)', 'Dùng cho trang phục thân trên hoặc toàn thân (áo sơ mi, áo khoác, đồ bộ) hoặc sự việc.', '[{"noun": "衣服", "pinyin": "yīfu", "phrase": "一件衣服", "meaning": "một bộ quần áo"}, {"noun": "衬衫", "pinyin": "chènshān", "phrase": "一件漂亮的衣服", "meaning": "một chiếc áo đẹp"}]'::jsonb, '[{"hanzi": "昨天在商场我买了两件漂亮的衣服。", "pinyin": "Zuótiān zài shāngchǎng wǒ mǎi le liǎng jiàn piàoliang de yīfu.", "meaning": "Hôm qua ở thương xá tôi đã mua 2 bộ quần áo rất đẹp."}]'::jsonb, '[{"type": "choice", "question": "我想买一___新衣服。", "options": ["件", "本", "张", "只"], "answer": "件", "explain": "Quần áo (衣服) dùng lượng từ ''件''."}]'::jsonb, 1);
 
--- HSK 3 - Bài 14: Bạn có mang theo ô không (Lượng từ: 段)
-INSERT INTO classifiers (hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
-VALUES (
-  3, 14, 'Bài 14: Bạn có mang theo ô không (你看过那个电影没有)',
-  '段', 'duàn', 'đoạn, khúc, quãng',
-  'Dùng cho một quãng thời gian, một đoạn đường, một đoạn văn bản hoặc trích đoạn âm nhạc/video.',
-  '[
-    {"noun": "时间", "pinyin": "shíjiān", "phrase": "一段时间", "meaning": "một khoảng thời gian"},
-    {"noun": "路", "pinyin": "lù", "phrase": "一段路", "meaning": "một đoạn đường"},
-    {"noun": "话", "pinyin": "huà", "phrase": "一段话", "meaning": "một đoạn lời nói/văn"},
-    {"noun": "历史", "pinyin": "lìshǐ", "phrase": "一段历史", "meaning": "một giai đoạn lịch sử"}
-  ]'::jsonb,
-  '[
-    {"hanzi": "这一段时间他一直很忙。", "pinyin": "Zhè yí duàn shíjiān tā yìzhí hěn máng.", "meaning": "Khoảng thời gian này anh ấy luôn rất bận rộn."}
-  ]'::jsonb,
-  '[
-    {
-      "type": "choice",
-      "question": "走完这___路就到家了。",
-      "options": ["段", "本", "只", "把"],
-      "answer": "段",
-      "explain": "Đoạn đường (路) dùng lượng từ ''段'' (一段路)."
-    }
-  ]'::jsonb,
-  1
-);
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (15, 1, 15, 'HSK 1 Bài 15 - 我是坐飞机来的 / Chúng tôi đáp máy bay đến đây', '架', 'jià', 'chiếc (máy bay, máy móc)', 'Dùng chuyên cho máy bay hoặc các loại máy móc có khung giàn lớn.', '[{"noun": "飞机", "pinyin": "fēijī", "phrase": "一架飞机", "meaning": "một chiếc máy bay"}]'::jsonb, '[{"hanzi": "天空中飞过了一架大飞机。", "pinyin": "Tiānkōng zhōng fēi guo le yí jià dà fēijī.", "meaning": "Trên bầu trời bay qua một chiếc máy bay lớn."}]'::jsonb, '[{"type": "choice", "question": "我是坐这___飞机来的。", "options": ["架", "条", "本", "只"], "answer": "架", "explain": "Máy bay (飞机) dùng lượng từ ''架''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (15, 1, 15, 'HSK 1 Bài 15 - 我是坐飞机来的 / Chúng tôi đáp máy bay đến đây', '辆', 'liàng', 'chiếc (xe có bánh)', 'Dùng cho các loại phương tiện giao thông đường bộ có bánh xe (ô tô, xe đạp, xe máy, xe buýt).', '[{"noun": "汽车", "pinyin": "qìchē", "phrase": "一辆汽车", "meaning": "một chiếc ô tô"}, {"noun": "自行车", "pinyin": "zìxíngchē", "phrase": "一辆自行车", "meaning": "một chiếc xe đạp"}]'::jsonb, '[{"hanzi": "校门前停着一辆新汽车。", "pinyin": "Xiàomén qián tíng zhe yí liàng xīn qìchē.", "meaning": "Trước cổng trường đỗ một chiếc xe ô tô mới."}]'::jsonb, '[{"type": "choice", "question": "爸爸给我买了一___新自行车。", "options": ["辆", "架", "本", "张"], "answer": "辆", "explain": "Xe cộ có bánh xe dùng lượng từ ''辆''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (16, 2, 1, 'Bài 1 HSK 2 - 九月去北京旅游最好。/ Tháng 9 là thời điểm để đi du lịch Bắc Kinh tốt nhất.', '次', 'cì', 'lần, chuyến (động lượng từ)', 'Động lượng từ chỉ số lần phát sinh hành động (đi du lịch, xem phim, ăn thử).', '[{"noun": "旅游", "pinyin": "lǚyóu", "phrase": "一次旅游", "meaning": "một chuyến du lịch"}, {"noun": "次", "pinyin": "cì", "phrase": "去过两次", "meaning": "từng đi 2 lần"}]'::jsonb, '[{"hanzi": "去年九月我去过一次北京旅游。", "pinyin": "Qùnián jiǔ yuè wǒ qù guo yí cì Běijīng lǚyóu.", "meaning": "Tháng 9 năm ngoái tôi đã đi du lịch Bắc Kinh một lần."}]'::jsonb, '[{"type": "choice", "question": "这是我第一___去北京。", "options": ["次", "个", "本", "条"], "answer": "次", "explain": "Số lần phát sinh hành vi dùng ''次''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (16, 2, 1, 'Bài 1 HSK 2 - 九月去北京旅游最好。/ Tháng 9 là thời điểm để đi du lịch Bắc Kinh tốt nhất.', '场', 'chǎng', 'trận, hiệp (thể thao, thi đấu)', 'Dùng cho các trận thi đấu thể thao hoặc buổi biểu diễn (bóng đá, bóng rổ, hòa nhạc).', '[{"noun": "足球赛", "pinyin": "zúqiúsài", "phrase": "一场足球赛", "meaning": "một trận đấu bóng đá"}, {"noun": "球赛", "pinyin": "qiúsài", "phrase": "一场球赛", "meaning": "một trận bóng"}]'::jsonb, '[{"hanzi": "昨天下午我和朋友看了一场精彩的足球比赛。", "pinyin": "Zuótiān xiàwǔ wǒ hé péngyou kàn le yì chǎng jīngcǎi de zúqiú bǐsài.", "meaning": "Chiều hôm qua tôi và bạn đã xem một trận đấu bóng đá đặc sắc."}]'::jsonb, '[{"type": "choice", "question": "我们一起去踢一___足球吧。", "options": ["场", "本", "张", "只"], "answer": "场", "explain": "Trận đấu thể thao dùng lượng từ ''场''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (17, 2, 2, 'Bài 2 HSK 2 - 我每天六点起床。/ Tôi thức dậy lúc 6 giờ mỗi ngày.', '片', 'piàn', 'viên (thuốc), miếng mỏng', 'Dùng cho các viên thuốc dạng nén dẹt hoặc các vật thể phẳng mỏng nhỏ (bánh mì nướng, lá cây).', '[{"noun": "药", "pinyin": "yào", "phrase": "一片药", "meaning": "một viên thuốc"}, {"noun": "面包", "pinyin": "miànbāo", "phrase": "一片面包", "meaning": "một lát bánh mì"}]'::jsonb, '[{"hanzi": "医生让我每天吃三次，每次吃两片药。", "pinyin": "Yīshēng ràng wǒ měitiān chī sān cì, měi cì chī liǎng piàn yào.", "meaning": "Bác sĩ dặn tôi mỗi ngày uống 3 lần, mỗi lần uống 2 viên thuốc."}]'::jsonb, '[{"type": "choice", "question": "医生说每次吃一___感冒药。", "options": ["片", "把", "张", "本"], "answer": "片", "explain": "Viên thuốc nén dùng lượng từ ''片''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (18, 2, 3, 'Bài 3 HSK 2 - 左边那个红色的是我的。/ Ô màu đỏ bên trái là của tôi.', '份', 'fèn', 'phần, tờ, bản (ấn phẩm, phần chia)', 'Dùng cho báo chí xuất bản định kỳ, tài liệu hoặc các phần quà, suất ăn.', '[{"noun": "报纸", "pinyin": "bàozhǐ", "phrase": "一份报纸", "meaning": "một tờ báo / ấn bản báo"}, {"noun": "礼物", "pinyin": "lǐwù", "phrase": "一份礼物", "meaning": "một phần quà"}]'::jsonb, '[{"hanzi": "爷爷每天早上都会看一份报纸。", "pinyin": "Yéye měitiān zǎoshang dōu huì kàn yí fèn bàozhǐ.", "meaning": "Ông nội mỗi buổi sáng đều đọc một tờ báo."}]'::jsonb, '[{"type": "choice", "question": "桌子上有一___今天的报纸。", "options": ["份", "只", "条", "把"], "answer": "份", "explain": "Báo chí định kỳ dùng lượng từ ''份''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (18, 2, 3, 'Bài 3 HSK 2 - 左边那个红色的是我的。/ Ô màu đỏ bên trái là của tôi.', '间', 'jiān', 'căn, gian (phòng ốc)', 'Dùng cho các căn phòng, gian phòng, lớp học trong nhà.', '[{"noun": "房间", "pinyin": "fángjiān", "phrase": "一间房间", "meaning": "một căn phòng"}, {"noun": "教室", "pinyin": "jiàoshì", "phrase": "一间教室", "meaning": "một phòng học"}]'::jsonb, '[{"hanzi": "他住在一间很大的房间里。", "pinyin": "Tā zhù zài yì jiān hěn dà de fángjiān lǐ.", "meaning": "Anh ấy sống trong một căn phòng rất lớn."}]'::jsonb, '[{"type": "choice", "question": "我家有三___宽敞的房间。", "options": ["间", "条", "只", "张"], "answer": "间", "explain": "Phòng ốc (房间) dùng lượng từ ''间''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (19, 2, 4, 'Bài 4 HSK 2 - 这个工作是他帮我介绍的。/ Công việc này do anh ấy giới thiệu cho tôi.', '份', 'fèn', 'phần, món (quà tặng, công việc)', 'Dùng cho các phần quà tặng dịp sinh nhật hoặc công việc được phân giao.', '[{"noun": "礼物", "pinyin": "lǐwù", "phrase": "一份生日礼物", "meaning": "một món quà sinh nhật"}, {"noun": "工作", "pinyin": "gōngzuò", "phrase": "一份好工作", "meaning": "một công việc tốt"}]'::jsonb, '[{"hanzi": "这是我送给你的一份生日礼物，祝你生日快乐！", "pinyin": "Zhè shì wǒ sòng gěi nǐ de yí fèn shēngrì lǐwù, zhù nǐ shēngrì kuàilè!", "meaning": "Đây là món quà sinh nhật tôi tặng bạn, chúc bạn sinh nhật vui vẻ!"}]'::jsonb, '[{"type": "choice", "question": "他送给我一___特别的生日礼物。", "options": ["份", "条", "本", "只"], "answer": "份", "explain": "Quà tặng (礼物) dùng lượng từ ''份''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (20, 2, 5, 'Bài 5 HSK 2 - 就买这件吧。/ Mua cái này đi.', '件', 'jiàn', 'chiếc, cái (áo, quần áo)', 'Dùng khi chọn mua trang phục hoặc quần áo nói chung (như tiêu đề bài ''就买这件吧'').', '[{"noun": "衣服", "pinyin": "yīfu", "phrase": "这件衣服", "meaning": "chiếc áo này"}, {"noun": "件", "pinyin": "jiàn", "phrase": "就买这件", "meaning": "mua cái này thôi"}]'::jsonb, '[{"hanzi": "这件衣服不仅漂亮，而且价格也不贵，就买这件吧。", "pinyin": "Zhè jiàn yīfu bùjǐn piàoliang, érqiě jiàgé yě bú guì, jiù mǎi zhè jiàn ba.", "meaning": "Chiếc áo này không chỉ đẹp mà giá cũng không đắt, mua chiếc này đi."}]'::jsonb, '[{"type": "choice", "question": "我觉得这___红色的衣服最好看。", "options": ["件", "张", "本", "条"], "answer": "件", "explain": "Quần áo dùng lượng từ ''件''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (21, 2, 6, 'Bài 6 HSK 2 - 你怎么不吃了？/ Tại sao bạn không ăn?', '斤', 'jīn', 'cân (nửa ký, 500g)', 'Đơn vị đo lường trọng lượng thông dụng nhất ở Trung Quốc khi đi chợ mua thịt, cá, rau củ (1 cân TQ = 500g = 0.5kg).', '[{"noun": "羊肉", "pinyin": "yángròu", "phrase": "一斤羊肉", "meaning": "1 cân thịt dê (500g)"}, {"noun": "牛肉", "pinyin": "niúròu", "phrase": "两斤牛肉", "meaning": "2 cân thịt bò (1kg)"}, {"noun": "苹果", "pinyin": "píngguǒ", "phrase": "三斤苹果", "meaning": "3 cân táo"}]'::jsonb, '[{"hanzi": "今天晚饭我们吃羊肉火锅，买了两斤牛肉和一斤羊肉。", "pinyin": "Jīntiān wǎnfàn wǒmen chī yángròu huǒguō, mǎi le liǎng jīn niúròu hé yì jīn yángròu.", "meaning": "Bữa tối nay chúng tôi ăn lẩu thịt dê, đã mua 2 cân thịt bò và 1 cân thịt dê."}]'::jsonb, '[{"type": "choice", "question": "请给我称两___新鲜的牛肉。", "options": ["斤", "本", "张", "只"], "answer": "斤", "explain": "Cân đo thịt cá ngoài chợ dùng ''斤'' (cân TQ)."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (22, 2, 7, 'Bài 7 HSK 2 - 我家里公司远吗？/ Nhà bạn cách công ty xa không?', '条', 'tiáo', 'con, chiếc, dải (thon dài)', 'Dùng cho sự vật có hình dáng thon dài, uốn lượn như con đường, dòng sông, con cá hoặc quần váy.', '[{"noun": "路", "pinyin": "lù", "phrase": "一条路", "meaning": "một con đường"}, {"noun": "鱼", "pinyin": "yú", "phrase": "一条鱼", "meaning": "một con cá"}, {"noun": "裤子", "pinyin": "kùzi", "phrase": "一条裤子", "meaning": "một chiếc quần"}]'::jsonb, '[{"hanzi": "我家离公司很近，走过这条路就到了。", "pinyin": "Wǒ jiā lí gōngsī hěn jìn, zǒu guo zhè tiáo lù jiù dào le.", "meaning": "Nhà tôi cách công ty rất gần, đi qua con đường này là đến nơi."}]'::jsonb, '[{"type": "choice", "question": "从这里到机场有两___路可以走。", "options": ["条", "本", "张", "只"], "answer": "条", "explain": "Đường đi (路) thon dài dùng lượng từ ''条''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (23, 2, 8, 'Bài 8 HSK 2 - 让我想想再告诉你。/ Để tôi nghĩ rồi nói với bạn.', '件', 'jiàn', 'vụ, sự việc', 'Dùng cho các sự vụ, sự việc, công việc hoặc câu chuyện cần xử lý.', '[{"noun": "事情", "pinyin": "shìqing", "phrase": "一件事", "meaning": "một sự việc"}, {"noun": "事情", "pinyin": "shìqing", "phrase": "许多事情", "meaning": "rất nhiều việc"}]'::jsonb, '[{"hanzi": "让我想想再告诉你这件事情怎么做。", "pinyin": "Ràng wǒ xiǎngxian zài gàosù nǐ zhè jiàn shìqing zěnme zuò.", "meaning": "Để tôi suy nghĩ rồi nói cho bạn biết việc này nên làm thế nào."}]'::jsonb, '[{"type": "choice", "question": "我今天有一___非常重要的事情要办。", "options": ["件", "只", "双", "本"], "answer": "件", "explain": "Sự việc (事情) dùng lượng từ ''件''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (24, 2, 9, 'Bài 9 HSK 2 - 题太多，我没做完。/ Câu hỏi nhiều quá, em chưa làm xong.', '道', 'dào', 'câu, bài (bài thi, bài tập, câu hỏi)', 'Dùng cho các câu hỏi kiểm tra, đề thi, bài toán hoặc đầu bài tập.', '[{"noun": "题", "pinyin": "tí", "phrase": "一道题", "meaning": "một câu hỏi / bài tập"}, {"noun": "考题", "pinyin": "kǎotí", "phrase": "一道考题", "meaning": "một câu thi"}]'::jsonb, '[{"hanzi": "这次考试题太多了，最后一道题我没做完。", "pinyin": "Zhè cì kǎoshì tí tài duō le, zuìhòu yí dào tí wǒ méi zuò wán.", "meaning": "Bài thi lần này câu hỏi nhiều quá, câu cuối cùng tôi chưa làm xong."}]'::jsonb, '[{"type": "choice", "question": "这___题太难了，你能帮我看看吗？", "options": ["道", "本", "张", "只"], "answer": "道", "explain": "Câu hỏi/đề thi (题) dùng lượng từ ''道''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (25, 2, 10, 'Bài 10 HSK 2 - 别找了，手机在桌子上呢。/ Đừng tìm nữa, điện thoại ở trên bàn.', '部', 'bù', 'chiếc (điện thoại, máy móc điện tử)', 'Dùng cho các thiết bị công nghệ hiện đại như điện thoại di động, máy ảnh hoặc các tác phẩm phim ảnh, tiểu thuyết.', '[{"noun": "手机", "pinyin": "shǒujī", "phrase": "一部手机", "meaning": "một chiếc điện thoại"}, {"noun": "电影", "pinyin": "diànyǐng", "phrase": "一部新电影", "meaning": "một bộ phim mới"}]'::jsonb, '[{"hanzi": "别找了，你的那部新手机在桌子上呢。", "pinyin": "Bié zhǎo le, nǐ de nà bù xīn shǒujī zài zhuōzi shang ne.", "meaning": "Đừng tìm nữa, chiếc điện thoại mới của bạn ở trên bàn kìa."}]'::jsonb, '[{"type": "choice", "question": "爸爸上周送给我一___新手机。", "options": ["部", "本", "条", "只"], "answer": "部", "explain": "Điện thoại di động (手机) dùng lượng từ ''部''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (26, 2, 11, 'Bài 11 HSK 2 - 他比我大三岁。/ Anh ấy lớn hơn tôi 3 tuổi.', '岁', 'suì', 'tuổi (so sánh độ tuổi)', 'Dùng khi biểu đạt sự chênh lệch tuổi tác trong câu so sánh chữ ''比''.', '[{"noun": "岁", "pinyin": "suì", "phrase": "大三岁", "meaning": "lớn hơn 3 tuổi"}, {"noun": "岁", "pinyin": "suì", "phrase": "小两岁", "meaning": "nhỏ hơn 2 tuổi"}]'::jsonb, '[{"hanzi": "我哥哥比我大三岁，现在在上大学。", "pinyin": "Wǒ gēge bǐ wǒ dà sān suì, xiànzài zài shàng dàxué.", "meaning": "Anh trai tôi lớn hơn tôi 3 tuổi, hiện đang học đại học."}]'::jsonb, '[{"type": "choice", "question": "她比我小两___。", "options": ["岁", "个", "本", "张"], "answer": "岁", "explain": "So sánh độ tuổi dùng lượng từ ''岁''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (27, 2, 12, 'Bài 12 HSK 2 - 你穿的太少了。/ Bạn mặc ít quá rồi.', '条', 'tiáo', 'chiếc (quần, váy)', 'Dùng cho trang phục thân dưới có hình dáng thon dài như quần dài, quần tây, váy đầm.', '[{"noun": "裤子", "pinyin": "kùzi", "phrase": "一条黑裤子", "meaning": "một chiếc quần đen"}, {"noun": "裙子", "pinyin": "qúnzi", "phrase": "一条漂亮的裙子", "meaning": "một chiếc váy đẹp"}]'::jsonb, '[{"hanzi": "外面天气冷，你应该多穿一条厚裤子。", "pinyin": "Wàimiàn tiānqì lěng, nǐ yīnggāi duō chuān yì tiáo hòu kùzi.", "meaning": "Bên ngoài trời lạnh, bạn nên mặc thêm một chiếc quần dày."}]'::jsonb, '[{"type": "choice", "question": "她买了一___很合身的裙子。", "options": ["条", "本", "张", "只"], "answer": "条", "explain": "Quần và váy dùng lượng từ ''条''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (28, 2, 13, 'Bài 13 HSK 2 - 门开着呢。/ Cửa đang mở.', '只', 'zhī', 'con (động vật), chiếc (trong đôi)', 'Dùng cho các loài thú cưng, động vật nhỏ (mèo, chó, chim) hoặc 1 chiếc trong đồ vật có đôi (1 bàn tay, 1 con mắt).', '[{"noun": "猫", "pinyin": "māo", "phrase": "一只白猫", "meaning": "một con mèo trắng"}, {"noun": "狗", "pinyin": "gǒu", "phrase": "一只小狗", "meaning": "một con chó nhỏ"}]'::jsonb, '[{"hanzi": "门开着呢，一只可爱的小猫跑进来了。", "pinyin": "Mén kāi zhe ne, yì zhī kě''ài de xiǎomāo pǎo jìn lái le.", "meaning": "Cửa đang mở kìa, một chú mèo nhỏ đáng yêu chạy vào rồi."}]'::jsonb, '[{"type": "choice", "question": "我家养了一___非常聪明的小狗。", "options": ["只", "条", "本", "张"], "answer": "只", "explain": "Chó mèo và động vật nhỏ dùng lượng từ ''只''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (29, 2, 14, 'Bài 14 HSK 2 - 你看过那个电影吗？/ Bạn đã xem phim đó chưa?', '张', 'zhāng', 'tấm, chiếc (vé xem phim)', 'Dùng cho các loại vé mỏng phẳng (vé xem phim, vé tàu xe, vé máy bay).', '[{"noun": "电影票", "pinyin": "diànyǐng piào", "phrase": "两张电影票", "meaning": "hai tấm vé xem phim"}, {"noun": "票", "pinyin": "piào", "phrase": "一张票", "meaning": "một tấm vé"}]'::jsonb, '[{"hanzi": "你看过那个电影吗？我这儿正好有两张电影票。", "pinyin": "Nǐ kàn guo nà ge diànyǐng ma? Wǒ zhèr zhènghǎo yǒu liǎng zhāng diànyǐng piào.", "meaning": "Bạn đã xem bộ phim đó chưa? Chỗ tôi tình cờ có 2 tấm vé xem phim nè."}]'::jsonb, '[{"type": "choice", "question": "请给我买两___今晚的电影票。", "options": ["张", "本", "条", "只"], "answer": "张", "explain": "Vé xem phim mỏng phẳng dùng lượng từ ''张''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (30, 2, 15, 'Bài 15 HSK 2 - 新年就要到了。/ Năm mới đến rồi.', '首', 'shǒu', 'bài (bài hát đón năm mới)', 'Dùng cho bài hát, ca khúc chào đón năm mới hoặc ca khúc kỷ niệm.', '[{"noun": "新年歌", "pinyin": "xīnnián gē", "phrase": "一首新年歌", "meaning": "một bài hát năm mới"}, {"noun": "歌", "pinyin": "gē", "phrase": "唱一首歌", "meaning": "hát một bài hát"}]'::jsonb, '[{"hanzi": "新年就要到了，大家一起唱一首快乐的歌吧。", "pinyin": "Xīnnián jiù yào dào le, dàjiā yìqǐ chàng yì shǒu kuàilè de gē ba.", "meaning": "Năm mới sắp đến rồi, mọi người hãy cùng hát một bài hát vui vẻ đi."}]'::jsonb, '[{"type": "choice", "question": "新年晚会上大家合唱了一___动听的歌。", "options": ["首", "件", "张", "条"], "answer": "首", "explain": "Bài hát (歌) dùng lượng từ ''首''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (31, 3, 1, 'Bài 1 HSK 3 - 周末你有什么打算？/ Zhōumò nǐ yǒu shénme dǎsuan?/ Anh dự định làm gì vào cuối tuần vậy?', '把', 'bǎ', 'chiếc, cây (ô, ghế dựa)', 'Dùng cho vật có tay cầm, cán nắm hoặc có lưng dựa (ô dù đi mưa, ghế ngồi, chìa khóa).', '[{"noun": "雨伞", "pinyin": "yǔsǎn", "phrase": "一把雨伞", "meaning": "một cây dù"}, {"noun": "椅子", "pinyin": "yǐzi", "phrase": "一把椅子", "meaning": "một chiếc ghế"}]'::jsonb, '[{"hanzi": "周末打算出去玩，天气预报说会下雨，别忘了带上一把雨伞。", "pinyin": "Zhōumò dǎsuàn chūqù wán, tiānqì yùbào shuō huì xiàyǔ, bié wàng le dài shàng yì bǎ yǔsǎn.", "meaning": "Cuối tuần dự định đi chơi, dự báo thời tiết nói sẽ mưa, đừng quên mang theo một cây dù."}]'::jsonb, '[{"type": "choice", "question": "下雨了，请借给我一___雨伞。", "options": ["把", "张", "条", "本"], "answer": "把", "explain": "Ô dù (雨伞) có cán cầm dùng lượng từ ''把''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (32, 3, 2, 'Bài 2 HSK 3 - 他什么时候回来？/ Tā shénme shíhòu huílai?/ Khi nào anh ấy quay về', '条', 'tiáo', 'đôi, chiếc (chân, chân cẳng)', 'Dùng cho các bộ phận cơ thể có dáng thon dài như chân, cánh tay, đuôi hoặc con đường.', '[{"noun": "腿", "pinyin": "tuǐ", "phrase": "一条腿", "meaning": "một bên chân"}, {"noun": "尾巴", "pinyin": "wěiba", "phrase": "一条长尾巴", "meaning": "một chiếc đuôi dài"}]'::jsonb, '[{"hanzi": "他爬山回来后，两条腿又酸又疼。", "pinyin": "Tā páshān huílái hòu, liǎng tiáo tuǐ yòu suān yòu téng.", "meaning": "Sau khi leo núi về, hai cái chân của anh ấy vừa mỏi vừa đau."}]'::jsonb, '[{"type": "choice", "question": "他跑步时不小心伤了一___腿。", "options": ["条", "只", "本", "张"], "answer": "条", "explain": "Chân (腿) thon dài dùng lượng từ ''条''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (33, 3, 3, 'Bài 3 HSK 3 - 桌子上放着很多饮料。/ Zhuōzi shàng fàng zhe hěnduō yǐnliào./ Trên bàn có rất nhiều thức uống.', '瓶', 'píng', 'chai, bình, lọ', 'Lượng từ dung tích cho chất lỏng đóng chai như nước ngọt, nước suối, bia, sữa.', '[{"noun": "饮料", "pinyin": "yǐnliào", "phrase": "一瓶饮料", "meaning": "một chai đồ uống"}, {"noun": "可乐", "pinyin": "kělè", "phrase": "两瓶可乐", "meaning": "hai chai coca"}, {"noun": "水", "pinyin": "shuǐ", "phrase": "一瓶水", "meaning": "một chai nước"}]'::jsonb, '[{"hanzi": "桌子上放着很多饮料，你想喝哪一瓶？", "pinyin": "Zhuōzi shàng fàng zhe hěnduō yǐnliào, nǐ xiǎng hē nǎ yì píng?", "meaning": "Trên bàn đặt rất nhiều đồ uống, bạn muốn uống chai nào?"}]'::jsonb, '[{"type": "choice", "question": "桌子上有好几___果汁和可乐。", "options": ["瓶", "张", "把", "本"], "answer": "瓶", "explain": "Đồ uống đóng chai (饮料) dùng lượng từ ''瓶''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (34, 3, 4, 'Bài 4 HSK 3 - 她总是笑着跟客人说话。/ Cô ấy luôn cười khi nói chuyện với khách hàng.', '位', 'wèi', 'vị, ngài (khách hàng)', 'Cách xưng hô tôn kính, thể hiện thái độ niềm nở, trang trọng đối với khách hàng (客人).', '[{"noun": "客人", "pinyin": "kèrén", "phrase": "两位客人", "meaning": "hai vị khách quý"}, {"noun": "先生", "pinyin": "xiānsheng", "phrase": "哪一位先生", "meaning": "vị tiên sinh nào"}]'::jsonb, '[{"hanzi": "服务员总是笑着跟每一位客人说话。", "pinyin": "Fúwùyuán zǒngshì xiào zhe gēn měi yí wèi kèrén shuōhuà.", "meaning": "Nhân viên phục vụ luôn tươi cười nói chuyện với mỗi một vị khách."}]'::jsonb, '[{"type": "choice", "question": "请问这___客人您需要点什么？", "options": ["位", "把", "条", "本"], "answer": "位", "explain": "Khách quý (客人) dùng lượng từ lịch sự ''位''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (35, 3, 5, 'Bài 5 HSK 3 - 我最近越来越胖了。/ Wǒ zuìjìn yuè lái yuè pàng le./ Dạo này em ngày càng béo ra.', '件', 'jiàn', 'chiếc (áo sơ mi, áo khoác)', 'Dùng cho trang phục thân trên như áo sơ mi, áo len hoặc trang phục nói chung.', '[{"noun": "衬衫", "pinyin": "chènshān", "phrase": "一件衬衫", "meaning": "một chiếc áo sơ mi"}, {"noun": "衣服", "pinyin": "yīfu", "phrase": "一件新衣服", "meaning": "một bộ quần áo mới"}]'::jsonb, '[{"hanzi": "我最近越来越胖了，这件去年的衬衫都穿不下了。", "pinyin": "Wǒ zuìjìn yuè lái yuè pàng le, zhè jiàn qùnián de chènshān dōu chuān bú xià le.", "meaning": "Dạo này em ngày càng béo ra, chiếc áo sơ mi năm ngoái này mặc không vừa nữa rồi."}]'::jsonb, '[{"type": "choice", "question": "这条裤子配这___衬衫最好看。", "options": ["件", "条", "只", "双"], "answer": "件", "explain": "Áo sơ mi (衬衫) dùng lượng từ ''件''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (36, 3, 6, 'Bài 6 HSK 3 - 怎么突然找不到了？/ Zěnme túrán zhǎo bù dào le?/ Sao bỗng dưng lại không tìm thấy?', '副', 'fù', 'cặp, chiếc (kính mắt, găng tay)', 'Dùng cho các đồ vật đi liền thành bộ hoàn chỉnh như kính đeo mắt (眼镜), găng tay, bộ bài.', '[{"noun": "眼镜", "pinyin": "yǎnjìng", "phrase": "一副眼镜", "meaning": "một chiếc/cặp kính mắt"}, {"noun": "手套", "pinyin": "shǒutào", "phrase": "一副手套", "meaning": "một đôi găng tay"}]'::jsonb, '[{"hanzi": "我戴的那副黑框眼镜怎么突然找不到了？", "pinyin": "Wǒ dài de nà fù hēikuàng yǎnjìng zěnme túrán zhǎo bù dào le?", "meaning": "Chiếc kính gọng đen tôi hay đeo sao bỗng nhiên lại tìm không thấy?"}]'::jsonb, '[{"type": "choice", "question": "爸爸新配了一___老花眼镜。", "options": ["副", "只", "条", "把"], "answer": "副", "explain": "Kính mắt (眼镜) dùng lượng từ ''副''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (36, 3, 6, 'Bài 6 HSK 3 - 怎么突然找不到了？/ Zěnme túrán zhǎo bù dào le?/ Sao bỗng dưng lại không tìm thấy?', '支', 'zhī', 'cây, chiếc (bút)', 'Dùng cho các đồ vật dạng ống thẳng thon nhỏ, đặc biệt là các loại bút viết (bút chì, bút mực, súng, hoa có cành).', '[{"noun": "铅笔", "pinyin": "qiānbǐ", "phrase": "一支铅笔", "meaning": "một cây bút chì"}, {"noun": "毛笔", "pinyin": "máobǐ", "phrase": "一支毛笔", "meaning": "một cây bút lông"}]'::jsonb, '[{"hanzi": "桌子上放着一支蓝色的铅笔。", "pinyin": "Zhuōzi shàng fàng zhe yì zhī lánsè de qiānbǐ.", "meaning": "Trên bàn đặt một cây bút chì màu xanh."}]'::jsonb, '[{"type": "choice", "question": "请借给我一___铅笔写字。", "options": ["支", "把", "张", "本"], "answer": "支", "explain": "Bút chì (铅笔) dùng lượng từ ''支''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (37, 3, 7, 'Bài 7 HSK 3 - 我跟她都认识五年了。/ Tôi và cô ấy quen nhau được năm năm rồi.', '刻', 'kè', 'khắc (15 phút)', 'Lượng từ thời gian cổ truyền bằng 15 phút. Thường đi sau giờ (vd: 3 giờ 1 khắc = 3 giờ 15 phút).', '[{"noun": "钟", "pinyin": "zhōng", "phrase": "一刻钟", "meaning": "15 phút"}, {"noun": "点", "pinyin": "diǎn", "phrase": "三点一刻", "meaning": "3 giờ 15 phút"}]'::jsonb, '[{"hanzi": "再等我一刻钟，我马上就做完了。", "pinyin": "Zài děng wǒ yí kè zhōng, wǒ mǎshàng jiù zuò wán le.", "meaning": "Đợi tôi thêm 15 phút nữa, tôi sắp làm xong rồi."}]'::jsonb, '[{"type": "choice", "question": "我们开会需要一___钟时间。", "options": ["刻", "本", "张", "条"], "answer": "刻", "explain": "Một khắc (15 phút) là ''一刻钟''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (38, 3, 8, 'Bài 8 HSK 3 - 你去哪儿我就去哪儿。/ Em đi đâu thì anh đi đến đó.', '座', 'zuò', 'ngọn, tòa (núi non, cao ốc đồ sộ)', 'Dùng cho các công trình hoặc vật thể to lớn cố định, đồ sộ (ngọn núi, cây cầu, tòa nhà lớn).', '[{"noun": "山", "pinyin": "shān", "phrase": "一座高山", "meaning": "một ngọn núi cao"}, {"noun": "桥", "pinyin": "qiáo", "phrase": "一座大桥", "meaning": "một cây cầu lớn"}]'::jsonb, '[{"hanzi": "周末我和朋友一起去爬了城市附近的那座高山。", "pinyin": "Zhōumò wǒ hé péngyou yìqǐ qù pá le chéngshì fùjìn de nà zuò gāoshān.", "meaning": "Cuối tuần tôi cùng bạn đi leo ngọn núi cao gần thành phố."}]'::jsonb, '[{"type": "choice", "question": "眼前是一___美丽巍峨的高山。", "options": ["座", "把", "条", "本"], "answer": "座", "explain": "Ngọn núi (山) đồ sộ dùng lượng từ ''座''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (39, 3, 9, 'Bài 9 HSK 3 - 她的汉语说得跟中国人一样好。/ Cô ấy nói tiếng Trung Quốc hay như người Trung Quốc vậy.', '句', 'jù', 'câu (câu văn, lời nói)', 'Dùng cho các câu nói, câu văn tiếng Hán khi rèn luyện giao tiếp.', '[{"noun": "话", "pinyin": "huà", "phrase": "一句话", "meaning": "một câu nói"}, {"noun": "汉语", "pinyin": "Hànyǔ", "phrase": "一句流利的汉语", "meaning": "một câu tiếng Hán lưu loát"}]'::jsonb, '[{"hanzi": "她的每一句话都说得跟中国人一样好。", "pinyin": "Tā de měi yí jù huà dōu shuō de gēn Zhōngguó rén yíyàng hǎo.", "meaning": "Mỗi một câu nói của cô ấy đều nói hay hệt như người Trung Quốc."}]'::jsonb, '[{"type": "choice", "question": "请用汉语说一___祝福的话。", "options": ["句", "本", "张", "只"], "answer": "句", "explain": "Câu nói (话) dùng lượng từ ''句''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (40, 3, 10, 'Bài 10 HSK 3 - 数学比历史难多了。/ Môn Toán khó hơn môn Lịch Sử nhiều.', '门', 'mén', 'môn (môn học, khóa học)', 'Dùng cho các môn học chính quy trong trường học (Toán, Lịch sử, Ngoại ngữ).', '[{"noun": "功课", "pinyin": "gōngkè", "phrase": "一门课", "meaning": "một môn học"}, {"noun": "数学", "pinyin": "shùxué", "phrase": "一门数学课", "meaning": "một môn Toán"}, {"noun": "历史", "pinyin": "lìshǐ", "phrase": "一门历史课", "meaning": "một môn Lịch sử"}]'::jsonb, '[{"hanzi": "这个学期我选了三门课，数学比历史难多了。", "pinyin": "Zhè ge xuéqī wǒ xuǎn le sān mén kè, shùxué bǐ lìshǐ nán duō le.", "meaning": "Học kỳ này tôi chọn 3 môn học, môn Toán khó hơn môn Lịch sử nhiều."}]'::jsonb, '[{"type": "choice", "question": "这学期我们还要学两___新课程。", "options": ["门", "本", "条", "只"], "answer": "门", "explain": "Môn học (课/课程) dùng lượng từ ''门''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (41, 3, 11, 'Bài 11 HSK 3 - 别忘了把空调关了。/ Bié wàng le bǎ kòngtiáo guān le./ Đừng quên tắt máy điều hoà nhé.', '台', 'tái', 'chiếc, máy (thiết bị điện tử, điện lạnh)', 'Dùng cho các thiết bị máy móc điện tử, điện gia dụng có kích thước vừa và lớn (máy điều hòa, tivi, máy vi tính, tủ lạnh).', '[{"noun": "空调", "pinyin": "kòngtiáo", "phrase": "一台空调", "meaning": "một chiếc máy điều hòa"}, {"noun": "冰箱", "pinyin": "bīngxiāng", "phrase": "一台冰箱", "meaning": "một chiếc tủ lạnh"}, {"noun": "电脑", "pinyin": "diànnǎo", "phrase": "一台电脑", "meaning": "một chiếc máy tính"}]'::jsonb, '[{"hanzi": "出门前别忘了把房间里的那台空调关了。", "pinyin": "Chūmén qián bié wàng le bǎ fángjiān lǐ de nà tái kòngtiáo guān le.", "meaning": "Trước khi ra khỏi cửa đừng quên tắt chiếc điều hòa trong phòng đi nhé."}]'::jsonb, '[{"type": "choice", "question": "客厅里新买了一___大空调。", "options": ["台", "把", "张", "本"], "answer": "台", "explain": "Máy điều hòa (空调) dùng lượng từ ''台''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (42, 3, 12, 'Bài 12 HSK 3 - 把重要的东西放在我这儿吧。/ Hãy để những đồ quan trọng ở chỗ tôi đi.', '把', 'bǎ', 'chiếc, chùm (chìa khóa)', 'Dùng cho chìa khóa nhà, chìa khóa xe hoặc đồ vật có thể nắm gọn trong lòng bàn tay.', '[{"noun": "钥匙", "pinyin": "yàoshi", "phrase": "一把钥匙", "meaning": "một chiếc/chùm chìa khóa"}]'::jsonb, '[{"hanzi": "把重要的东西和这把钥匙放在我这儿吧，不会丢的。", "pinyin": "Bǎ zhòngyào de dōngxi hé zhè bǎ yàoshi fàng zài wǒ zhèr ba, bú huì diū de.", "meaning": "Hãy để những đồ quan trọng và chùm chìa khóa này ở chỗ tôi đi, không mất đâu."}]'::jsonb, '[{"type": "choice", "question": "我把那一___家门钥匙弄丢了。", "options": ["把", "张", "本", "条"], "answer": "把", "explain": "Chìa khóa (钥匙) dùng lượng từ ''把''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (43, 3, 13, 'Bài 13 HSK 3 - 我是走回来的。/ Wǒ shì zǒu huílái de./ Anh đi bộ về.', '栋', 'dòng', 'tòa, dãy (tòa nhà, chung cư)', 'Dùng chuyên cho các dãy nhà, tòa nhà cao ốc, chung cư độc lập.', '[{"noun": "楼", "pinyin": "lóu", "phrase": "一栋大楼", "meaning": "một tòa nhà lớn"}, {"noun": "房子", "pinyin": "fángzi", "phrase": "一栋新房子", "meaning": "một ngôi nhà mới"}]'::jsonb, '[{"hanzi": "我住在那栋白色的教学楼后面。", "pinyin": "Wǒ zhù zài nà dòng báisè de jiàoxuélóu hòumiàn.", "meaning": "Tôi sống ở phía sau tòa nhà học màu trắng đó."}]'::jsonb, '[{"type": "choice", "question": "校区里新建了一___现代化的图书馆大楼。", "options": ["栋", "本", "条", "张"], "answer": "栋", "explain": "Tòa nhà (楼) dùng lượng từ ''栋''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (44, 3, 14, 'Bài 14 HSK 3 - 你把水果拿过来。/ Nǐ bǎ shuǐguǒ ná guòlái./ Cậu hãy mang đĩa trái cây đến đây.', '盘', 'pán', 'đĩa (đĩa thức ăn, đĩa trái cây)', 'Lượng từ đồ dùng chứa thức ăn dạng đĩa dẹt (đĩa hoa quả, đĩa thức ăn).', '[{"noun": "水果", "pinyin": "shuǐguǒ", "phrase": "一盘新鲜水果", "meaning": "một đĩa hoa quả tươi"}, {"noun": "菜", "pinyin": "cài", "phrase": "一盘好菜", "meaning": "một đĩa thức ăn ngon"}]'::jsonb, '[{"hanzi": "客人来了，你快把这盘洗好的水果拿过来。", "pinyin": "Kèrén lái le, nǐ kuài bǎ zhè pán xǐ hǎo de shuǐguǒ ná guòlái.", "meaning": "Khách đến rồi, con mau mang đĩa trái cây đã rửa sạch này lại đây."}]'::jsonb, '[{"type": "choice", "question": "桌子上摆着一___红苹果。", "options": ["盘", "本", "条", "支"], "answer": "盘", "explain": "Đĩa hoa quả (水果) dùng lượng từ ''盘''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (45, 3, 15, 'Bài 15 HSK 3 - 其他都没什么问题。/ Qítā dōu méi shénme wèntí./ Những câu khác đều không có vấn đề gì.', '份', 'fèn', 'bộ, bản (bài kiểm tra, tài liệu)', 'Dùng cho tài liệu, văn bản giấy tờ hoặc bài kiểm tra, đề thi được in phát theo bộ/suất.', '[{"noun": "试卷", "pinyin": "shìjuàn", "phrase": "一份试卷", "meaning": "một đề thi / bài kiểm tra"}, {"noun": "材料", "pinyin": "cáiliào", "phrase": "一份材料", "meaning": "một tập tài liệu"}]'::jsonb, '[{"hanzi": "老师发给每个学生一份期末考试题，其他都没什么问题。", "pinyin": "Lǎoshī fā gěi měi gè xuéshēng yí fèn qīmò kǎoshì tí, qítā dōu méi shénme wèntí.", "meaning": "Thầy giáo phát cho mỗi học sinh một bản đề thi học kỳ, ngoài ra đều không có vấn đề gì."}]'::jsonb, '[{"type": "choice", "question": "请大家拿出一___复习资料。", "options": ["份", "只", "条", "把"], "answer": "份", "explain": "Tài liệu in ấn/đề thi dùng lượng từ ''份''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (46, 3, 16, 'Bài 16 HSK 3 - 我现在累得下了班就想睡觉。/ Bây giờ tôi mệt đến nỗi chỉ muốn đi ngủ sau khi hết giờ làm việc.', '场', 'chǎng', 'trận (ốm), cơn (bệnh tật)', 'Dùng cho quá trình diễn ra của một cơn bệnh, trận ốm hoặc cơn sốt.', '[{"noun": "大病", "pinyin": "dàbìng", "phrase": "一场大病", "meaning": "một trận ốm nặng"}, {"noun": "感冒", "pinyin": "gǎnmào", "phrase": "一场感冒", "meaning": "một trận cảm cúm"}]'::jsonb, '[{"hanzi": "生了一场大病之后，我现在累得下了班就想睡觉。", "pinyin": "Shēng le yì cháng dàbìng zhīhòu, wǒ xiànzài lèi de xià le bān jiù xiǎng shuìjiào.", "meaning": "Sau khi trải qua một trận ốm nặng, bây giờ tôi mệt mỏi đến nỗi cứ tan sở là chỉ muốn đi ngủ."}]'::jsonb, '[{"type": "choice", "question": "他生了一___病，人瘦了很多。", "options": ["场", "本", "张", "只"], "answer": "场", "explain": "Trận ốm/cơn bệnh dùng lượng từ ''场''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (47, 3, 17, 'Bài 17 HSK 3 - 谁都有办法看好你的“病”。/ Ai cũng có cách chữa khỏi “bệnh” của em.', '种', 'zhǒng', 'loại, thứ, phương pháp', 'Dùng để phân loại phương pháp, chủng loại hoặc biện pháp giải quyết vấn đề.', '[{"noun": "办法", "pinyin": "bànfǎ", "phrase": "一种好办法", "meaning": "một cách hay"}, {"noun": "药", "pinyin": "yào", "phrase": "这种药", "meaning": "loại thuốc này"}]'::jsonb, '[{"hanzi": "谁都有一种好办法看好你的病。", "pinyin": "Shéi dōu yǒu yì zhǒng hǎo bànfǎ kàn hǎo nǐ de bìng.", "meaning": "Ai cũng có một cách hay để chữa khỏi bệnh của bạn."}]'::jsonb, '[{"type": "choice", "question": "解决这个问题有好几___办法。", "options": ["种", "本", "条", "把"], "answer": "种", "explain": "Chủng loại/phương pháp (办法) dùng lượng từ ''种''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (48, 3, 18, 'Bài 18 HSK 3 - 我相信他们会同意的。/ Wǒ xiāngxìn tāmen huì tóngyì de./ Tôi tin họ sẽ đồng ý.', '场', 'chǎng', 'cuộc (hội nghị, cuộc họp)', 'Dùng cho các sự kiện tập trung diễn ra trong một khoảng thời gian như cuộc họp, hội nghị, buổi phỏng vấn.', '[{"noun": "会议", "pinyin": "huìyì", "phrase": "一场重要会议", "meaning": "một cuộc họp quan trọng"}, {"noun": "讨论", "pinyin": "tǎolùn", "phrase": "一场讨论", "meaning": "một cuộc thảo luận"}]'::jsonb, '[{"hanzi": "在今天这长重要会议上，我相信他们会同意的。", "pinyin": "Zài jīntiān zhè chǎng zhòngyào huìyì shang, wǒ xiāngxìn tāmen huì tóngyì de.", "meaning": "Trong cuộc họp quan trọng hôm nay, tôi tin là họ sẽ đồng ý."}]'::jsonb, '[{"type": "choice", "question": "下午经理要组织一___部门会议。", "options": ["场", "本", "条", "把"], "answer": "场", "explain": "Cuộc họp/hội nghị (会议) dùng lượng từ ''场''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (49, 3, 19, 'Bài 19 HSK 3 - 你没看出来吗？/ Nǐ méi kàn chūlái ma?/ Anh không nhìn ra được à?', '幅', 'fú', 'bức, tấm (tranh vẽ, tác phẩm hội họa)', 'Dùng chuyên biệt cho các tác phẩm nghệ thuật, tranh vẽ, tranh thư pháp cuộn hoặc đóng khung.', '[{"noun": "画", "pinyin": "huà", "phrase": "一幅画", "meaning": "một bức tranh"}, {"noun": "国画", "pinyin": "guóhuà", "phrase": "一幅中国画", "meaning": "một bức tranh thủy mặc Trung Quốc"}]'::jsonb, '[{"hanzi": "墙上挂着一幅名画，你没看出来这是谁画的吗？", "pinyin": "Qiáng shàng guà zhe yì fú mínghuà, nǐ méi kàn chūlái zhè shì shéi huà de ma?", "meaning": "Trên tường treo một bức tranh danh tiếng, bạn không nhìn ra đây là ai vẽ à?"}]'::jsonb, '[{"type": "choice", "question": "展厅里挂满了美丽的一___中国画。", "options": ["幅", "条", "本", "只"], "answer": "幅", "explain": "Tranh vẽ (画) dùng lượng từ ''幅''."}]'::jsonb, 1);
+
+INSERT INTO classifiers (session_id, hsk_level, lesson_num, lesson_title, hanzi, pinyin, meaning, usage_note, collocations, examples, exercises, order_index)
+VALUES (50, 3, 20, 'Bài 20 HSK 3 - 我被他影响了。/ Wǒ bèi tā yǐngxiǎng le./ Mình chịu ảnh hưởng từ anh ấy.', '种', 'zhǒng', 'loại, thứ (ảnh hưởng, thói quen)', 'Dùng cho sự vật trừu tượng như thói quen, phong cách hoặc sự ảnh hưởng tinh thần.', '[{"noun": "影响", "pinyin": "yǐngxiǎng", "phrase": "一种深远的影响", "meaning": "một sự ảnh hưởng sâu sắc"}, {"noun": "习惯", "pinyin": "xíguàn", "phrase": "一种好习惯", "meaning": "một thói quen tốt"}]'::jsonb, '[{"hanzi": "和他做朋友是一种很好的影响，我也养成了早起的好习惯。", "pinyin": "Hé tā zuò péngyou shì yì zhǒng hěn hǎo de yǐngxiǎng, wǒ yě yǎngchéng le zǎoqǐ de hǎo xíguàn.", "meaning": "Làm bạn với anh ấy là một sự ảnh hưởng rất tốt, tôi cũng đã hình thành thói quen dậy sớm."}]'::jsonb, '[{"type": "choice", "question": "读书能够带来一___积极的心理影响。", "options": ["种", "条", "张", "本"], "answer": "种", "explain": "Sự việc trừu tượng như ảnh hưởng (影响) dùng lượng từ ''种''."}]'::jsonb, 1);
+
