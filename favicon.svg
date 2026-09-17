@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="sealGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D14333"/>
+      <stop offset="100%" stop-color="#B83425"/>
+    </linearGradient>
+  </defs>
+  <!-- Seal Outer Container -->
+  <rect x="2" y="2" width="60" height="60" rx="13" fill="url(#sealGrad)" stroke="#E57368" stroke-width="2.5"/>
+  <!-- Subtle Inner Border -->
+  <rect x="5.5" y="5.5" width="53" height="53" rx="10" fill="none" stroke="#FFA399" stroke-width="0.75" stroke-opacity="0.4"/>
+  <!-- Chinese Hanzi Character 'Han' -->
+  <text x="32" y="46" font-family="'Noto Serif SC', 'Songti SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif" font-size="39" font-weight="900" fill="#FFFFFF" text-anchor="middle">汉</text>
+</svg>
