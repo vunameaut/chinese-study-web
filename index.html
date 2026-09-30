@@ -2663,6 +2663,12 @@
             <div class="stat-block"><div class="num" id="wp-finish-correct" style="color:var(--jade)"></div><div class="lbl">Thuộc được</div></div>
             <div class="stat-block"><div class="num" id="wp-finish-wrong" style="color:var(--seal-son)"></div><div class="lbl">Lần gõ sai</div></div>
           </div>
+          <div id="wp-wrong-summary-box" class="finish-wrong-summary" style="display:none">
+            <div class="finish-wrong-summary-title">
+              <span>⚠️ Các từ cần luyện lại (<span id="wp-wrong-count-badge">0</span>)</span>
+            </div>
+            <div class="finish-wrong-list" id="wp-wrong-items-list"></div>
+          </div>
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:340px">
             <button class="primary-action-btn" onclick="startWritePinyin(state.wpSessionId)">Luyện tập lại buổi này</button>
             <button class="back-btn" style="padding:12px 20px;font-size:14px;justify-content:center;width:100%" onclick="goBack()">Về trang chủ</button>
@@ -2727,6 +2733,12 @@
           <div class="finish-stats-row">
             <div class="stat-block"><div class="num" id="finish-correct" style="color:var(--jade)"></div><div class="lbl">Thuộc được</div></div>
             <div class="stat-block"><div class="num" id="finish-wrong" style="color:var(--seal-son)"></div><div class="lbl">Lần chọn sai</div></div>
+          </div>
+          <div id="quiz-wrong-summary-box" class="finish-wrong-summary" style="display:none">
+            <div class="finish-wrong-summary-title">
+              <span>⚠️ Các từ cần ôn lại (<span id="quiz-wrong-count-badge">0</span>)</span>
+            </div>
+            <div class="finish-wrong-list" id="quiz-wrong-items-list"></div>
           </div>
           <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:340px">
             <button class="primary-action-btn" onclick="startQuiz(state.quizSessionId)">Ôn tập lại buổi này</button>
