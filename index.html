@@ -2134,46 +2134,59 @@
   }
 
   /* =================== DARK MODE =================== */
+  /* Dark palette: warm dark (not cold zinc) cho hoa hop voi brand muc & giay */
   body.dark {
-    --paper: #18181b;
-    --paper-card: #27272a;
-    --paper-deep: #1f1f23;
-    --paper-card-hover: #323238;
-    --ink: #f4f4f5;
-    --ink-soft: #a1a1aa;
-    --ink-faint: #71717a;
-    --hairline: #3f3f46;
-    --hairline-light: #52525b;
-    --seal-son: #f17568;
-    --seal-deep: #e55a4d;
-    --seal-tint: #2c1a18;
-    --amber: #fbbf24;
-    --amber-deep: #f59e0b;
-    --amber-tint: #2d2408;
-    --jade: #34d399;
-    --jade-fill: #10b981;
-    --jade-tint: #0a2a1f;
-    --shadow-sm: 0 2px 6px rgba(0,0,0,0.25);
-    --shadow-md: 0 6px 18px rgba(0,0,0,0.35);
-    --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+    --paper: #1a1714;
+    --paper-card: #242018;
+    --paper-deep: #1e1b13;
+    --paper-card-hover: #2e2920;
+    --ink: #f0ece4;
+    --ink-soft: #9e9585;
+    --ink-faint: #6b6155;
+    --hairline: #38322a;
+    --hairline-light: #47403a;
+    --seal-son: #e8614e;
+    --seal-deep: #d44e3c;
+    --seal-tint: #2e1610;
+    --amber: #d4a44c;
+    --amber-deep: #b8892e;
+    --amber-tint: #2a1f08;
+    --jade: #3dac8a;
+    --jade-fill: #2f9070;
+    --jade-tint: #0d2a1e;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 6px 20px rgba(0,0,0,0.4);
+    --shadow-lg: 0 14px 40px rgba(0,0,0,0.5);
   }
   body.dark {
-    background: radial-gradient(ellipse at 50% 0%, #1c1c1f 0%, #18181b 60%, #0f0f11 100%);
+    background: radial-gradient(ellipse at 50% 0%, #1f1c16 0%, #1a1714 60%, #110f0c 100%);
   }
   body.dark .desktop-header {
-    background: rgba(24,24,27,0.94);
+    background: rgba(26,23,20,0.95);
+    border-bottom-color: var(--hairline);
   }
-  body.dark .tool-btn:hover { background: #3f3f46; }
-  body.dark select option, body.dark optgroup { background: #27272a; color: #f4f4f5; }
+  body.dark .tool-btn { background: var(--paper-card); border-color: var(--hairline); }
+  body.dark .tool-btn:hover { background: var(--paper-card-hover); border-color: var(--hairline-light); }
+  body.dark select option, body.dark optgroup { background: #242018; color: #f0ece4; }
   body.dark input, body.dark textarea, body.dark select {
-    background: #27272a;
-    color: #f4f4f5;
-    border-color: #52525b;
+    background: var(--paper-card);
+    color: var(--ink);
+    border-color: var(--hairline);
   }
-  body.dark .session-card.highlighted { background: #2d2408; }
-  body.dark .voice-select-dropdown { background: #27272a; color: #f4f4f5; }
-  body.dark .voice-select-dropdown optgroup { background: #1f1f23; }
-  body.dark .voice-select-dropdown option { background: #27272a; }
+  body.dark input:focus, body.dark textarea:focus, body.dark select:focus {
+    border-color: var(--seal-son);
+  }
+  body.dark .session-card { background: var(--paper-card); border-color: var(--hairline); }
+  body.dark .session-card:hover { background: var(--paper-card-hover); border-color: var(--hairline-light); }
+  body.dark .session-card.highlighted { background: var(--amber-tint); border-left-color: var(--amber); }
+  body.dark .hsk-segmented { background: var(--paper-deep); border-color: var(--hairline); }
+  body.dark .stat-pill { background: var(--paper-card); border-color: var(--hairline); }
+  body.dark .setup-box { background: var(--paper-card); border-color: var(--hairline); }
+  body.dark .setup-box input { background: var(--paper-deep); color: var(--ink); border-color: var(--hairline); }
+  body.dark .voice-select-dropdown { background: var(--paper-card); color: var(--ink); border-color: var(--hairline); }
+  body.dark .voice-select-dropdown optgroup { background: var(--paper-deep); }
+  body.dark .voice-select-dropdown option { background: var(--paper-card); }
+  body.dark .snackbar { background: var(--ink); color: var(--paper); }
   /* Dark toggle button */
   .dark-toggle-btn {
     display: inline-flex;
