@@ -2186,7 +2186,54 @@
   body.dark .voice-select-dropdown { background: var(--paper-card); color: var(--ink); border-color: var(--hairline); }
   body.dark .voice-select-dropdown optgroup { background: var(--paper-deep); }
   body.dark .voice-select-dropdown option { background: var(--paper-card); }
-  body.dark .snackbar { background: var(--ink); color: var(--paper); }
+  /* --- Dark mode: buttons harmonized --- */
+  /* Nut On tap (btn-qz) - giam saturation, dung seal am hon */
+  body.dark .btn-qz {
+    background: var(--seal-son);
+    box-shadow: 0 2px 8px rgba(232,97,78,0.2);
+    opacity: 0.92;
+  }
+  body.dark .btn-qz:hover { background: var(--seal-deep); opacity: 1; }
+
+  /* Nut Ngu phap (btn-gm) - dung jade-tint toi */
+  body.dark .btn-gm {
+    background: var(--jade-tint);
+    border-color: rgba(61,172,138,0.3);
+    color: var(--jade);
+  }
+  body.dark .btn-gm:hover { background: #122e21; border-color: var(--jade); }
+
+  /* Nut Pinyin (btn-wp) - dung amber-tint toi */
+  body.dark .btn-wp {
+    background: var(--amber-tint);
+    border-color: rgba(212,164,76,0.3);
+    color: var(--amber);
+  }
+  body.dark .btn-wp:hover { background: #332508; border-color: var(--amber); }
+
+  /* Nut Luong tu (btn-cl) - dung seal-tint toi */
+  body.dark .btn-cl {
+    background: var(--seal-tint);
+    border-color: rgba(232,97,78,0.3);
+    color: var(--seal-son);
+  }
+  body.dark .btn-cl:hover { background: #3a1a14; border-color: var(--seal-son); }
+
+  /* Primary action button - giam do choi */
+  body.dark .primary-action-btn {
+    background: var(--seal-son);
+    box-shadow: 0 3px 12px rgba(232,97,78,0.25);
+  }
+  body.dark .primary-action-btn:hover { background: var(--seal-deep); box-shadow: 0 4px 16px rgba(232,97,78,0.3); }
+
+  /* cl-card-btn */
+  body.dark .cl-card-btn {
+    background: var(--seal-tint);
+    border-color: rgba(232,97,78,0.3);
+    color: var(--seal-son);
+  }
+  body.dark .cl-card-btn:hover { background: #3a1a14; border-color: var(--seal-son); }
+    body.dark .snackbar { background: var(--ink); color: var(--paper); }
   /* Dark toggle button */
   .dark-toggle-btn {
     display: inline-flex;
