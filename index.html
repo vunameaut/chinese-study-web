@@ -2427,6 +2427,43 @@
   }
   body.dark .dark-toggle-btn .dt-track { background: var(--seal-son); border-color: var(--seal-son); }
   body.dark .dark-toggle-btn .dt-thumb { left: 14px; background: #fff; }
+
+  /* Dark mode fixes for Quiz / Practice components */
+  body.dark .opt-card {
+    background: var(--paper-card);
+    border-color: var(--hairline);
+    color: var(--ink);
+  }
+  body.dark .opt-card:hover:not(.disabled) {
+    background: var(--paper-card-hover) !important;
+    border-color: var(--hairline-light) !important;
+  }
+  body.dark .opt-card.correct {
+    background: var(--jade-tint) !important;
+    border-color: var(--jade) !important;
+    color: var(--jade) !important;
+  }
+  body.dark .opt-card.wrong {
+    background: var(--seal-tint) !important;
+    border-color: var(--seal-son) !important;
+    color: var(--seal-son) !important;
+  }
+  body.dark .next-btn {
+    background: #5a211a !important;
+    border-color: rgba(232, 97, 78, 0.45) !important;
+    color: #ffffff !important;
+  }
+  body.dark .next-btn:hover {
+    background: #6e2820 !important;
+    border-color: var(--seal-son) !important;
+    color: #ffffff !important;
+  }
+  body.dark .next-btn kbd {
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+  }
+
   /* =================== END DARK MODE =================== */
 </style>
 </head>
@@ -4546,6 +4583,7 @@ async function startQuiz(sessionId) {
   state.quizIsRepractice = isRepractice;
 
   state.vocabQueue = shuffle(review);
+  state.totalQuizVocabs = review.length;
   state.correctCount = 0;
   state.wrongCount = 0;
   setupNextFlashcard();
@@ -4556,7 +4594,6 @@ async function setupNextFlashcard() {
   if (state.vocabQueue.length === 0) { showQuizFinish(state.correctCount, state.wrongCount); return; }
   var vocab = state.vocabQueue[0]; state.currentVocab = vocab;
   state.quizStep = 'PINYIN'; state.isAnswerSelected = false; state.selectedAnswer = null;
-  state.remainingVocabs = state.vocabQueue.length;
 
   var dist = await getPinyinDistractors(vocab);
   state.options = shuffle(dist.concat([vocab.pinyin]));
@@ -4565,9 +4602,10 @@ async function setupNextFlashcard() {
 
 function renderQuizUI() {
   var vocab = state.currentVocab; if (!vocab) return;
-  var total = state.remainingVocabs;
-  var done = total - state.vocabQueue.length - (state.isAnswerSelected && state.isCorrect ? 1 : 0);
-  document.getElementById('quiz-progress-fill').style.width = (done / total * 100) + '%';
+  var total = state.totalQuizVocabs || state.vocabQueue.length;
+  var done = state.correctCount;
+  var percent = total > 0 ? Math.min(100, Math.round((done / total) * 100)) : 0;
+  document.getElementById('quiz-progress-fill').style.width = percent + '%';
   document.getElementById('quiz-counter').textContent = done + '/' + total;
 
   document.getElementById('step-pinyin').style.background = state.quizStep === 'PINYIN' ? 'var(--seal-son)' : 'var(--paper-deep)';
