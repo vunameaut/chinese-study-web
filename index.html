@@ -2186,53 +2186,123 @@
   body.dark .voice-select-dropdown { background: var(--paper-card); color: var(--ink); border-color: var(--hairline); }
   body.dark .voice-select-dropdown optgroup { background: var(--paper-deep); }
   body.dark .voice-select-dropdown option { background: var(--paper-card); }
-  /* --- Dark mode: buttons harmonized --- */
-  /* Nut On tap (btn-qz) - giam saturation, dung seal am hon */
+  /* --- Dark mode: all buttons & tabs harmonized --- */
+
+  /* Nut On tap (btn-qz): giam do choi, dung muted red */
   body.dark .btn-qz {
-    background: var(--seal-son);
-    box-shadow: 0 2px 8px rgba(232,97,78,0.2);
-    opacity: 0.92;
+    background: #5a211a !important;
+    border: 1.2px solid rgba(232,97,78,0.45) !important;
+    color: #f0876f !important;
+    box-shadow: none !important;
   }
-  body.dark .btn-qz:hover { background: var(--seal-deep); opacity: 1; }
+  body.dark .btn-qz:hover {
+    background: #6e2820 !important;
+    border-color: var(--seal-son) !important;
+    color: #f5a08a !important;
+  }
 
-  /* Nut Ngu phap (btn-gm) - dung jade-tint toi */
+  /* Nut Ngu phap (btn-gm): jade toi */
   body.dark .btn-gm {
-    background: var(--jade-tint);
-    border-color: rgba(61,172,138,0.3);
-    color: var(--jade);
+    background: var(--jade-tint) !important;
+    border-color: rgba(61,172,138,0.35) !important;
+    color: var(--jade) !important;
   }
-  body.dark .btn-gm:hover { background: #122e21; border-color: var(--jade); }
+  body.dark .btn-gm:hover {
+    background: #122e21 !important;
+    border-color: var(--jade) !important;
+  }
 
-  /* Nut Pinyin (btn-wp) - dung amber-tint toi */
+  /* Nut Viet Pinyin (btn-wp): amber toi */
   body.dark .btn-wp {
-    background: var(--amber-tint);
-    border-color: rgba(212,164,76,0.3);
-    color: var(--amber);
+    background: var(--amber-tint) !important;
+    border-color: rgba(212,164,76,0.35) !important;
+    color: var(--amber) !important;
   }
-  body.dark .btn-wp:hover { background: #332508; border-color: var(--amber); }
+  body.dark .btn-wp:hover {
+    background: #332508 !important;
+    border-color: var(--amber) !important;
+  }
 
-  /* Nut Luong tu (btn-cl) - dung seal-tint toi */
+  /* Nut Luong tu (btn-cl): seal muted */
   body.dark .btn-cl {
-    background: var(--seal-tint);
-    border-color: rgba(232,97,78,0.3);
-    color: var(--seal-son);
+    background: var(--seal-tint) !important;
+    border-color: rgba(232,97,78,0.3) !important;
+    color: #f0876f !important;
   }
-  body.dark .btn-cl:hover { background: #3a1a14; border-color: var(--seal-son); }
-
-  /* Primary action button - giam do choi */
-  body.dark .primary-action-btn {
-    background: var(--seal-son);
-    box-shadow: 0 3px 12px rgba(232,97,78,0.25);
+  body.dark .btn-cl:hover {
+    background: #3a1a14 !important;
+    border-color: var(--seal-son) !important;
   }
-  body.dark .primary-action-btn:hover { background: var(--seal-deep); box-shadow: 0 4px 16px rgba(232,97,78,0.3); }
 
-  /* cl-card-btn */
+  /* cl-card-btn toi */
   body.dark .cl-card-btn {
-    background: var(--seal-tint);
-    border-color: rgba(232,97,78,0.3);
-    color: var(--seal-son);
+    background: #5a211a !important;
+    border: 1px solid rgba(232,97,78,0.4) !important;
+    color: #f0876f !important;
+    box-shadow: none !important;
   }
-  body.dark .cl-card-btn:hover { background: #3a1a14; border-color: var(--seal-son); }
+  body.dark .cl-card-btn:hover {
+    background: #6e2820 !important;
+    border-color: var(--seal-son) !important;
+    color: #f5a08a !important;
+  }
+
+  /* Primary action button: giam do sang */
+  body.dark .primary-action-btn {
+    background: #5a211a !important;
+    color: #f5d4ce !important;
+    box-shadow: 0 2px 8px rgba(90,33,26,0.4) !important;
+  }
+  body.dark .primary-action-btn:hover {
+    background: #6e2820 !important;
+    box-shadow: 0 4px 12px rgba(90,33,26,0.5) !important;
+  }
+
+  /* Study mode tabs: active = khong dung --ink (se thanh trang) */
+  body.dark .study-mode-btn {
+    background: var(--paper-card) !important;
+    border-color: var(--hairline) !important;
+    color: var(--ink-soft) !important;
+  }
+  body.dark .study-mode-btn:hover {
+    background: var(--paper-card-hover) !important;
+    border-color: var(--hairline-light) !important;
+    color: var(--ink) !important;
+  }
+  body.dark .study-mode-btn.active {
+    background: var(--paper-card-hover) !important;
+    border-color: var(--seal-son) !important;
+    color: var(--ink) !important;
+    box-shadow: 0 0 0 1px var(--seal-son) !important;
+  }
+  body.dark .study-mode-btn.active .mode-count {
+    background: rgba(232,97,78,0.2) !important;
+    color: var(--seal-son) !important;
+  }
+  body.dark .mode-count {
+    background: var(--paper-deep) !important;
+    color: var(--ink-soft) !important;
+  }
+
+  /* grammar-tab-btn & cl-tab-btn toi */
+  body.dark .grammar-tab-btn,
+  body.dark .cl-tab-btn {
+    background: var(--paper-card) !important;
+    border-color: var(--hairline) !important;
+    color: var(--ink-soft) !important;
+  }
+  body.dark .grammar-tab-btn:hover:not(.active),
+  body.dark .cl-tab-btn:hover:not(.active) {
+    background: var(--paper-card-hover) !important;
+    color: var(--ink) !important;
+  }
+  body.dark .grammar-tab-btn.active,
+  body.dark .cl-tab-btn.active {
+    background: var(--paper-card-hover) !important;
+    border-color: var(--seal-son) !important;
+    color: var(--seal-son) !important;
+    box-shadow: none !important;
+  }
     body.dark .snackbar { background: var(--ink); color: var(--paper); }
   /* Dark toggle button */
   .dark-toggle-btn {
