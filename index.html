@@ -5231,8 +5231,10 @@ function renderGrammarChoiceExercise(ex, container) {
       '<div style="font-family:\'Noto Serif SC\',serif;font-size:24px;font-weight:700;color:var(--ink);letter-spacing:0.02em;line-height:1.4">' +
         escHtml(ex.question) +
       '</div>' +
-      (ex.pinyin ? '<div style="font-size:14px;color:var(--amber-deep);font-weight:600;margin-top:6px">' + escHtml(ex.pinyin) + '</div>' : '') +
-      (ex.meaning ? '<div style="font-size:13.5px;color:var(--ink-soft);margin-top:4px">Nghĩa: ' + escHtml(ex.meaning) + '</div>' : '') +
+      '<div id="gp-choice-hint" style="display:none;margin-top:8px;padding-top:8px;border-top:1px dashed var(--hairline)">' +
+        (ex.pinyin ? '<div style="font-size:14px;color:var(--amber);font-weight:600">' + escHtml(ex.pinyin) + '</div>' : '') +
+        (ex.meaning ? '<div style="font-size:13.5px;color:var(--ink-soft);margin-top:3px">Nghĩa: ' + escHtml(ex.meaning) + '</div>' : '') +
+      '</div>' +
     '</div>' +
   '</div>' +
   '<div class="quiz-options-grid" style="margin-top:14px">' + optsHtml + '</div>' +
@@ -5270,6 +5272,9 @@ function checkGrammarChoice(selected, optIdx) {
     }
   });
 
+  // Hiện lời giải đầy đủ (Pinyin + Nghĩa)
+  var hintEl = document.getElementById('gp-choice-hint');
+  if (hintEl) hintEl.style.display = 'block';
   // Hiển thị khung phản hồi
   var fb = document.getElementById('gp-choice-feedback');
   if (fb) {
@@ -6086,8 +6091,10 @@ function renderClassifierChoiceExercise(ex, container) {
       '<div style="font-family:\'Noto Serif SC\',serif;font-size:26px;font-weight:700;color:var(--ink);letter-spacing:0.02em;line-height:1.4">' +
         escHtml(ex.question) +
       '</div>' +
-      (ex.pinyin ? '<div style="font-size:14px;color:var(--amber-deep);font-weight:600;margin-top:6px">' + escHtml(ex.pinyin) + '</div>' : '') +
-      (ex.meaning ? '<div style="font-size:13.5px;color:var(--ink-soft);margin-top:4px">Nghĩa: ' + escHtml(ex.meaning) + '</div>' : '') +
+      '<div id="cl-choice-hint" style="display:none;margin-top:8px;padding-top:8px;border-top:1px dashed var(--hairline)">' +
+        (ex.pinyin ? '<div style="font-size:14px;color:var(--amber);font-weight:600">' + escHtml(ex.pinyin) + '</div>' : '') +
+        (ex.meaning ? '<div style="font-size:13.5px;color:var(--ink-soft);margin-top:3px">Nghĩa: ' + escHtml(ex.meaning) + '</div>' : '') +
+      '</div>' +
     '</div>' +
   '</div>' +
   '<div class="quiz-options-grid" style="margin-top:14px">' + optsHtml + '</div>' +
@@ -6121,6 +6128,8 @@ function checkClassifierChoice(selected, optIdx) {
     }
   });
 
+  var clHint = document.getElementById('cl-choice-hint');
+  if (clHint) clHint.style.display = 'block';
   var fb = document.getElementById('cl-choice-feedback');
   if (fb) {
     fb.style.display = 'block';
