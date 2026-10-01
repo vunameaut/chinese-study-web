@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <script src="https://aio-analytics-server.wasmer.app/tracker.js" data-project="chinese_study" async></script>
@@ -933,7 +933,7 @@
     letter-spacing:-0.01em;
   }
   .gp-pattern-box {
-    background:linear-gradient(135deg, rgba(46,105,88,0.08) 0%, rgba(248,243,231,0.95) 100%);
+    background:linear-gradient(135deg, var(--jade-tint) 0%, var(--paper) 100%);
     border:1.5px dashed rgba(46,105,88,0.4);
     border-radius:10px;
     padding:10px 16px;
@@ -965,7 +965,7 @@
     flex-wrap:wrap;
   }
   .gp-formula-chip {
-    background:#fff;
+    background:var(--paper-card);
     padding:2px 8px;
     border-radius:6px;
     border:1px solid rgba(46,105,88,0.25);
@@ -1027,12 +1027,12 @@
   }
   .gp-example-item:hover {
     border-color:rgba(46,105,88,0.4);
-    background:#fff;
+    background:var(--paper-card-hover);
   }
-  .gp-example-content {
+  .gp-example-content, .gp-ex-content {
     flex:1;
   }
-  .gp-example-hanzi {
+  .gp-example-hanzi, .gp-ex-hanzi {
     font-family:'Noto Serif SC',serif;
     font-size:17.5px;
     font-weight:600;
@@ -1040,15 +1040,23 @@
     line-height:1.4;
     margin-bottom:2px;
   }
-  .gp-example-pinyin {
+  .gp-example-pinyin, .gp-ex-pinyin {
     font-size:13px;
     font-weight:600;
     color:var(--amber-deep);
     margin-bottom:2px;
   }
-  .gp-example-meaning {
+  .gp-example-meaning, .gp-ex-meaning {
     font-size:13px;
     color:var(--ink-soft);
+  }
+  .gp-ex-speaker-btn {
+    font-size:15px;
+    margin-right:8px;
+    display:inline-flex;
+    align-items:center;
+    flex-shrink:0;
+    cursor:pointer;
   }
   .gp-speaker-btn {
     width:34px;
@@ -1145,7 +1153,7 @@
     min-height:46px;
     align-items:center;
     padding:10px 12px;
-    background:rgba(255,255,255,0.5);
+    background:var(--paper-deep);
     border-radius:10px;
     border:1px solid var(--hairline);
   }
@@ -1211,7 +1219,7 @@
   }
   .grammar-field-input:focus, .grammar-field-textarea:focus {
     border-color:var(--jade);
-    background:#fff;
+    background:var(--paper-card);
   }
   .grammar-sql-pre {
     background:#1E1E1E;
@@ -2462,6 +2470,111 @@
     background: rgba(255, 255, 255, 0.18) !important;
     color: #ffffff !important;
     border-color: rgba(255, 255, 255, 0.25) !important;
+  }
+
+  /* Dark mode: Grammar & Classifier theory & practice */
+  body.dark .grammar-point-card {
+    background: var(--paper-card);
+    border-color: var(--hairline);
+  }
+  body.dark .grammar-point-card:hover {
+    border-color: var(--hairline-light);
+  }
+  body.dark .gp-pattern-box {
+    background: linear-gradient(135deg, rgba(61,172,138,0.14) 0%, rgba(30,27,19,0.92) 100%) !important;
+    border-color: rgba(61,172,138,0.35) !important;
+  }
+  body.dark .gp-pattern-tag {
+    color: var(--jade);
+  }
+  body.dark .gp-pattern-formula {
+    color: var(--ink);
+  }
+  body.dark .gp-formula-chip {
+    background: #232d27 !important;
+    border-color: rgba(61,172,138,0.35) !important;
+    color: #f0ece4 !important;
+  }
+  body.dark .gp-formula-chip.keyword {
+    background: var(--seal-tint) !important;
+    border-color: rgba(232,97,78,0.4) !important;
+    color: var(--seal-son) !important;
+  }
+  body.dark .gp-example-item {
+    background: var(--paper-deep) !important;
+    border-color: var(--hairline) !important;
+  }
+  body.dark .gp-example-item:hover {
+    background: var(--paper-card-hover) !important;
+    border-color: rgba(61,172,138,0.5) !important;
+  }
+  body.dark .gp-example-hanzi,
+  body.dark .gp-ex-hanzi {
+    color: var(--ink) !important;
+  }
+  body.dark .gp-example-pinyin,
+  body.dark .gp-ex-pinyin {
+    color: var(--amber) !important;
+  }
+  body.dark .gp-example-meaning,
+  body.dark .gp-ex-meaning {
+    color: var(--ink-soft) !important;
+  }
+  body.dark .gp-speaker-btn {
+    background: var(--paper-card);
+    border-color: var(--hairline);
+    color: var(--ink-soft);
+  }
+  body.dark .gp-speaker-btn:hover {
+    background: var(--jade-tint);
+    border-color: var(--jade);
+    color: var(--jade);
+  }
+  body.dark .gp-speaker-btn.speaking {
+    background: var(--jade);
+    color: #fff;
+    border-color: var(--jade);
+    box-shadow: 0 0 0 4px rgba(61,172,138,0.3);
+  }
+  body.dark .unscramble-target-zone {
+    background: var(--paper-deep);
+    border-color: rgba(61,172,138,0.35);
+  }
+  body.dark .unscramble-pool-zone {
+    background: var(--paper-deep) !important;
+    border-color: var(--hairline) !important;
+  }
+  body.dark .unscramble-pool-chip {
+    background: var(--paper-card);
+    border-color: var(--hairline);
+    color: var(--ink);
+  }
+  body.dark .unscramble-pool-chip:hover {
+    background: var(--jade-tint);
+    border-color: var(--jade);
+    color: var(--jade);
+  }
+  body.dark .grammar-field-input:focus,
+  body.dark .grammar-field-textarea:focus {
+    background: var(--paper-card) !important;
+    border-color: var(--jade) !important;
+    color: var(--ink) !important;
+  }
+  body.dark .cl-hanzi-box {
+    background: var(--paper-deep);
+    border-color: var(--hairline);
+  }
+  body.dark .cl-usage-box {
+    background: linear-gradient(135deg, var(--seal-tint) 0%, var(--paper-deep) 100%) !important;
+    border-color: rgba(232,97,78,0.35) !important;
+  }
+  body.dark .cl-colloc-card {
+    background: var(--paper-deep);
+    border-color: var(--hairline);
+  }
+  body.dark .cl-colloc-card:hover {
+    background: var(--seal-tint);
+    border-color: var(--seal-son);
   }
 
   /* =================== END DARK MODE =================== */
